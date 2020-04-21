@@ -1,6 +1,7 @@
 var CANVAS, CONTEXT,
 	C_WIDTH, C_HEIGHT,
-	MOUSE_POS;
+	MOUSE_POS, CAMERA,
+	CUTS = [];
 
 
 function main(){
@@ -14,7 +15,7 @@ function main(){
 	CONTEXT = canvas.getContext("2d");
 	C_WIDTH = window.innerWidth;
 	C_HEIGHT = window.innerHeight;
-	MOUSE_POS = new Pos(0,0);
+	MOUSE_POS = new Point(0,0);
 
 	CANVAS.style.width = C_WIDTH + "px";
 	CANVAS.style.height = C_HEIGHT + "px";
@@ -26,24 +27,33 @@ function main(){
 	CANVAS.setAttribute('height', style_height * dpi);
 	CANVAS.setAttribute('width', style_width * dpi);
 
+	CAMERA = new Camera();
 
+	addCut(new Cut(new Point(C_WIDTH/2,C_HEIGHT/2)));
 	initUserInput();
 	renderLoop();
-
 }
 
 
 function renderLoop(){
-	//CONTEXT.fillRect(0, 0, C_WIDTH, C_HEIGHT);
 	renderGrid();
-	let c = new Cut(C_WIDTH/2,C_HEIGHT/2);
+	updateUserInput();
 
-	c.update();
-	drawCut(c);
+	IS_OVER_OBJ = false;
+	for( c of CUTS ){
+		c.update();
+		drawCut(c);
 
+		if ( c.is_mouse_over && CURRENT_OBJ === null && IS_MOUSE_DOWN ){
+			IS_OVER_OBJ = true;
+			CURRENT_OBJ = c;
+		}
+
+	}
 
 	requestAnimationFrame(renderLoop);
 }
+
 
 function getRandomString(){
 	var array = new Uint32Array(2);
@@ -56,3 +66,4 @@ function getRandomString(){
 
 	return ret;
 }
+
