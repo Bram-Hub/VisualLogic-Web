@@ -20,6 +20,17 @@ function isWithinEllipse(point, x, y, rad_x, rad_y){
 }
 
 
+/**
+* check if a given value is between a certain tolerance (inclusive)
+* @param {Number} tgt
+* @param {Number} base
+* @param {Number} tol 
+*/
 function isWithinTollerance(tgt, base, tol){
 	return tgt >= ( base - tol ) && tgt <= ( base + tol );
+}
+
+
+function isIntersecting(){
+	
 }

@@ -18,3 +18,10 @@ class Vector{
 		this.top_to_bot = this.height >= 0;
 	}
 }
+
+function drawVector(v){
+	CONTEXT.beginPath();
+	CONTEXT.moveTo(v.start.x, v.start.y);
+	CONTEXT.lineTo(v.end.x,v.end.y);
+	CONTEXT.stroke();
+}

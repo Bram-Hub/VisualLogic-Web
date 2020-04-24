@@ -12,7 +12,10 @@ function initUserInput(){
 	window.addEventListener('onkeydown', whileKeyDown);
 
 	IS_DRAGGING = IS_MOVING = IS_MOUSE_DOWN = false;
-	LAST_MOUSE_POS = new Point(0,0);
+
+	//assume the cursor's position is in the center of the page on load
+	MOUSE_POS = new Point(C_WIDTH/2, C_HEIGHT/2);
+	LAST_MOUSE_POS = MOUSE_POS;
 }
 
 
@@ -27,6 +30,10 @@ function updateUserInput(){
 
 	if ( IS_DRAGGING && !(CURRENT_OBJ === null) ){
 		CURRENT_OBJ.updatePos( MOUSE_POS );
+	}
+
+	if ( CURRENT_OBJ === null ){
+		document.getElementById("canvas").style.cursor = "default"; 
 	}
 }
 

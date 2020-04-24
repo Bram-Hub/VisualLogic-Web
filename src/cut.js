@@ -18,30 +18,33 @@ class Cut{
 		this.rad_y = 100 + this.border_rad;
 
 		this.is_mouse_over = false;
+		this.is_mouse_in = false;
+		this.is_mouse_in_border = false;
 		this.center = new Point(this.x,this.y);
+
+		this.area = Math.PI * this.rad_x * this.rad_y;
+		this.cut_border = new CutBorder();
 	}
 
 
 	update(){
 		this.is_mouse_over = isMouseOverCut(this);
-		if ( isMouseInBorder(this) ){
+		this.is_mouse_in = isMouseInCut(this);
+		this.is_mouse_in_border = isMouseInBorder(this);
+		if ( this.is_mouse_in_border ){
 			updateCursor(this);
 		}
 	}
 
 
-	getPos(){
-		let x_ = this.x + CAMERA.pan_x;
-		let y_ = this.y + CAMERA.pan_y;
-
-		return new Point(x_,y_);
-	}
-
-
 	updatePos( new_pos ){
+		//calculate offset to center
+		let v = new Vector(MOUSE_POS, new Point(new_pos.x,new_pos.y) );
+		drawVector(v);
+
 		this.x = new_pos.x;
 		this.y = new_pos.y;
-
+		this.center = new Point(this.x,this.y);
 	}
 }
 
@@ -51,6 +54,9 @@ class Cut{
 */
 function drawCut(cut){
 	let border_rad = 5;
+
+	if ( cut.rad_x < border_rad*2 || cut.rad_y < border_rad*2 )
+		return;
 
 	CONTEXT.strokeStyle = cut.is_mouse_over ? 'blue' : 'black';
 	CONTEXT.lineWidth = cut.border_rad;
@@ -72,6 +78,12 @@ function drawCut(cut){
 	CONTEXT.fill();
 	CONTEXT.restore();
 	CONTEXT.lineWidth = 1;
+}
+
+class CutBorder{
+	updatePos(){
+		//TODO
+	}
 }
 
 /**
@@ -97,7 +109,7 @@ function isMouseInCut(cut){
 *@param {Cut} cut 
 */
 function isMouseInBorder(cut){
-	return !isMouseInCut(cut) && isMouseOverCut(cut);
+	return !cut.is_mouse_in && cut.is_mouse_over;
 }
 
 
@@ -122,7 +134,34 @@ function updateCursor(cut){
 		ptr = "ew-resize";
 	}else if( (a > 200 && a < 250) || (a > 20 && a < 70) ){
 		ptr = "nwse-resize";
+	}else{
+		ptr = "default";
 	}
 
 	document.getElementById("canvas").style.cursor = ptr; 
+}
+
+var TMP_ORIGIN;
+function drawTemporaryCut(pos){
+	if ( TMP_CUT === null ){
+		TMP_ORIGIN = pos;
+		TMP_CUT = new Cut(TMP_ORIGIN);
+		TMP_CUT.rad_x = 1;
+		TMP_CUT.rad_y = 1;
+	}
+
+	let v = new Vector(TMP_ORIGIN, pos);
+	drawVector(v);
+
+	TMP_CUT.rad_x = Math.abs(v.length);
+	TMP_CUT.rad_y = Math.abs(v.height);
+
+	TMP_CUT.x = TMP_ORIGIN.x + v.length/4;
+	TMP_CUT.y = TMP_ORIGIN.y + v.height/4;
+
+
+	CONTEXT.save();
+	CONTEXT.globalAlpha = 0.5;
+	drawCut(TMP_CUT);
+	CONTEXT.restore();
 }

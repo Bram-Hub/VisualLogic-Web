@@ -3,6 +3,7 @@ var CANVAS, CONTEXT,
 	MOUSE_POS, CAMERA,
 	CUTS = [];
 
+var TMP_CUT = null;
 
 function main(){
 	//initialize application
@@ -12,6 +13,7 @@ function main(){
 		return;
 	}
 
+	CANVAS.focus();
 	CONTEXT = canvas.getContext("2d");
 	C_WIDTH = window.innerWidth;
 	C_HEIGHT = window.innerHeight;
@@ -29,7 +31,9 @@ function main(){
 
 	CAMERA = new Camera();
 
-	addCut(new Cut(new Point(C_WIDTH/2,C_HEIGHT/2)));
+	// addCut(new Cut(new Point(C_WIDTH/2,C_HEIGHT/2)));
+	// addCut(new Cut(new Point(C_WIDTH/2,C_HEIGHT/2)));
+
 	initUserInput();
 	renderLoop();
 }
@@ -44,12 +48,23 @@ function renderLoop(){
 		c.update();
 		drawCut(c);
 
-		if ( c.is_mouse_over && CURRENT_OBJ === null && IS_MOUSE_DOWN ){
-			IS_OVER_OBJ = true;
-			CURRENT_OBJ = c;
-		}
+		cutSelectionControl(c);
 
 	}
+
+	//we realeased the mouse and a temporary cut exists, now create its
+	if ( !(TMP_CUT === null) && !IS_MOUSE_DOWN ){
+		addCut(TMP_CUT);
+	}
+
+
+	if ( !IS_OVER_OBJ && IS_MOUSE_DOWN ){
+		drawTemporaryCut(MOUSE_POS);
+	}else{
+		TMP_CUT = null;
+		TMP_ORIGIN = null;
+	}
+
 
 	requestAnimationFrame(renderLoop);
 }
@@ -67,3 +82,12 @@ function getRandomString(){
 	return ret;
 }
 
+function cutSelectionControl(c){
+	if ( c.is_mouse_in_border && IS_MOUSE_DOWN && CURRENT_OBJ === null ){
+		CURRENT_OBJ = c.cut_border;
+		IS_OVER_OBJ = true;
+	}else if( c.is_mouse_in && CURRENT_OBJ === null && IS_MOUSE_DOWN ){
+		IS_OVER_OBJ = true;
+		CURRENT_OBJ = c;
+	}
+}
