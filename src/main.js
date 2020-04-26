@@ -22,6 +22,8 @@ function main(){
 	CANVAS.style.width = C_WIDTH + "px";
 	CANVAS.style.height = C_HEIGHT + "px";
 
+	//fix canvas blurring
+	//SRC : https://medium.com/wdstack/fixing-html5-2d-canvas-blur-8ebe27db07da
 	let dpi = window.devicePixelRatio;
 	let style_height = +getComputedStyle(CANVAS).getPropertyValue("height").slice(0, -2);
 	let style_width = +getComputedStyle(CANVAS).getPropertyValue("width").slice(0, -2);
@@ -39,6 +41,7 @@ function main(){
 }
 
 
+//main application loop
 function renderLoop(){
 	renderGrid();
 	updateUserInput();
@@ -52,7 +55,7 @@ function renderLoop(){
 
 	}
 
-	//we realeased the mouse and a temporary cut exists, now create its
+	//we realeased the mouse and a temporary cut exists, now create it
 	if ( !(TMP_CUT === null) && !IS_MOUSE_DOWN ){
 		addCut(TMP_CUT);
 	}

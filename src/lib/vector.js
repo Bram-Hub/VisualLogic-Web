@@ -1,5 +1,15 @@
+/** @typedef { import('./lib/point.js').Point } Point */
 
+
+/**
+*	Vector represents a 2D vector between two points in the canvas plain
+*/
 class Vector{
+	/**
+	* @constructor 
+	* @param {Point} s the starting position
+	* @param {Point} t the ending position
+	*/
 	constructor(s,t){
 		this.start = s;
 		this.end = t;
@@ -19,6 +29,9 @@ class Vector{
 	}
 }
 
+/**
+*@param {Vector} v draws a given vector, primarlly for debugging
+*/
 function drawVector(v){
 	CONTEXT.beginPath();
 	CONTEXT.moveTo(v.start.x, v.start.y);

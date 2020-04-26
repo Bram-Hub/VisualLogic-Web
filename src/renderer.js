@@ -1,5 +1,9 @@
 
 
+/**
+* Draws the background grid, this also acts as a method
+* of clearing the previous frame
+*/
 function renderGrid(){
 	CONTEXT.fillStyle = 'white';
 	CONTEXT.fillRect(0,0,C_WIDTH,C_HEIGHT);
