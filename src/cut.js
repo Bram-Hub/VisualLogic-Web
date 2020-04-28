@@ -24,6 +24,8 @@ class Cut{
 
 		this.area = Math.PI * this.rad_x * this.rad_y;
 		this.cut_border = new CutBorder();
+
+		this.child_cuts = [];
 	}
 
 
@@ -114,6 +116,8 @@ function isMouseInBorder(cut){
 
 
 function addCut(cut){
+	//correct the cuts center position before adding
+	resetCenter(cut);
 	CUTS.push(cut);
 }
 
@@ -164,4 +168,9 @@ function drawTemporaryCut(pos){
 	CONTEXT.globalAlpha = 0.5;
 	drawCut(TMP_CUT);
 	CONTEXT.restore();
+}
+
+
+function resetCenter(cut){
+	cut.center = new Point(cut.x,cut.y);
 }

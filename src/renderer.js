@@ -31,3 +31,21 @@ function renderGrid(){
 		CONTEXT.stroke();
 	}
 }
+
+
+
+function onResize(){
+	C_WIDTH = window.innerWidth;
+	C_HEIGHT = window.innerHeight;
+	MOUSE_POS = new Point(0,0);
+
+	CANVAS.style.width = C_WIDTH + "px";
+	CANVAS.style.height = C_HEIGHT + "px";
+
+	let dpi = window.devicePixelRatio;
+	let style_height = +getComputedStyle(CANVAS).getPropertyValue("height").slice(0, -2);
+	let style_width = +getComputedStyle(CANVAS).getPropertyValue("width").slice(0, -2);
+
+	CANVAS.setAttribute('height', style_height * dpi);
+	CANVAS.setAttribute('width', style_width * dpi);
+}

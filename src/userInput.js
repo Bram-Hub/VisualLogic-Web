@@ -1,6 +1,7 @@
 var IS_DRAGGING, MOUSE_VEC,
 	IS_MOVING, IS_MOUSE_DOWN,
-	LAST_MOUSE_POS, IS_OVER_OBJ = false,
+	LAST_MOUSE_POS, SHIFT_DOWN,
+	IS_OVER_OBJ = false,
 	CURRENT_OBJ = null;
 
 
@@ -8,10 +9,11 @@ function initUserInput(){
 	CANVAS.addEventListener('mousedown', onMouseDown);
 	CANVAS.addEventListener('mouseup', onMouseUp);
 	CANVAS.addEventListener('mousemove', onMouseMove);
-	window.addEventListener('keydown', whileKeyDown);
-	window.addEventListener('onkeydown', whileKeyDown);
+	window.addEventListener('keydown', onKeyDown);
+	window.addEventListener('keyup', onKeyUp);
 
-	IS_DRAGGING = IS_MOVING = IS_MOUSE_DOWN = false;
+	IS_DRAGGING = IS_MOVING = IS_MOUSE_DOWN = 
+	SHIFT_DOWN = false;
 
 	//assume the cursor's position is in the center of the page on load
 	MOUSE_POS = new Point(C_WIDTH/2, C_HEIGHT/2);
@@ -46,10 +48,7 @@ function onMouseDown(e){
 
 function onMouseUp(e){
 	IS_MOUSE_DOWN = false;
-
-	if ( !IS_OVER_OBJ ){
-		CURRENT_OBJ = null;
-	}
+	CURRENT_OBJ = null;
 }
 
 
@@ -61,6 +60,7 @@ function onMouseMove(e){
 
 }
 
+
 function getRealMousePos(event){
 	let x = event.clientX;
 	let y = event.clientY;
@@ -68,8 +68,19 @@ function getRealMousePos(event){
 	return new Point(x,y);
 }
 
-function whileKeyDown(e){
-	if( e.keyCode === 39){
-		//RIGHT_ARROW
+
+function onKeyDown(e){
+	if ( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
+		SHIFT_DOWN = true;
+	}
+}
+
+
+function onKeyUp(e){
+	if ( e.keyCode === 27 ){
+		//user decides to not create a cut, clear the temporary
+		TMP_CUT = null;
+	}else if( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
+		SHIFT_DOWN = false;
 	}
 }

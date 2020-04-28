@@ -15,23 +15,13 @@ function main(){
 
 	CANVAS.focus();
 	CONTEXT = canvas.getContext("2d");
-	C_WIDTH = window.innerWidth;
-	C_HEIGHT = window.innerHeight;
-	MOUSE_POS = new Point(0,0);
 
-	CANVAS.style.width = C_WIDTH + "px";
-	CANVAS.style.height = C_HEIGHT + "px";
-
-	//fix canvas blurring
-	//SRC : https://medium.com/wdstack/fixing-html5-2d-canvas-blur-8ebe27db07da
-	let dpi = window.devicePixelRatio;
-	let style_height = +getComputedStyle(CANVAS).getPropertyValue("height").slice(0, -2);
-	let style_width = +getComputedStyle(CANVAS).getPropertyValue("width").slice(0, -2);
-
-	CANVAS.setAttribute('height', style_height * dpi);
-	CANVAS.setAttribute('width', style_width * dpi);
+	//initialze the canvas dimensions
+	onResize();
+	window.addEventListener("resize", onResize);
 
 	CAMERA = new Camera();
+
 
 	// addCut(new Cut(new Point(C_WIDTH/2,C_HEIGHT/2)));
 	// addCut(new Cut(new Point(C_WIDTH/2,C_HEIGHT/2)));
@@ -54,19 +44,20 @@ function renderLoop(){
 		cutSelectionControl(c);
 
 	}
-
 	//we realeased the mouse and a temporary cut exists, now create it
 	if ( !(TMP_CUT === null) && !IS_MOUSE_DOWN ){
 		addCut(TMP_CUT);
 	}
 
-
-	if ( !IS_OVER_OBJ && IS_MOUSE_DOWN ){
+	if ( IS_MOUSE_DOWN && SHIFT_DOWN ){
 		drawTemporaryCut(MOUSE_POS);
 	}else{
 		TMP_CUT = null;
 		TMP_ORIGIN = null;
 	}
+
+
+	drawDistancesOfCuts();
 
 
 	requestAnimationFrame(renderLoop);
@@ -85,12 +76,17 @@ function getRandomString(){
 	return ret;
 }
 
+
 function cutSelectionControl(c){
+	if ( c.is_mouse_over )
+		IS_OVER_OBJ = true;
+
+	if ( SHIFT_DOWN )
+		return;
+
 	if ( c.is_mouse_in_border && IS_MOUSE_DOWN && CURRENT_OBJ === null ){
 		CURRENT_OBJ = c.cut_border;
-		IS_OVER_OBJ = true;
 	}else if( c.is_mouse_in && CURRENT_OBJ === null && IS_MOUSE_DOWN ){
-		IS_OVER_OBJ = true;
 		CURRENT_OBJ = c;
 	}
 }
