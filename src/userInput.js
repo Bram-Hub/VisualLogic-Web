@@ -1,6 +1,7 @@
 var IS_DRAGGING, MOUSE_VEC,
 	IS_MOVING, IS_MOUSE_DOWN,
 	LAST_MOUSE_POS, SHIFT_DOWN,
+	MOUSE_OVER_OBJ = null,
 	IS_OVER_OBJ = false,
 	CURRENT_OBJ = null;
 
@@ -58,6 +59,8 @@ function onMouseMove(e){
 	MOUSE_VEC = new Vector(MOUSE_POS, getRealMousePos(e));
 	MOUSE_POS = getRealMousePos(e);
 
+	//TODO find a better a time to figure this out
+	recalculateChildCuts();
 }
 
 
@@ -76,11 +79,24 @@ function onKeyDown(e){
 }
 
 
+
+
 function onKeyUp(e){
 	if ( e.keyCode === 27 ){
 		//user decides to not create a cut, clear the temporary
 		TMP_CUT = null;
 	}else if( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
 		SHIFT_DOWN = false;
+	}else if( isAlpha(e.code) ){
+		addSymbol( new Symbol(e.code[3]) );
+	}
+
+
+	function isAlpha(tgt){
+		if ( tgt.length != 4 )
+			return false;
+
+		let n = tgt.charCodeAt(3);
+		return n >=65 && n <= 90;
 	}
 }

@@ -2,7 +2,7 @@
 
 
 /**
-*	Vector represents a 2D vector between two points in the canvas plain
+*	Vector represents a 2D vector between two points in the canvas plane
 */
 class Vector{
 	/**

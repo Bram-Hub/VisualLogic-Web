@@ -26,6 +26,7 @@ class Cut{
 		this.cut_border = new CutBorder();
 
 		this.child_cuts = [];
+		this.level = 1;
 	}
 
 
@@ -36,6 +37,17 @@ class Cut{
 		if ( this.is_mouse_in_border ){
 			updateCursor(this);
 		}
+
+		if (this.is_mouse_over){
+			MOUSE_OVER_OBJ = this;
+		}
+
+		for(var x of this.child_cuts){
+			if ( x.is_mouse_over ){
+				MOUSE_OVER_OBJ = x;
+			}
+		}
+
 	}
 
 
@@ -47,6 +59,14 @@ class Cut{
 		this.x = new_pos.x;
 		this.y = new_pos.y;
 		this.center = new Point(this.x,this.y);
+
+		for ( x of this.child_cuts ){
+			x.updatePos( new_pos );
+		}
+	}
+
+	toString(){
+		return this.id;
 	}
 }
 
@@ -60,7 +80,7 @@ function drawCut(cut){
 	if ( cut.rad_x < border_rad*2 || cut.rad_y < border_rad*2 )
 		return;
 
-	CONTEXT.strokeStyle = cut.is_mouse_over ? 'blue' : 'black';
+	CONTEXT.strokeStyle = cut === MOUSE_OVER_OBJ ? 'blue' : 'black';
 	CONTEXT.lineWidth = cut.border_rad;
 
 	CONTEXT.beginPath();
@@ -69,9 +89,11 @@ function drawCut(cut){
 	CONTEXT.stroke();
 	//now draw inner cut
 
+	inner_style = cut.level % 2 == 0 ? "white" : "#A9A9A9";
+
 	CONTEXT.save();
 	CONTEXT.globalAlpha = 0.7;
-	CONTEXT.fillStyle = cut.is_mouse_over ? '#DCDCDC' : 'white';
+	CONTEXT.fillStyle = cut === MOUSE_OVER_OBJ ? '#DCDCDC' : inner_style;
 	CONTEXT.beginPath();
 	CONTEXT.ellipse(cut.x, cut.y, 
 		            cut.rad_x - cut.border_rad, 
@@ -173,4 +195,28 @@ function drawTemporaryCut(pos){
 
 function resetCenter(cut){
 	cut.center = new Point(cut.x,cut.y);
+}
+
+
+function isWithinCut(a,b){
+	return isWithinEllipse(
+		a.center, 
+		
+		b.center.x,
+		b.center.y,
+		b.rad_x,
+		b.rad_y
+	);
+}
+
+
+function mouseOverInnerMost(cut){
+	inner_most = null;
+	for ( x of cut.child_cuts ){
+		if ( x.is_mouse_over ){
+			inner_most = x;
+		}
+	}
+
+	return inner_most === null ? cut : inner_most;
 }

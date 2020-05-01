@@ -12,7 +12,7 @@
 */
 function isWithinEllipse(point, x, y, rad_x, rad_y){
 	// (x-h)^2/a^2 + (y-k)^2/b^2 <= 1
-
+	
 	let a = Math.pow( point.x - x, 2) / Math.pow(rad_x, 2);
 	let b = Math.pow( point.y - y, 2) / Math.pow(rad_y, 2);
 
