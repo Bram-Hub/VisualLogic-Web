@@ -31,6 +31,7 @@ function isWithinTollerance(tgt, base, tol){
 }
 
 
-function isIntersecting(){
-	
+function isPointWithinRect(point, x,y, width, height){
+	return point.x >= x && point.x <= x + width &&
+		   point.y >= y && point.y <= y + height;	
 }

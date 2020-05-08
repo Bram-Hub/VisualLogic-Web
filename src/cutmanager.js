@@ -34,5 +34,16 @@ function recalculateChildCuts(){
 			}
 
 		}
+
+		//do the same for symbols
+		for (var k = 0; k < SYMBOLS.length; k++){
+			let t = isWithinCut(SYMBOLS[k], CUTS[i]);
+
+			if ( t ){
+				CUTS[i].child_syms.push(SYMBOLS[k]);
+			}
+
+		}
+
 	}
 }

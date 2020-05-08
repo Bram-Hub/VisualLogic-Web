@@ -51,7 +51,14 @@ function renderLoop(){
 	}
 
 	for ( s of SYMBOLS ){
+		s.update();
 		drawSymbol(s);
+
+		symSelectionControl(s);
+
+		if ( s.is_mouse_over && DEBUG ){
+			document.getElementById("debug").innerHTML = s.toString();
+		}
 	}
 
 	//we realeased the mouse and a temporary cut exists, now create it
@@ -99,5 +106,15 @@ function cutSelectionControl(c){
 		CURRENT_OBJ = c.cut_border;
 	}else if( c.is_mouse_in && CURRENT_OBJ === null && IS_MOUSE_DOWN ){
 		CURRENT_OBJ = c;
+	}
+}
+
+
+function symSelectionControl(s){
+	if ( SHIFT_DOWN )
+		return;
+
+	if ( s.is_mouse_over && IS_MOUSE_DOWN && CURRENT_OBJ === null ){
+		CURRENT_OBJ = s;
 	}
 }

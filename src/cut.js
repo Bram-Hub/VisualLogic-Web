@@ -26,6 +26,7 @@ class Cut{
 		this.cut_border = new CutBorder();
 
 		this.child_cuts = [];
+		this.child_syms = [];
 		this.level = 1;
 	}
 
@@ -60,7 +61,11 @@ class Cut{
 		this.y = new_pos.y;
 		this.center = new Point(this.x,this.y);
 
-		for ( x of this.child_cuts ){
+		for ( var x of this.child_cuts ){
+			x.updatePos( new_pos );
+		}
+
+		for ( var x of this.child_syms ){
 			x.updatePos( new_pos );
 		}
 	}
