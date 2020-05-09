@@ -39,9 +39,8 @@ function renderLoop(){
 	MOUSE_OVER_OBJ = null;
 	for( c of CUTS ){
 		c.update();
-		drawCut(c);
 
-		cutSelectionControl(c);
+		//cutSelectionControl(c);
 
 		if ( c.is_mouse_over && DEBUG ){
 			document.getElementById("debug").innerHTML = c.toString() + 
@@ -52,13 +51,21 @@ function renderLoop(){
 
 	for ( s of SYMBOLS ){
 		s.update();
-		drawSymbol(s);
 
-		symSelectionControl(s);
+		//symSelectionControl(s);
 
 		if ( s.is_mouse_over && DEBUG ){
 			document.getElementById("debug").innerHTML = s.toString();
 		}
+	}
+
+
+	for ( c of CUTS ){
+		drawCut(c);
+	}
+
+	for ( s of SYMBOLS ){
+		drawSymbol(s);
 	}
 
 	//we realeased the mouse and a temporary cut exists, now create it
@@ -73,8 +80,8 @@ function renderLoop(){
 		TMP_ORIGIN = null;
 	}
 
-	// if (CURRENT_OBJ)
-	// 	document.getElementById("debug").innerHTML = CURRENT_OBJ.toString();
+	if (CURRENT_OBJ)
+		document.getElementById("debug").innerHTML += "<br>" + CURRENT_OBJ.toString();
 
 	if ( DEBUG )
 		drawDistancesOfCuts();	
@@ -92,29 +99,4 @@ function getRandomString(){
 	}
 
 	return ret;
-}
-
-
-function cutSelectionControl(c){
-	
-	if ( SHIFT_DOWN )
-		return;
-
-	c = mouseOverInnerMost(c);
-
-	if ( c.is_mouse_in_border && IS_MOUSE_DOWN && CURRENT_OBJ === null ){
-		CURRENT_OBJ = c.cut_border;
-	}else if( c.is_mouse_in && CURRENT_OBJ === null && IS_MOUSE_DOWN ){
-		CURRENT_OBJ = c;
-	}
-}
-
-
-function symSelectionControl(s){
-	if ( SHIFT_DOWN )
-		return;
-
-	if ( s.is_mouse_over && IS_MOUSE_DOWN && CURRENT_OBJ === null ){
-		CURRENT_OBJ = s;
-	}
 }

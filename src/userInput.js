@@ -44,6 +44,26 @@ function updateUserInput(){
 function onMouseDown(e){
 	IS_MOUSE_DOWN = true;
 	LAST_MOUSE_POS = getRealMousePos(e);
+
+
+	if ( SHIFT_DOWN )
+		return;
+
+	//are we over anything
+	for (c of CUTS){
+		if ( c.is_mouse_over ){
+			CURRENT_OBJ = mouseOverInnerMost(c);
+			break;
+		}
+	}
+
+	for (s of SYMBOLS){
+		if ( s.is_mouse_over ){
+			CURRENT_OBJ = s;
+			break;
+		}
+	}
+
 }
 
 

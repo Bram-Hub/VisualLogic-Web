@@ -28,6 +28,8 @@ class Cut{
 		this.child_cuts = [];
 		this.child_syms = [];
 		this.level = 1;
+
+		this.area = getEllipseArea(this.rad_x, this.rad_y)
 	}
 
 

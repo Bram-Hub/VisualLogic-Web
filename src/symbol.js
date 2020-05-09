@@ -1,6 +1,13 @@
+/** @typedef { import('./lib/point.js').Point } Point */
 
-
+/**
+* A symbol represents a boolean variable in the sheet of assertion
+*/
 class Symbol{
+	/**
+	* @constructor 
+	* @param {String} The charactor representing the symbol
+	*/
 	constructor(letter){
 		this.letter = letter;
 		this.x = MOUSE_POS.x;
@@ -20,6 +27,8 @@ class Symbol{
 
 	update(){
 		this.is_mouse_over = isMouseOverSym(this);
+		if (this.is_mouse_over)
+			MOUSE_OVER_OBJ = this;
 	}
 
 	updatePos( new_pos ){

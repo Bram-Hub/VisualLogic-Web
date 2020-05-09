@@ -31,7 +31,25 @@ function isWithinTollerance(tgt, base, tol){
 }
 
 
+/**
+* check if a given point exists within a rect on the canvas
+* @param {Point} point
+* @param {Number} x location of the rect
+* @param {Number} y location of the rect
+* @param {Number} width of the rect
+* @param {Number} height of the rect
+*/
 function isPointWithinRect(point, x,y, width, height){
 	return point.x >= x && point.x <= x + width &&
 		   point.y >= y && point.y <= y + height;	
+}
+
+
+/**
+* calculates the area of an ellipse
+* @param {Number} rad_x
+* @param {Number} rad_y 
+*/
+function getEllipseArea(rad_x, rad_y){
+	return rad_x * rad_y * Math.PI;
 }
