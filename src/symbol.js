@@ -31,14 +31,21 @@ class Symbol{
 			MOUSE_OVER_OBJ = this;
 	}
 
-	updatePos( new_pos ){
-		this.x = new_pos.x;
-		this.y = new_pos.y;
+	updatePos( new_pos, root = true ){
+		let dx = new_pos.x - LAST_MOUSE_POS.x;
+		let dy = new_pos.y - LAST_MOUSE_POS.y;
+
+		this.x += dx;
+		this.y += dy;
 
 		this.real_x = this.x - 25;
 		this.real_y = this.y + 25;
 
 		this.center = new Point(this.real_x, this.real_y);
+
+		if ( root ){
+			LAST_MOUSE_POS = new_pos;
+		}
 	}
 
 	toString(){

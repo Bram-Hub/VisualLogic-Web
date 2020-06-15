@@ -3,7 +3,8 @@ var IS_DRAGGING, MOUSE_VEC,
 	LAST_MOUSE_POS, SHIFT_DOWN,
 	MOUSE_OVER_OBJ = null,
 	IS_OVER_OBJ = false,
-	CURRENT_OBJ = null;
+	CURRENT_OBJ = null,
+	CTRL_DOWN;
 
 
 function initUserInput(){
@@ -14,7 +15,7 @@ function initUserInput(){
 	window.addEventListener('keyup', onKeyUp);
 
 	IS_DRAGGING = IS_MOVING = IS_MOUSE_DOWN = 
-	SHIFT_DOWN = false;
+	SHIFT_DOWN = CTRL_DOWN = false;
 
 	//assume the cursor's position is in the center of the page on load
 	MOUSE_POS = new Point(C_WIDTH/2, C_HEIGHT/2);
@@ -26,7 +27,6 @@ function updateUserInput(){
 	IS_DRAGGING = IS_MOUSE_DOWN && IS_MOVING;
 	IS_MOVING = false;
 
-	//console.log(IS_DRAGGING, CURRENT_OBJ);
 	if ( IS_DRAGGING && CURRENT_OBJ === null ){
 		CAMERA.updatePan( LAST_MOUSE_POS, MOUSE_POS );
 	}
@@ -44,7 +44,6 @@ function updateUserInput(){
 function onMouseDown(e){
 	IS_MOUSE_DOWN = true;
 	LAST_MOUSE_POS = getRealMousePos(e);
-
 
 	if ( SHIFT_DOWN )
 		return;
@@ -74,6 +73,9 @@ function onMouseUp(e){
 
 
 function onMouseMove(e){
+	e.preventDefault();
+    e.stopPropagation();
+
 	IS_MOVING = true;
 
 	MOUSE_VEC = new Vector(MOUSE_POS, getRealMousePos(e));
@@ -95,6 +97,8 @@ function getRealMousePos(event){
 function onKeyDown(e){
 	if ( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
 		SHIFT_DOWN = true;
+	}else if(e.code === "ControlLeft" || e.code === "ControlRight" ){
+		CTRL_DOWN = true;
 	}
 }
 
@@ -107,11 +111,11 @@ function onKeyUp(e){
 		TMP_CUT = null;
 	}else if( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
 		SHIFT_DOWN = false;
-	}else if( isAlpha(e.code) ){
+	}else if( isAlpha(e.code) && !CTRL_DOWN && e.code != "KeyR"){
 		addSymbol( new Symbol(e.code[3]) );
 	}
 
-
+	SHIFT_DOWN = CTRL_DOWN = false;
 	function isAlpha(tgt){
 		if ( tgt.length != 4 )
 			return false;
@@ -119,4 +123,5 @@ function onKeyUp(e){
 		let n = tgt.charCodeAt(3);
 		return n >=65 && n <= 90;
 	}
+
 }

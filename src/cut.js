@@ -54,21 +54,27 @@ class Cut{
 	}
 
 
-	updatePos( new_pos ){
-		//calculate offset to center
-		let v = new Vector(MOUSE_POS, new Point(new_pos.x,new_pos.y) );
-		drawVector(v);
+	updatePos( new_pos, root = true ){
+		let dx = new_pos.x - LAST_MOUSE_POS.x;
+		let dy = new_pos.y - LAST_MOUSE_POS.y;
 
-		this.x = new_pos.x;
-		this.y = new_pos.y;
+		this.x += dx;
+		this.y += dy;
 		this.center = new Point(this.x,this.y);
 
-		for ( var x of this.child_cuts ){
-			x.updatePos( new_pos );
+		for ( let child of this.child_cuts ){
+			child.x += dx;
+			child.y += dy;
+
+			child.center = new Point(child.x,child.y);
 		}
 
-		for ( var x of this.child_syms ){
-			x.updatePos( new_pos );
+		for ( let child of this.child_syms ){
+			child.updatePos(new_pos, false);
+		}
+
+		if ( root ){
+			LAST_MOUSE_POS = new_pos;
 		}
 	}
 

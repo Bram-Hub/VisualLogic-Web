@@ -22,9 +22,6 @@ function main(){
 	CAMERA = new Camera();
 
 
-	// addCut(new Cut(new Point(C_WIDTH/2,C_HEIGHT/2)));
-	// addCut(new Cut(new Point(C_WIDTH/2,C_HEIGHT/2)));
-
 	initUserInput();
 	renderLoop();
 }

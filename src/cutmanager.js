@@ -17,9 +17,14 @@ function drawDistancesOfCuts(){
 
 
 function recalculateChildCuts(){
-	for(var i = 0; i < CUTS.length; i++ ){
-		CUTS[i].child_cuts = [];
-		for(var j = i; j < CUTS.length; j++){
+	for(let c of CUTS){
+		c.level = 1;
+		c.child_syms = [];
+		c.child_cuts = [];
+	}
+
+	for(let i = 0; i < CUTS.length; i++ ){
+		for(let j = i; j < CUTS.length; j++){
 			if ( i === j)
 				continue;
 
@@ -36,7 +41,7 @@ function recalculateChildCuts(){
 		}
 
 		//do the same for symbols
-		for (var k = 0; k < SYMBOLS.length; k++){
+		for (let k = 0; k < SYMBOLS.length; k++){
 			let t = isWithinCut(SYMBOLS[k], CUTS[i]);
 
 			if ( t ){
