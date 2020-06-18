@@ -153,6 +153,7 @@ function isMouseInBorder(cut){
 function addCut(cut){
 	//correct the cuts center position before adding
 	resetCenter(cut);
+	CutManager.getInstance().addObj(cut);
 	CUTS.push(cut);
 }
 

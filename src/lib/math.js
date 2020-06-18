@@ -25,6 +25,7 @@ function isWithinEllipse(point, x, y, rad_x, rad_y){
 * @param {Number} tgt
 * @param {Number} base
 * @param {Number} tol 
+* @return {Boolean}
 */
 function isWithinTollerance(tgt, base, tol){
 	return tgt >= ( base - tol ) && tgt <= ( base + tol );
@@ -38,6 +39,7 @@ function isWithinTollerance(tgt, base, tol){
 * @param {Number} y location of the rect
 * @param {Number} width of the rect
 * @param {Number} height of the rect
+* @return {Boolean}
 */
 function isPointWithinRect(point, x,y, width, height){
 	return point.x >= x && point.x <= x + width &&
@@ -49,7 +51,47 @@ function isPointWithinRect(point, x,y, width, height){
 * calculates the area of an ellipse
 * @param {Number} rad_x
 * @param {Number} rad_y 
+* @return {Number}
 */
 function getEllipseArea(rad_x, rad_y){
 	return rad_x * rad_y * Math.PI;
+}
+
+
+/**
+* https://stackoverflow.com/questions/27205018/multiply-2-matrices-in-javascript
+* given two matrices perform a dot product on them
+*
+* @param {Array.<Number>} A
+* @param {Array.<Number>} B
+* @return {Array.<Array.<Number>>}
+*/
+function matrixDot (A, B) {
+    var result = new Array(A.length).fill(0).map(row => new Array(B[0].length).fill(0));
+
+    return result.map((row, i) => {
+        return row.map((val, j) => {
+            return A[i].reduce((sum, elm, k) => sum + (elm*B[k][j]) ,0)
+        })
+    })
+}
+
+
+/**
+* convert a point using the homography matrix based on the initial
+* transformation done on the canvas
+*
+* @param {Point} p - the point to transform
+* @return {Point}
+*/
+function transformPoint(p, ratio){
+	//use the transformation matrix to get the real canvas position
+	let m = matrixDot(
+		[[p.x, p.y]], 
+      	[[ratio, 0, 0 ], 
+       	 [0, ratio, 0], 
+       	 [0,0,1]]
+    )[0];
+
+    return new Point(m[0],m[1]);
 }

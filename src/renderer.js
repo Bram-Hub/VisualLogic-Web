@@ -33,19 +33,45 @@ function renderGrid(){
 }
 
 
+/** 
+* returns the device's pixel ratio for HiDPI displays 
+* @return {Number}
+*/
+function getDeviceRatio () {
+    dpr = window.devicePixelRatio || 1,
+    bsr = CONTEXT.webkitBackingStorePixelRatio ||
+          CONTEXT.mozBackingStorePixelRatio ||
+          CONTEXT.msBackingStorePixelRatio ||
+          CONTEXT.oBackingStorePixelRatio ||
+          CONTEXT.backingStorePixelRatio || 1;
 
-function onResize(){
+    return dpr / bsr;
+}
+
+
+/**
+* https://stackoverflow.com/questions/
+* 15661339/how-do-i-fix-blurry-text-in-my-html5-canvas
+*
+* corrects the canvas and resets the mouse pointer
+*/
+function onResize() {
 	C_WIDTH = window.innerWidth;
 	C_HEIGHT = window.innerHeight;
-	MOUSE_POS = new Point(0,0);
+    MOUSE_POS = new Point(0,0);
 
-	CANVAS.style.width = C_WIDTH + "px";
-	CANVAS.style.height = C_HEIGHT + "px";
 
-	let dpi = window.devicePixelRatio;
-	let style_height = +getComputedStyle(CANVAS).getPropertyValue("height").slice(0, -2);
-	let style_width = +getComputedStyle(CANVAS).getPropertyValue("width").slice(0, -2);
-
-	CANVAS.setAttribute('height', style_height * dpi);
-	CANVAS.setAttribute('width', style_width * dpi);
+    ratio = getDeviceRatio();
+    CANVAS.width = C_WIDTH * ratio;
+    CANVAS.height = C_HEIGHT * ratio;
+    CANVAS.style.width = C_WIDTH + "px";
+    CANVAS.style.height = C_HEIGHT + "px";
+    //                    a     b  c  d      e  f
+    CONTEXT.setTransform(ratio, 0, 0, ratio, 0, 0);
+    /**
+    [ a c e 
+      b d f
+      0 0 1
+    ]
+    */
 }

@@ -55,6 +55,7 @@ class Symbol{
 
 function addSymbol(sym){
 	SYMBOLS.push(sym);
+	CutManager.getInstance().addObj(sym);
 }
 
 function drawSymbol(sym){

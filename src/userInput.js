@@ -4,7 +4,7 @@ var IS_DRAGGING, MOUSE_VEC,
 	MOUSE_OVER_OBJ = null,
 	IS_OVER_OBJ = false,
 	CURRENT_OBJ = null,
-	CTRL_DOWN;
+	CTRL_DOWN, PROOF_MODE = false;
 
 
 function initUserInput(){
@@ -81,16 +81,24 @@ function onMouseMove(e){
 	MOUSE_VEC = new Vector(MOUSE_POS, getRealMousePos(e));
 	MOUSE_POS = getRealMousePos(e);
 
+
 	//TODO find a better a time to figure this out
-	recalculateChildCuts();
+	CutManager.getInstance().recalculate();
 }
 
 
-function getRealMousePos(event){
-	let x = event.clientX;
-	let y = event.clientY;
-
-	return new Point(x,y);
+/**
+* corrects the raw mouse position to a mouse position relative to the canvas
+* upper left corner is (0,0)
+*
+* also corrects for HiDPI displays since every canvas pixel
+* may not map to every pixel on the physical display
+*
+* @param {Point} pos - raw mouse position
+* @returns {Point}
+*/
+function getRealMousePos(pos){
+	return transformPoint(new Point(pos.offsetX, pos.offsetY), getDeviceRatio());
 }
 
 
@@ -103,15 +111,13 @@ function onKeyDown(e){
 }
 
 
-
-
 function onKeyUp(e){
 	if ( e.keyCode === 27 ){
 		//user decides to not create a cut, clear the temporary
 		TMP_CUT = null;
 	}else if( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
 		SHIFT_DOWN = false;
-	}else if( isAlpha(e.code) && !CTRL_DOWN && e.code != "KeyR"){
+	}else if( isAlpha(e.code) && !CTRL_DOWN && e.code != "KeyR" && !PROOF_MODE){
 		addSymbol( new Symbol(e.code[3]) );
 	}
 
@@ -124,4 +130,16 @@ function onKeyUp(e){
 		return n >=65 && n <= 90;
 	}
 
+}
+
+
+/**
+* Toggles the different modes in VL, fired by onclick event
+*/
+function toggleMode(){
+	PROOF_MODE = !PROOF_MODE;
+	let tgt = document.getElementById("toggle_mode");
+
+	tgt.innerHTML = PROOF_MODE ? "Proof Mode" : "Transform Mode";
+	tgt.className = "btn btn-" + (PROOF_MODE ? "proof" : "transform");
 }

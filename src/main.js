@@ -70,7 +70,7 @@ function renderLoop(){
 		addCut(TMP_CUT);
 	}
 
-	if ( IS_MOUSE_DOWN && SHIFT_DOWN ){
+	if ( IS_MOUSE_DOWN && SHIFT_DOWN && !PROOF_MODE ){
 		drawTemporaryCut(MOUSE_POS);
 	}else{
 		TMP_CUT = null;
@@ -82,10 +82,15 @@ function renderLoop(){
 
 	if ( DEBUG )
 		drawDistancesOfCuts();	
+
 	requestAnimationFrame(renderLoop);
 }
 
 
+/**
+* create a unique random string
+* @return {String}
+*/
 function getRandomString(){
 	var array = new Uint32Array(2);
 	window.crypto.getRandomValues(array);
