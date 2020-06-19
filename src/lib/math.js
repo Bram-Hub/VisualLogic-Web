@@ -93,5 +93,6 @@ function transformPoint(p, ratio){
        	 [0,0,1]]
     )[0];
 
-    return new Point(m[0],m[1]);
+	//divide by ratio?
+    return new Point(m[0]/ratio,m[1]/ratio);
 }
