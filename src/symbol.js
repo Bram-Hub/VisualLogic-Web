@@ -23,6 +23,7 @@ class Symbol{
 		this.is_mouse_over = false;
 
 		this.id = Date.now().toString() + getRandomString();
+		this.level = 1;
 	}
 
 	update(){

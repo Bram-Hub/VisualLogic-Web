@@ -64,11 +64,13 @@ class Cut{
 		this.center = new Point(this.x,this.y);
 
 		for ( let child of this.child_cuts ){
-			child.updatePos( new_pos, false);
+			if ( child.level === this.level + 1)
+				child.updatePos( new_pos, false);
 		}
 
 		for ( let child of this.child_syms ){
-			child.updatePos(new_pos, false);
+			if ( child.level === this.level )
+				child.updatePos(new_pos, false);
 		}
 
 		if ( root ){

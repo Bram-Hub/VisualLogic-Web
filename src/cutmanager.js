@@ -89,30 +89,33 @@ class __CUT_MANAGER{
                 if ( i.id === j.id )
                     continue;
 
-                if ( isWithinCut(i,j) ){
-                    console.log(i.area > j.area);
-                    console.log(i,j);
+                if ( isWithinCut(i,j) || isWithinCut(j,i) ){
+                    if ( i.id === j.id )
+                        continue;
+
                     if ( i.area > j.area ){
                         i.addChildCut(j);
                         j.level = i.level + 1;
-                    }else{
-                        j.addChildCut(i);
-                        i.level = j.level + 1;
                     }
                 }
 
             }
 
+
+        }
+
+
+        for(let c of CUTS){
             //update any symbols
             for(let s of SYMBOLS){
                 if( isWithinCut(s, c) ){
                     //add this to the innermost in this cut
+                    s.level = c.level;
                     getInnerMostCut(c).addChildSym(s);
-                    break;
                 }
             }
-
         }
+
 
     }
 
