@@ -22,14 +22,13 @@ class Cut{
 		this.is_mouse_in_border = false;
 		this.center = new Point(this.x,this.y);
 
-		this.area = Math.PI * this.rad_x * this.rad_y;
 		this.cut_border = new CutBorder();
 
 		this.child_cuts = [];
 		this.child_syms = [];
 		this.level = 1;
 
-		this.area = getEllipseArea(this.rad_x, this.rad_y)
+		this.area = getEllipseArea(this.rad_x, this.rad_y);
 	}
 
 
@@ -37,6 +36,8 @@ class Cut{
 		this.is_mouse_over = isMouseOverCut(this);
 		this.is_mouse_in = isMouseInCut(this);
 		this.is_mouse_in_border = isMouseInBorder(this);
+		this.area = getEllipseArea(this.rad_x, this.rad_y);
+
 		if ( this.is_mouse_in_border ){
 			updateCursor(this);
 		}
@@ -63,10 +64,7 @@ class Cut{
 		this.center = new Point(this.x,this.y);
 
 		for ( let child of this.child_cuts ){
-			child.x += dx;
-			child.y += dy;
-
-			child.center = new Point(child.x,child.y);
+			child.updatePos( new_pos, false);
 		}
 
 		for ( let child of this.child_syms ){
@@ -78,8 +76,35 @@ class Cut{
 		}
 	}
 
+
 	toString(){
 		return this.id;
+	}
+
+
+	/**
+	* adds a new child cut to this cut, checks if unique
+	* @param {Cut} new_child - cut to add
+	*/
+	addChildCut(new_child){
+		if( this.child_cuts.includes(new_child) ){
+			return;
+		}
+
+		this.child_cuts.push(new_child);
+	}
+
+
+	/**
+	* adds a new child symbol to this cut, checks if unique
+	* @param {Symbol} new_child - sym to add
+	*/
+	addChildSym(new_child){
+		if( this.child_syms.includes(new_child) ){
+			return;
+		}
+
+		this.child_syms.push(new_child);
 	}
 }
 
@@ -142,8 +167,8 @@ function isMouseInCut(cut){
 }
 
 /*
-*return true if the mouse is within the border of a cut
-*@param {Cut} cut 
+* return true if the mouse is within the border of a cut
+* @param {Cut} cut 
 */
 function isMouseInBorder(cut){
 	return !cut.is_mouse_in && cut.is_mouse_over;
@@ -153,8 +178,11 @@ function isMouseInBorder(cut){
 function addCut(cut){
 	//correct the cuts center position before adding
 	resetCenter(cut);
+	cut.update();
 	CutManager.getInstance().addObj(cut);
 	CUTS.push(cut);
+	//sort the cuts list biggest first
+	CUTS.sort((a,b) => (b.area - a.area));
 }
 
 
@@ -224,7 +252,7 @@ function isWithinCut(a,b){
 }
 
 
-function mouseOverInnerMost(cut){
+function getInnerMostCut(cut){
 	inner_most = null;
 	for ( x of cut.child_cuts ){
 		if ( x.is_mouse_over ){
@@ -233,4 +261,10 @@ function mouseOverInnerMost(cut){
 	}
 
 	return inner_most === null ? cut : inner_most;
+}
+
+
+//TODO remove;
+function mouseOverInnerMost(cut){
+	return getInnerMostCut(cut);
 }

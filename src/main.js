@@ -41,7 +41,7 @@ function renderLoop(){
 
 		if ( c.is_mouse_over && DEBUG ){
 			document.getElementById("debug").innerHTML = c.toString() + 
-			"<br>" + c.child_cuts.length.toString();
+			"<br>Level : " + c.level.toString();
 		}
 
 	}

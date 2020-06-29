@@ -83,28 +83,37 @@ class __CUT_MANAGER{
 			c.child_cuts = [];
 		}
 
-		for(let i = 0; i < CUTS.length; i++ ){
-			for(let j = i; j < CUTS.length; j++){
-				if ( i === j)
-					continue;
+		
+        for(let i of CUTS){
+            for(let j of CUTS){
+                if ( i.id === j.id )
+                    continue;
 
+                if ( isWithinCut(i,j) ){
+                    console.log(i.area > j.area);
+                    console.log(i,j);
+                    if ( i.area > j.area ){
+                        i.addChildCut(j);
+                        j.level = i.level + 1;
+                    }else{
+                        j.addChildCut(i);
+                        i.level = j.level + 1;
+                    }
+                }
 
-				//are there any cuts under i, if so add it to i's children.
-				if ( isWithinCut(CUTS[j], CUTS[i]) ){
-					CUTS[i].child_cuts.push(CUTS[j]);
-					CUTS[j].level = CUTS[i].level + 1;
-				}
+            }
 
-			}
+            //update any symbols
+            for(let s of SYMBOLS){
+                if( isWithinCut(s, c) ){
+                    //add this to the innermost in this cut
+                    getInnerMostCut(c).addChildSym(s);
+                    break;
+                }
+            }
 
-			//do the same for symbols
-			for (let k = 0; k < SYMBOLS.length; k++){
-				if ( isWithinCut(SYMBOLS[k], CUTS[i]) ){
-					CUTS[i].child_syms.push(SYMBOLS[k]);
-				}
-			}
+        }
 
-		}
     }
 
 }
