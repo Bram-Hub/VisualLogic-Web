@@ -33,6 +33,11 @@ function renderLoop(){
 
 	IS_OVER_OBJ = false;
 	MOUSE_OVER_OBJ = null;
+
+	if( DEBUG ){
+		document.getElementById("debug").innerHTML = "";
+	}
+
 	for( c of CUTS ){
 		c.update();
 
@@ -41,6 +46,12 @@ function renderLoop(){
 		if ( c.is_mouse_over && DEBUG ){
 			document.getElementById("debug").innerHTML = c.toString() + 
 			"<br>Level : " + c.level.toString();
+		}
+
+
+		if ( c.is_mouse_over ){
+			MOUSE_OVER_OBJ = c;
+			IS_OVER_OBJ = true;
 		}
 
 	}
@@ -52,6 +63,12 @@ function renderLoop(){
 
 		if ( s.is_mouse_over && DEBUG ){
 			document.getElementById("debug").innerHTML = s.toString();
+		}
+
+
+		if ( s.is_mouse_over ){
+			MOUSE_OVER_OBJ = s;
+			IS_OVER_OBJ = true;
 		}
 	}
 

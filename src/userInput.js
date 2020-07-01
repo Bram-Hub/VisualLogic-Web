@@ -121,6 +121,8 @@ function onKeyUp(e){
 		SHIFT_DOWN = false;
 	}else if( isAlpha(e.code) && !CTRL_DOWN && e.code != "KeyR" && !PROOF_MODE){
 		addSymbol( new Symbol(e.code[3]), IS_MINI_OPEN );
+	}else if( e.code === "Delete"){
+		deleteObjectUnderMouse();
 	}
 
 	SHIFT_DOWN = CTRL_DOWN = false;
@@ -144,4 +146,31 @@ function toggleMode(){
 
 	tgt.innerHTML = PROOF_MODE ? "Proof Mode" : "Transform Mode";
 	tgt.className = "btn btn-" + (PROOF_MODE ? "proof" : "transform");
+}
+
+
+function deleteObjectUnderMouse(){
+	if(!IS_OVER_OBJ){
+		return;
+	}
+
+
+	function removeFromList(tgt, list){
+		for(let i = 0; i < list.length; i++){
+			if ( list[i].id === tgt.id ){
+				list.splice(i, 1);
+				break;
+			}
+		}
+	}
+
+
+	if( MOUSE_OVER_OBJ instanceof Symbol ){
+		removeFromList(MOUSE_OVER_OBJ, SYMBOLS);
+	}else{
+		removeFromList(MOUSE_OVER_OBJ, CUTS);
+	}
+
+	IS_OVER_OBJ = false;
+	MOUSE_OVER_OBJ = null;
 }
