@@ -54,21 +54,27 @@ class Symbol{
 	}
 }
 
-function addSymbol(sym){
+function addSymbol(sym, is_mini){
+	if(is_mini){
+		SCRATCH_SYMS.push(sym);
+		return;
+	}
+
+
 	SYMBOLS.push(sym);
 	CutManager.getInstance().addObj(sym);
 }
 
-function drawSymbol(sym){
-	CONTEXT.fillStyle = sym.is_mouse_over ? "blue" : "black";
-	CONTEXT.font = "italic 70px Times New Roman";
+function drawSymbol(sym, context){
+	context.fillStyle = sym.is_mouse_over ? "blue" : "black";
+	context.font = "italic 70px Times New Roman";
 
-	CONTEXT.fillText(sym.letter, sym.real_x, sym.real_y); 
+	context.fillText(sym.letter, sym.real_x, sym.real_y); 
 
 	if ( DEBUG ){
-		CONTEXT.beginPath();
-		CONTEXT.rect(sym.x - 25, sym.y - 25, sym.width, sym.height);
-		CONTEXT.stroke();
+		context.beginPath();
+		context.rect(sym.x - 25, sym.y - 25, sym.width, sym.height);
+		context.stroke();
 	}
 }
 

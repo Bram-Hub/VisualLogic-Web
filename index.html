@@ -9,6 +9,7 @@
 	<script type="text/javascript" src="src/camera.js"></script>
 	<script type="text/javascript" src="src/cutmanager.js"></script>
 	<script type="text/javascript" src="src/symbol.js"></script>
+	<script type="text/javascript" src="src/minirenderer.js"></script>
 
 	<script type="text/javascript" src="src/lib/math.js"></script>
 	<script type="text/javascript" src="src/lib/point.js"></script>
@@ -20,8 +21,12 @@
 <p id="debug" style="position: absolute;z-index: 999;"></p>
 <button onclick="toggleMode()" id = "toggle_mode" class = "btn btn-transform">Transform Mode</button>
 
-<body onload="main()">
+<body onload="main(); loadMini();">
 	<canvas id="canvas" width="100%"></canvas>
 </body>
 
+<div>
+	<canvas id="mini-canvas"></canvas>
+	<button class="btn"></button>
+</div>
 </html>

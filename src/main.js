@@ -13,14 +13,13 @@ function main(){
 	}
 
 	CANVAS.focus();
-	CONTEXT = canvas.getContext("2d");
+	CONTEXT = CANVAS.getContext("2d");
 
 	//initialze the canvas dimensions
 	onResize();
 	window.addEventListener("resize", onResize);
 
 	CAMERA = new Camera();
-
 
 	initUserInput();
 	renderLoop();
@@ -29,7 +28,7 @@ function main(){
 
 //main application loop
 function renderLoop(){
-	renderGrid();
+	CONTEXT = renderGrid(CONTEXT, C_WIDTH, C_HEIGHT);
 	updateUserInput();
 
 	IS_OVER_OBJ = false;
@@ -62,7 +61,7 @@ function renderLoop(){
 	}
 
 	for ( s of SYMBOLS ){
-		drawSymbol(s);
+		drawSymbol(s, CONTEXT);
 	}
 
 	//we realeased the mouse and a temporary cut exists, now create it
@@ -77,8 +76,9 @@ function renderLoop(){
 		TMP_ORIGIN = null;
 	}
 
-	if (CURRENT_OBJ)
-		document.getElementById("debug").innerHTML += "<br>" + CURRENT_OBJ.toString();
+	if (CURRENT_OBJ){
+		document.getElementById("debug").innerHTML += "<br>Current : " + CURRENT_OBJ.toString();
+	}
 
 	if ( DEBUG )
 		drawDistancesOfCuts();	

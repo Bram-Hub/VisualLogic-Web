@@ -5,10 +5,7 @@ body{
 }
 
 .btn{
-	position: absolute;
 	z-index: 999;
-	top: 10px;
-	right: 20px;
 
 	background-color: white;
 	border-left: 1px solid gray;
@@ -27,4 +24,24 @@ body{
 
 .btn-proof{
 	border-bottom: 5px solid green;
+}
+
+#mini-canvas{
+	/*display: none;*/
+	position: absolute;
+	width: 80%;
+	height: 80%;
+	/*background-color: green;*/
+	top: 100px;
+	margin-left: auto;
+	margin-right: auto;
+	left: 0;
+	right: 0;
+	border: solid 2px black;
+}
+
+#toggle_mode{
+	top: 10px;
+	right: 20px;
+	position: absolute;
 }

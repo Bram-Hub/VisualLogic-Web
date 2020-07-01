@@ -4,32 +4,33 @@
 * Draws the background grid, this also acts as a method
 * of clearing the previous frame
 */
-function renderGrid(){
-	CONTEXT.fillStyle = 'white';
-	CONTEXT.fillRect(0,0,C_WIDTH,C_HEIGHT);
+function renderGrid(context, width, height, line_width = 50){
+	context.fillStyle = 'white';
+	context.fillRect(0,0,width,height);
 
 	//x direction
-	let line_width = 50;
-	for(var i = 0; i < C_WIDTH; i += line_width){
+	for(var i = 0; i < width; i += line_width){
 
-		CONTEXT.strokeStyle = i % 150 === 0 ? "#787878" : "#D0D0D0";
+		context.strokeStyle = i % 150 === 0 ? "#787878" : "#D0D0D0";
 
-		CONTEXT.beginPath();
-		CONTEXT.moveTo(i,0)
-		CONTEXT.lineTo(i, C_HEIGHT);
-		CONTEXT.stroke();
+		context.beginPath();
+		context.moveTo(i,0)
+		context.lineTo(i, height);
+		context.stroke();
 	}
 
 	//y direction
-	for(var i = 0; i < C_HEIGHT; i += line_width){
+	for(var i = 0; i < height; i += line_width){
 
-		CONTEXT.strokeStyle = i % 150 === 0 ? "#787878" : "#D0D0D0";
+		context.strokeStyle = i % 150 === 0 ? "#787878" : "#D0D0D0";
 
-		CONTEXT.beginPath();
-		CONTEXT.moveTo(0,i)
-		CONTEXT.lineTo(C_WIDTH, i);
-		CONTEXT.stroke();
+		context.beginPath();
+		context.moveTo(0,i)
+		context.lineTo(width, i);
+		context.stroke();
 	}
+
+	return context;
 }
 
 
@@ -60,14 +61,18 @@ function onResize() {
 	C_HEIGHT = window.innerHeight;
     MOUSE_POS = new Point(0,0);
 
+    fixBlur(CANVAS, CONTEXT, C_WIDTH, C_HEIGHT);
+}
 
-    ratio = getDeviceRatio();
-    CANVAS.width = C_WIDTH * ratio;
-    CANVAS.height = C_HEIGHT * ratio;
-    CANVAS.style.width = C_WIDTH + "px";
-    CANVAS.style.height = C_HEIGHT + "px";
+
+function fixBlur(canvas, context, width, height){
+	ratio = getDeviceRatio();
+    canvas.width = width * ratio;
+    canvas.height = height * ratio;
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
     //                    a     b  c  d      e  f
-    CONTEXT.setTransform(ratio, 0, 0, ratio, 0, 0);
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
     /**
     [ a c e 
       b d f

@@ -90,8 +90,6 @@ class __CUT_MANAGER{
                     continue;
 
                 if ( isWithinCut(i,j) || isWithinCut(j,i) ){
-                    if ( i.id === j.id )
-                        continue;
 
                     if ( i.area > j.area ){
                         i.addChildCut(j);

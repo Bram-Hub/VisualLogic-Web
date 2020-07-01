@@ -27,12 +27,14 @@ function updateUserInput(){
 	IS_DRAGGING = IS_MOUSE_DOWN && IS_MOVING;
 	IS_MOVING = false;
 
-	if ( IS_DRAGGING && CURRENT_OBJ === null ){
-		CAMERA.updatePan( LAST_MOUSE_POS, MOUSE_POS );
-	}
+	if (!PROOF_MODE){
+		if ( IS_DRAGGING && CURRENT_OBJ === null ){
+			CAMERA.updatePan( LAST_MOUSE_POS, MOUSE_POS );
+		}
 
-	if ( IS_DRAGGING && !(CURRENT_OBJ === null) ){
-		CURRENT_OBJ.updatePos( MOUSE_POS );
+		if ( IS_DRAGGING && !(CURRENT_OBJ === null) ){
+			CURRENT_OBJ.updatePos( MOUSE_POS );
+		}
 	}
 
 	if ( CURRENT_OBJ === null ){
@@ -118,7 +120,7 @@ function onKeyUp(e){
 	}else if( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
 		SHIFT_DOWN = false;
 	}else if( isAlpha(e.code) && !CTRL_DOWN && e.code != "KeyR" && !PROOF_MODE){
-		addSymbol( new Symbol(e.code[3]) );
+		addSymbol( new Symbol(e.code[3]), IS_MINI_OPEN );
 	}
 
 	SHIFT_DOWN = CTRL_DOWN = false;
