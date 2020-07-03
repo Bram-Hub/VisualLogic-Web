@@ -9,7 +9,7 @@ var IS_DRAGGING, MOUSE_VEC,
 
 function initUserInput(){
 
-	let CANVAS = CanavasManager.getInstance().Canvas;
+	let CANVAS = CanvasManager.getInstance().Canvas;
 
 	CANVAS.addEventListener('mousedown', onMouseDown);
 	CANVAS.addEventListener('mouseup', onMouseUp);
@@ -123,7 +123,8 @@ function onKeyUp(e){
 	}else if( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
 		SHIFT_DOWN = false;
 	}else if( isAlpha(e.code) && !CTRL_DOWN && e.code != "KeyR" && !PROOF_MODE){
-		addSymbol( new Symbol(e.code[3]), IS_MINI_OPEN );
+		console.log("!");
+		addSymbol( new Symbol(e.code[3]) );
 	}else if( e.code === "Delete"){
 		deleteObjectUnderMouse();
 	}

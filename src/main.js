@@ -19,8 +19,8 @@ function main(){
 		return;
 	}
 
-	CanavasManager.init(canvas, mini_canvas);
-	CanavasManager.getInstance().Canvas.focus();
+	CanvasManager.init(canvas, mini_canvas);
+	CanvasManager.getInstance().Canvas.focus();
 
 	//initialze the canvas dimensions
 	onResize();
@@ -45,7 +45,7 @@ function main(){
 //main application loop
 function renderLoop(){
 
-	let CONTEXT = CanavasManager.getInstance().Context;
+	let CONTEXT = CanvasManager.getInstance().Context;
 
 	renderGrid(CONTEXT, C_WIDTH, C_HEIGHT);
 	updateUserInput();

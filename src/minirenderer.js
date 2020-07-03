@@ -1,15 +1,13 @@
 
 var MINI_CONTEXT,
-	M_HEIGHT, M_WIDTH, IS_MINI_OPEN = false,
+	M_HEIGHT, M_WIDTH,
 	SCRATCH_CUTS = [],
 	SCRATCH_SYMS = [],
 	REQUEST;
 
 function loadMini(){
-	IS_MINI_OPEN = true;
-
-
-	let CM = CanavasManager.getInstance();
+	let CM = CanvasManager.getInstance();
+	CM.is_mini_open = true;
 
 	M_HEIGHT = CM.MiniCanvas.clientHeight; 
 	M_WIDTH = CM.MiniCanvas.clientWidth;
@@ -21,13 +19,16 @@ function loadMini(){
 
 function toggleMiniRenderer(){
 	let container = document.getElementById("mini-renderer");
+	let CM = CanvasManager.getInstance();
 
 	if(container.style.display != "none"){
 		container.style.display = "none";
 		cancelAnimationFrame(REQUEST);
+		CM.is_mini_open = false;
 	}else{
 		container.style.display = "block";
 		loadMini();
+		CM.is_mini_open = true;
 	}
 
 
@@ -38,7 +39,7 @@ function toggleMiniRenderer(){
 
 //main application loop
 function renderMiniCanvas(){
-	let MINI_CONTEXT = CanavasManager.getInstance().MiniContext;
+	let MINI_CONTEXT = CanvasManager.getInstance().MiniContext;
 	renderGrid(MINI_CONTEXT, M_WIDTH, M_HEIGHT, 25);
 
 	for ( s of SCRATCH_SYMS ){

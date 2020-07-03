@@ -54,8 +54,8 @@ class Symbol{
 	}
 }
 
-function addSymbol(sym, is_mini){
-	if(is_mini){
+function addSymbol(sym){
+	if(CanvasManager.getInstance().is_mini_open){
 		SCRATCH_SYMS.push(sym);
 		return;
 	}

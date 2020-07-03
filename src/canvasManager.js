@@ -1,7 +1,7 @@
 
 /** Handles object being drawn on the canvas or mini renderer */
 
-var CanavasManager = (function(){
+var CanvasManager = (function(){
     var instance = null;
 
     function createInstance(canvas, mini_canvas) {
