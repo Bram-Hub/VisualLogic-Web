@@ -1,4 +1,4 @@
-var CANVAS, CONTEXT,
+var CONTEXT,
 	C_WIDTH, C_HEIGHT,
 	MOUSE_POS, CAMERA,
 	CUTS = [], TMP_CUT = null,
@@ -6,14 +6,21 @@ var CANVAS, CONTEXT,
 
 function main(){
 	//initialize application
-	CANVAS = document.getElementById("canvas");
-	if ( !CANVAS || !CANVAS.getContext("2d")){
+	let canvas = document.getElementById("canvas");
+	if ( !canvas || !canvas.getContext("2d")){
 		alert("Failed to initialized canvas element");
 		return;
 	}
 
-	CANVAS.focus();
-	CONTEXT = CANVAS.getContext("2d");
+	let mini_canvas = document.getElementById("mini-canvas");
+
+	if ( !mini_canvas || !mini_canvas.getContext("2d")){
+		alert("Failed to initialized mini canvas element");
+		return;
+	}
+
+	CanavasManager.init(canvas, mini_canvas);
+	CanavasManager.getInstance().Canvas.focus();
 
 	//initialze the canvas dimensions
 	onResize();
@@ -23,12 +30,24 @@ function main(){
 
 	initUserInput();
 	renderLoop();
+
+	//load default mode
+	let mode = localStorage.getItem("proof_mode");
+	if(!mode){
+		localStorage.setItem("proof_mode", "active");
+	}else if(mode === "active"){
+		toggleMode();
+	}
+
 }
 
 
 //main application loop
 function renderLoop(){
-	CONTEXT = renderGrid(CONTEXT, C_WIDTH, C_HEIGHT);
+
+	let CONTEXT = CanavasManager.getInstance().Context;
+
+	renderGrid(CONTEXT, C_WIDTH, C_HEIGHT);
 	updateUserInput();
 
 	IS_OVER_OBJ = false;

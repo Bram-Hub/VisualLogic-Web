@@ -115,6 +115,8 @@ class Cut{
 * @param {Cut} cut
 */
 function drawCut(cut){
+	let CONTEXT = CanavasManager.getInstance().getContext();
+
 	let border_rad = 5;
 
 	if ( cut.rad_x < border_rad*2 || cut.rad_y < border_rad*2 )
@@ -229,6 +231,7 @@ function drawTemporaryCut(pos){
 	TMP_CUT.x = TMP_ORIGIN.x + v.length/4;
 	TMP_CUT.y = TMP_ORIGIN.y + v.height/4;
 
+	let CONTEXT = CanavasManager.getInstance().getContext();
 
 	CONTEXT.save();
 	CONTEXT.globalAlpha = 0.5;

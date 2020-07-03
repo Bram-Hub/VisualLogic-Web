@@ -33,6 +33,9 @@ class Vector{
 *@param {Vector} v draws a given vector, primarlly for debugging
 */
 function drawVector(v){
+
+	let CONTEXT = CanavasManager.getInstance().getContext();
+
 	CONTEXT.beginPath();
 	CONTEXT.moveTo(v.start.x, v.start.y);
 	CONTEXT.lineTo(v.end.x,v.end.y);

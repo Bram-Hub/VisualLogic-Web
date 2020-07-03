@@ -10,6 +10,7 @@
 	<script type="text/javascript" src="src/cutmanager.js"></script>
 	<script type="text/javascript" src="src/symbol.js"></script>
 	<script type="text/javascript" src="src/minirenderer.js"></script>
+	<script type="text/javascript" src="src/canvasManager.js"></script>
 
 	<script type="text/javascript" src="src/lib/math.js"></script>
 	<script type="text/javascript" src="src/lib/point.js"></script>
@@ -20,13 +21,14 @@
 
 <p id="debug" style="position: absolute;z-index: 999;"></p>
 <button onclick="toggleMode()" id = "toggle_mode" class = "btn btn-transform">Transform Mode</button>
+<button onclick="toggleMiniRenderer()" id="insert-btn" class="btn">Insert</button>
 
 <body onload="main();">
 	<canvas id="canvas" width="100%"></canvas>
 </body>
 
-<!-- <div>
+<div id="mini-renderer" style="display: none;">
 	<canvas id="mini-canvas"></canvas>
-	<button class="btn"></button>
-</div> -->
+	<button onclick="toggleMiniRenderer()" class="btn" id="exit-mini">Exit</button>
+</div>
 </html>

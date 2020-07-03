@@ -39,6 +39,7 @@ function renderGrid(context, width, height, line_width = 50){
 * @return {Number}
 */
 function getDeviceRatio () {
+	let CONTEXT = CanavasManager.getInstance().Context;
     dpr = window.devicePixelRatio || 1,
     bsr = CONTEXT.webkitBackingStorePixelRatio ||
           CONTEXT.mozBackingStorePixelRatio ||
@@ -61,7 +62,12 @@ function onResize() {
 	C_HEIGHT = window.innerHeight;
     MOUSE_POS = new Point(0,0);
 
-    fixBlur(CANVAS, CONTEXT, C_WIDTH, C_HEIGHT);
+    let CM = CanavasManager.getInstance();
+    fixBlur(
+    	CM.Canvas, 
+    	CM.Context, 
+    	C_WIDTH, C_HEIGHT
+    );
 }
 
 

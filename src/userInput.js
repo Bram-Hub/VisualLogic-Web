@@ -8,6 +8,9 @@ var IS_DRAGGING, MOUSE_VEC,
 
 
 function initUserInput(){
+
+	let CANVAS = CanavasManager.getInstance().Canvas;
+
 	CANVAS.addEventListener('mousedown', onMouseDown);
 	CANVAS.addEventListener('mouseup', onMouseUp);
 	CANVAS.addEventListener('mousemove', onMouseMove);
@@ -146,6 +149,20 @@ function toggleMode(){
 
 	tgt.innerHTML = PROOF_MODE ? "Proof Mode" : "Transform Mode";
 	tgt.className = "btn btn-" + (PROOF_MODE ? "proof" : "transform");
+	localStorage.setItem("proof_mode", (PROOF_MODE ? "active" : "inactive") );
+
+	toggleInsertButton();
+}
+
+
+function toggleInsertButton(){
+	let tgt = document.getElementById("insert-btn");
+
+	if(PROOF_MODE){
+		tgt.style.display = "block";
+	}else{
+		tgt.style.display = "none";
+	}
 }
 
 
