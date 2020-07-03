@@ -34,7 +34,7 @@ class Vector{
 */
 function drawVector(v){
 
-	let CONTEXT = CanavasManager.getInstance().getContext();
+	let CONTEXT = CanvasManager.getInstance().getContext();
 
 	CONTEXT.beginPath();
 	CONTEXT.moveTo(v.start.x, v.start.y);
