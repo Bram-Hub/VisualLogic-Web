@@ -31,6 +31,8 @@ function toggleMiniRenderer(){
 		CM.is_mini_open = true;
 	}
 
+	let btn = document.getElementById("exit-mini");
+	btn.style.left = CM.MiniCanvas.offsetLeft + "px";
 
 	//once insert has been hit - change back to transform mode
 	toggleMode();

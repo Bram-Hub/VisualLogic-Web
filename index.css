@@ -54,8 +54,7 @@ body{
 }
 
 #exit-mini{
-	position: relative;
-	top: -900px;
-	left: 100px;
 	width: 50px;
+	position: absolute;
+	top: 100px;
 }
