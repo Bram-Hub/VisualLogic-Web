@@ -14,12 +14,12 @@ var CanvasManager = (function(){
         },
 
         init : function(canvas, mini_canvas){
-        	instance = createInstance(canvas, mini_canvas);
+            instance = createInstance(canvas, mini_canvas);
         },
 
         getInstance: function () {
             if (!instance) {
-                throw "Tried to get uninitialized canvas manager"
+                throw "Tried to get uninitialized canvas manager, call init first"
             }
             return instance;
         }
@@ -29,18 +29,60 @@ var CanvasManager = (function(){
 
 class __CANVAS_MANAGER{
     constructor(canvas, mini_canvas){
-   		this.cuts = [];
-   		this.syms = [];
-   		this.is_mini_open = false;
+        this.cuts = [];
+        this.syms = [];
+        //scratch cuts and syms, used for the mini renderer
+        this.s_cuts = [];
+        this.s_syms = [];
 
-   		this.Canvas = canvas;
-   		this.MiniCanvas = mini_canvas;
+        this.is_mini_open = false;
 
-   		this.Context = this.Canvas.getContext("2d");
-   		this.MiniContext = this.MiniCanvas.getContext("2d");
-    }	
+        this.Canvas = canvas;
+        this.MiniCanvas = mini_canvas;
 
+        this.Context = this.Canvas.getContext("2d");
+        this.MiniContext = this.MiniCanvas.getContext("2d");
+    }   
+
+    /**
+    * Get the current open context
+    *
+    * @returns {CanvasRenderingContext2D}
+    */
     getContext(){
-    	return this.Context;
+        return this.is_mini_open ? this.MiniContext : this.Context;
     }
+
+    /**
+    * adds a new cut to either cuts or scratch cuts depending if
+    * the mini renderer is open
+    *
+    * @param {Cut} cut
+    */
+    addCut(cut){
+        resetCenter(cut);
+        cut.update();
+        CutManager.getInstance().addObj(cut);
+
+        let tgt = this.is_mini_open ? this.s_cuts : this.cuts;
+        //keep the cuts list sorted from biggest area to smallest
+        tgt.push(cut);
+        tgt.sort((a,b) => (b.area - a.area));
+    }
+
+    /**
+    * @returns {Cut[]} returns either cuts or s_cuts based on if mini_renderer is open
+    */
+    getCuts(){
+        return this.is_mini_open ? this.s_cuts : this.cuts;
+    }
+    
+
+    /**
+    * @returns {Symbol[]} returns either cuts or s_cuts based on if mini_renderer is open
+    */
+    getSyms(){
+        return this.is_mini_open ? this.s_syms : this.syms; 
+    }
+
 }

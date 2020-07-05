@@ -55,17 +55,21 @@ class Symbol{
 }
 
 function addSymbol(sym){
-	if(CanvasManager.getInstance().is_mini_open){
-		SCRATCH_SYMS.push(sym);
+	let CM = CanvasManager.getInstance();
+	if(CM.is_mini_open){
+		CM.s_syms.push(sym);
 		return;
 	}
 
 
-	SYMBOLS.push(sym);
+	CM.syms.push(sym);
 	CutManager.getInstance().addObj(sym);
 }
 
-function drawSymbol(sym, context){
+function drawSymbol(sym){
+
+	let context = CanvasManager.getInstance().getContext();
+
 	context.fillStyle = sym.is_mouse_over ? "blue" : "black";
 	context.font = "italic 70px Times New Roman";
 

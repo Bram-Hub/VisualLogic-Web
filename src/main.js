@@ -1,8 +1,7 @@
 var CONTEXT,
 	C_WIDTH, C_HEIGHT,
 	MOUSE_POS, CAMERA,
-	CUTS = [], TMP_CUT = null,
-	SYMBOLS = [], DEBUG = true;
+	TMP_CUT = null, DEBUG = true;
 
 function main(){
 	//initialize application
@@ -44,8 +43,8 @@ function main(){
 
 //main application loop
 function renderLoop(){
-
-	let CONTEXT = CanvasManager.getInstance().Context;
+	let CM = CanvasManager.getInstance();
+	let CONTEXT = CM.Context;
 
 	renderGrid(CONTEXT, C_WIDTH, C_HEIGHT);
 	updateUserInput();
@@ -57,7 +56,7 @@ function renderLoop(){
 		document.getElementById("debug").innerHTML = "";
 	}
 
-	for( c of CUTS ){
+	for( let c of CM.cuts ){
 		c.update();
 
 		//cutSelectionControl(c);
@@ -75,7 +74,7 @@ function renderLoop(){
 
 	}
 
-	for ( s of SYMBOLS ){
+	for ( let s of CM.syms ){
 		s.update();
 
 		//symSelectionControl(s);
@@ -92,17 +91,17 @@ function renderLoop(){
 	}
 
 
-	for ( c of CUTS ){
+	for ( let c of CM.cuts ){
 		drawCut(c);
 	}
 
-	for ( s of SYMBOLS ){
-		drawSymbol(s, CONTEXT);
+	for ( let s of CM.syms ){
+		drawSymbol(s);
 	}
 
 	//we realeased the mouse and a temporary cut exists, now create it
 	if ( !(TMP_CUT === null) && !IS_MOUSE_DOWN ){
-		addCut(TMP_CUT);
+		CM.addCut(TMP_CUT);
 	}
 
 	if ( IS_MOUSE_DOWN && SHIFT_DOWN && !PROOF_MODE ){

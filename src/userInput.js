@@ -9,13 +9,20 @@ var IS_DRAGGING, MOUSE_VEC,
 
 function initUserInput(){
 
-	let CANVAS = CanvasManager.getInstance().Canvas;
+	let CM = CanvasManager.getInstance();
+	let CANVAS = CM.Canvas;
+	let MINI_CANVAS = CM.MiniCanvas;
 
 	CANVAS.addEventListener('mousedown', onMouseDown);
 	CANVAS.addEventListener('mouseup', onMouseUp);
 	CANVAS.addEventListener('mousemove', onMouseMove);
 	window.addEventListener('keydown', onKeyDown);
 	window.addEventListener('keyup', onKeyUp);
+
+	MINI_CANVAS.addEventListener('mousedown', onMouseDown);
+	MINI_CANVAS.addEventListener('mouseup', onMouseUp);
+	MINI_CANVAS.addEventListener('mousemove', onMouseMove);
+
 
 	IS_DRAGGING = IS_MOVING = IS_MOUSE_DOWN = 
 	SHIFT_DOWN = CTRL_DOWN = false;
@@ -47,6 +54,7 @@ function updateUserInput(){
 
 
 function onMouseDown(e){
+	let CM = CanvasManager.getInstance();
 	IS_MOUSE_DOWN = true;
 	LAST_MOUSE_POS = getRealMousePos(e);
 
@@ -54,14 +62,30 @@ function onMouseDown(e){
 		return;
 
 	//are we over anything
-	for (c of CUTS){
+	//TODO move to 1 function
+	for (c of CM.cuts){
 		if ( c.is_mouse_over ){
 			CURRENT_OBJ = mouseOverInnerMost(c);
 			break;
 		}
 	}
 
-	for (s of SYMBOLS){
+	for (s of CM.syms){
+		if ( s.is_mouse_over ){
+			CURRENT_OBJ = s;
+			break;
+		}
+	}
+
+
+	for (c of CM.s_cuts){
+		if ( c.is_mouse_over ){
+			CURRENT_OBJ = mouseOverInnerMost(c);
+			break;
+		}
+	}
+
+	for (s of CM.s_syms){
 		if ( s.is_mouse_over ){
 			CURRENT_OBJ = s;
 			break;
@@ -123,7 +147,6 @@ function onKeyUp(e){
 	}else if( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
 		SHIFT_DOWN = false;
 	}else if( isAlpha(e.code) && !CTRL_DOWN && e.code != "KeyR" && !PROOF_MODE){
-		console.log("!");
 		addSymbol( new Symbol(e.code[3]) );
 	}else if( e.code === "Delete"){
 		deleteObjectUnderMouse();
@@ -158,12 +181,7 @@ function toggleMode(){
 
 function toggleInsertButton(){
 	let tgt = document.getElementById("insert-btn");
-
-	if(PROOF_MODE){
-		tgt.style.display = "block";
-	}else{
-		tgt.style.display = "none";
-	}
+	tgt.style.display = PROOF_MODE ? "block" : "none";
 }
 
 
@@ -182,11 +200,12 @@ function deleteObjectUnderMouse(){
 		}
 	}
 
+	let CM = CanvasManager.getInstance();
 
 	if( MOUSE_OVER_OBJ instanceof Symbol ){
-		removeFromList(MOUSE_OVER_OBJ, SYMBOLS);
+		removeFromList(MOUSE_OVER_OBJ, CM.getSyms());
 	}else{
-		removeFromList(MOUSE_OVER_OBJ, CUTS);
+		removeFromList(MOUSE_OVER_OBJ, CM.getCuts());
 	}
 
 	IS_OVER_OBJ = false;

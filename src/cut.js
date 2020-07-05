@@ -161,32 +161,21 @@ function isMouseOverCut(cut){
 	return isWithinEllipse(MOUSE_POS, cut.x, cut.y, cut.rad_x , cut.rad_y );
 }
 
-/*
-*return true if the mouse is inside the cut
-*this excludes the border
-*@param {Cut} cut
+/**
+* return true if the mouse is inside the cut
+* this excludes the border
+* @param {Cut} cut
 */
 function isMouseInCut(cut){
 	return isWithinEllipse(MOUSE_POS, cut.x, cut.y, cut.rad_x - cut.border_rad , cut.rad_y - cut.border_rad);
 }
 
-/*
+/**
 * return true if the mouse is within the border of a cut
 * @param {Cut} cut 
 */
 function isMouseInBorder(cut){
 	return !cut.is_mouse_in && cut.is_mouse_over;
-}
-
-
-function addCut(cut){
-	//correct the cuts center position before adding
-	resetCenter(cut);
-	cut.update();
-	CutManager.getInstance().addObj(cut);
-	CUTS.push(cut);
-	//sort the cuts list biggest first
-	CUTS.sort((a,b) => (b.area - a.area));
 }
 
 

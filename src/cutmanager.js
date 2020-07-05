@@ -1,8 +1,9 @@
 
 function drawDistancesOfCuts(){
-	
-	for (let i of CUTS){
-		for(let j of CUTS){
+	let CM = CanvasManager.getInstance();
+
+	for (let i of CM.cuts){
+		for(let j of CM.cuts){
 			if ( j === i )
 				continue;
 
@@ -44,13 +45,14 @@ var CutManager = (function(){
 
 class __CUT_MANAGER{
     constructor(){
+        let CM = CanvasManager.getInstance();
    		this.objs = new Map();
 
-   		for(let c of CUTS){
+   		for(let c of CM.cuts){
    			this.objs.set(c.ID, c);
    		}
 
-   		for(let s of SYMBOLS){
+   		for(let s of CM.cuts){
    			this.objs.set(s.ID, s);
    		}
 
@@ -77,15 +79,16 @@ class __CUT_MANAGER{
 
 
     recalculate(){
-    	for(let c of CUTS){
+        let CM = CanvasManager.getInstance();
+    	for(let c of CM.getCuts()){
 			c.level = 1;
 			c.child_syms = [];
 			c.child_cuts = [];
 		}
 
 		
-        for(let i of CUTS){
-            for(let j of CUTS){
+        for(let i of CM.getCuts()){
+            for(let j of CM.getCuts()){
                 if ( i.id === j.id )
                     continue;
 
@@ -103,9 +106,9 @@ class __CUT_MANAGER{
         }
 
 
-        for(let c of CUTS){
+        for(let c of CM.getCuts()){
             //update any symbols
-            for(let s of SYMBOLS){
+            for(let s of CM.getSyms()){
                 if( isWithinCut(s, c) ){
                     //add this to the innermost in this cut
                     s.level = c.level;
