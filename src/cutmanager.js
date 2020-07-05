@@ -1,18 +1,18 @@
 
 function drawDistancesOfCuts(){
-	let CM = CanvasManager.getInstance();
+    let CM = CanvasManager.getInstance();
 
-	for (let i of CM.cuts){
-		for(let j of CM.cuts){
-			if ( j === i )
-				continue;
+    for (let i of CM.cuts){
+        for(let j of CM.cuts){
+            if ( j === i )
+                continue;
 
-			drawVector(
-				new Vector( i.center, j.center )
-			);
+            drawVector(
+                new Vector( i.center, j.center )
+            );
 
-		}
-	}
+        }
+    }
 
 }
 
@@ -46,47 +46,47 @@ var CutManager = (function(){
 class __CUT_MANAGER{
     constructor(){
         let CM = CanvasManager.getInstance();
-   		this.objs = new Map();
+        this.objs = new Map();
 
-   		for(let c of CM.cuts){
-   			this.objs.set(c.ID, c);
-   		}
+        for(let c of CM.cuts){
+            this.objs.set(c.ID, c);
+        }
 
-   		for(let s of CM.cuts){
-   			this.objs.set(s.ID, s);
-   		}
+        for(let s of CM.cuts){
+            this.objs.set(s.ID, s);
+        }
 
-    }	
+    }   
 
 
     removeByID(id){
-    	return this.objs.delete(id);
+        return this.objs.delete(id);
     }
 
 
     addObj(obj){
-    	this.objs.set(obj.ID, obj);
+        this.objs.set(obj.ID, obj);
     }
 
 
     getById(id){
-    	let t = this.objs.get(id);
-    	if ( typeof t === "undefined")
-    		return null;
+        let t = this.objs.get(id);
+        if ( typeof t === "undefined")
+            return null;
 
-    	return t;
+        return t;
     }
 
 
     recalculate(){
         let CM = CanvasManager.getInstance();
-    	for(let c of CM.getCuts()){
-			c.level = 1;
-			c.child_syms = [];
-			c.child_cuts = [];
-		}
+        for(let c of CM.getCuts()){
+            c.level = 1;
+            c.child_syms = [];
+            c.child_cuts = [];
+        }
 
-		
+        
         for(let i of CM.getCuts()){
             for(let j of CM.getCuts()){
                 if ( i.id === j.id )
