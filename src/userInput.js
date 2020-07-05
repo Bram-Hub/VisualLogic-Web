@@ -1,94 +1,118 @@
 var IS_DRAGGING, MOUSE_VEC,
-	IS_MOVING, IS_MOUSE_DOWN,
-	LAST_MOUSE_POS, SHIFT_DOWN,
-	MOUSE_OVER_OBJ = null,
-	IS_OVER_OBJ = false,
-	CURRENT_OBJ = null,
-	CTRL_DOWN, PROOF_MODE = false;
+    IS_MOVING, IS_MOUSE_DOWN,
+    LAST_MOUSE_POS, SHIFT_DOWN,
+    MOUSE_OVER_OBJ = null,
+    IS_OVER_OBJ = false,
+    CURRENT_OBJ = null,
+    CTRL_DOWN, PROOF_MODE = false;
 
 
 function initUserInput(){
 
-	let CANVAS = CanvasManager.getInstance().Canvas;
+    let CM = CanvasManager.getInstance();
+    let CANVAS = CM.Canvas;
+    let MINI_CANVAS = CM.MiniCanvas;
 
-	CANVAS.addEventListener('mousedown', onMouseDown);
-	CANVAS.addEventListener('mouseup', onMouseUp);
-	CANVAS.addEventListener('mousemove', onMouseMove);
-	window.addEventListener('keydown', onKeyDown);
-	window.addEventListener('keyup', onKeyUp);
+    CANVAS.addEventListener('mousedown', onMouseDown);
+    CANVAS.addEventListener('mouseup', onMouseUp);
+    CANVAS.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
 
-	IS_DRAGGING = IS_MOVING = IS_MOUSE_DOWN = 
-	SHIFT_DOWN = CTRL_DOWN = false;
+    MINI_CANVAS.addEventListener('mousedown', onMouseDown);
+    MINI_CANVAS.addEventListener('mouseup', onMouseUp);
+    MINI_CANVAS.addEventListener('mousemove', onMouseMove);
 
-	//assume the cursor's position is in the center of the page on load
-	MOUSE_POS = new Point(C_WIDTH/2, C_HEIGHT/2);
-	LAST_MOUSE_POS = MOUSE_POS;
+
+    IS_DRAGGING = IS_MOVING = IS_MOUSE_DOWN = 
+    SHIFT_DOWN = CTRL_DOWN = false;
+
+    //assume the cursor's position is in the center of the page on load
+    MOUSE_POS = new Point(C_WIDTH/2, C_HEIGHT/2);
+    LAST_MOUSE_POS = MOUSE_POS;
 }
 
 
 function updateUserInput(){
-	IS_DRAGGING = IS_MOUSE_DOWN && IS_MOVING;
-	IS_MOVING = false;
+    IS_DRAGGING = IS_MOUSE_DOWN && IS_MOVING;
+    IS_MOVING = false;
 
-	if (!PROOF_MODE){
-		if ( IS_DRAGGING && CURRENT_OBJ === null ){
-			CAMERA.updatePan( LAST_MOUSE_POS, MOUSE_POS );
-		}
+    if (!PROOF_MODE){
+        if ( IS_DRAGGING && CURRENT_OBJ === null ){
+            CAMERA.updatePan( LAST_MOUSE_POS, MOUSE_POS );
+        }
 
-		if ( IS_DRAGGING && !(CURRENT_OBJ === null) ){
-			CURRENT_OBJ.updatePos( MOUSE_POS );
-		}
-	}
+        if ( IS_DRAGGING && !(CURRENT_OBJ === null) ){
+            CURRENT_OBJ.updatePos( MOUSE_POS );
+        }
+    }
 
-	if ( CURRENT_OBJ === null ){
-		document.getElementById("canvas").style.cursor = "default"; 
-	}
+    if ( CURRENT_OBJ === null ){
+        document.getElementById("canvas").style.cursor = "default"; 
+    }
 }
 
 
 function onMouseDown(e){
-	IS_MOUSE_DOWN = true;
-	LAST_MOUSE_POS = getRealMousePos(e);
+    let CM = CanvasManager.getInstance();
+    IS_MOUSE_DOWN = true;
+    LAST_MOUSE_POS = getRealMousePos(e);
 
-	if ( SHIFT_DOWN )
-		return;
+    if ( SHIFT_DOWN )
+        return;
 
-	//are we over anything
-	for (c of CUTS){
-		if ( c.is_mouse_over ){
-			CURRENT_OBJ = mouseOverInnerMost(c);
-			break;
-		}
-	}
+    //are we over anything
+    //TODO move to 1 function
+    for (c of CM.cuts){
+        if ( c.is_mouse_over ){
+            CURRENT_OBJ = mouseOverInnerMost(c);
+            break;
+        }
+    }
 
-	for (s of SYMBOLS){
-		if ( s.is_mouse_over ){
-			CURRENT_OBJ = s;
-			break;
-		}
-	}
+    for (s of CM.syms){
+        if ( s.is_mouse_over ){
+            CURRENT_OBJ = s;
+            break;
+        }
+    }
+
+
+    for (c of CM.s_cuts){
+        if ( c.is_mouse_over ){
+            CURRENT_OBJ = mouseOverInnerMost(c);
+            break;
+        }
+    }
+
+    for (s of CM.s_syms){
+        if ( s.is_mouse_over ){
+            CURRENT_OBJ = s;
+            break;
+        }
+    }
 
 }
 
 
 function onMouseUp(e){
-	IS_MOUSE_DOWN = false;
-	CURRENT_OBJ = null;
+    IS_MOUSE_DOWN = false;
+    CURRENT_OBJ = null;
 }
 
 
 function onMouseMove(e){
-	e.preventDefault();
+    e.preventDefault();
     e.stopPropagation();
 
-	IS_MOVING = true;
+    IS_MOVING = true;
 
-	MOUSE_VEC = new Vector(MOUSE_POS, getRealMousePos(e));
-	MOUSE_POS = getRealMousePos(e);
+    MOUSE_VEC = new Vector(MOUSE_POS, getRealMousePos(e));
+    MOUSE_POS = getRealMousePos(e);
 
 
-	//TODO find a better a time to figure this out
-	CutManager.getInstance().recalculate();
+    //TODO find a better a time to figure this out
+    CutManager.getInstance().recalculate();
 }
 
 
@@ -103,40 +127,39 @@ function onMouseMove(e){
 * @returns {Point}
 */
 function getRealMousePos(pos){
-	return transformPoint(new Point(pos.offsetX, pos.offsetY), getDeviceRatio());
+    return transformPoint(new Point(pos.offsetX, pos.offsetY), getDeviceRatio());
 }
 
 
 function onKeyDown(e){
-	if ( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
-		SHIFT_DOWN = true;
-	}else if(e.code === "ControlLeft" || e.code === "ControlRight" ){
-		CTRL_DOWN = true;
-	}
+    if ( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
+        SHIFT_DOWN = true;
+    }else if(e.code === "ControlLeft" || e.code === "ControlRight" ){
+        CTRL_DOWN = true;
+    }
 }
 
 
 function onKeyUp(e){
-	if ( e.keyCode === 27 ){
-		//user decides to not create a cut, clear the temporary
-		TMP_CUT = null;
-	}else if( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
-		SHIFT_DOWN = false;
-	}else if( isAlpha(e.code) && !CTRL_DOWN && e.code != "KeyR" && !PROOF_MODE){
-		console.log("!");
-		addSymbol( new Symbol(e.code[3]) );
-	}else if( e.code === "Delete"){
-		deleteObjectUnderMouse();
-	}
+    if ( e.keyCode === 27 ){
+        //user decides to not create a cut, clear the temporary
+        TMP_CUT = null;
+    }else if( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
+        SHIFT_DOWN = false;
+    }else if( isAlpha(e.code) && !CTRL_DOWN && e.code != "KeyR" && !PROOF_MODE){
+        addSymbol( new Symbol(e.code[3]) );
+    }else if( e.code === "Delete"){
+        deleteObjectUnderMouse();
+    }
 
-	SHIFT_DOWN = CTRL_DOWN = false;
-	function isAlpha(tgt){
-		if ( tgt.length != 4 )
-			return false;
+    SHIFT_DOWN = CTRL_DOWN = false;
+    function isAlpha(tgt){
+        if ( tgt.length != 4 )
+            return false;
 
-		let n = tgt.charCodeAt(3);
-		return n >=65 && n <= 90;
-	}
+        let n = tgt.charCodeAt(3);
+        return n >=65 && n <= 90;
+    }
 
 }
 
@@ -145,50 +168,46 @@ function onKeyUp(e){
 * Toggles the different modes in VL, fired by onclick event
 */
 function toggleMode(){
-	PROOF_MODE = !PROOF_MODE;
-	let tgt = document.getElementById("toggle_mode");
+    PROOF_MODE = !PROOF_MODE;
+    let tgt = document.getElementById("toggle_mode");
 
-	tgt.innerHTML = PROOF_MODE ? "Proof Mode" : "Transform Mode";
-	tgt.className = "btn btn-" + (PROOF_MODE ? "proof" : "transform");
-	localStorage.setItem("proof_mode", (PROOF_MODE ? "active" : "inactive") );
+    tgt.innerHTML = PROOF_MODE ? "Proof Mode" : "Transform Mode";
+    tgt.className = "btn btn-" + (PROOF_MODE ? "proof" : "transform");
+    localStorage.setItem("proof_mode", (PROOF_MODE ? "active" : "inactive") );
 
-	toggleInsertButton();
+    toggleInsertButton();
 }
 
 
 function toggleInsertButton(){
-	let tgt = document.getElementById("insert-btn");
-
-	if(PROOF_MODE){
-		tgt.style.display = "block";
-	}else{
-		tgt.style.display = "none";
-	}
+    let tgt = document.getElementById("insert-btn");
+    tgt.style.display = PROOF_MODE ? "block" : "none";
 }
 
 
 function deleteObjectUnderMouse(){
-	if(!IS_OVER_OBJ){
-		return;
-	}
+    if(!IS_OVER_OBJ){
+        return;
+    }
 
 
-	function removeFromList(tgt, list){
-		for(let i = 0; i < list.length; i++){
-			if ( list[i].id === tgt.id ){
-				list.splice(i, 1);
-				break;
-			}
-		}
-	}
+    function removeFromList(tgt, list){
+        for(let i = 0; i < list.length; i++){
+            if ( list[i].id === tgt.id ){
+                list.splice(i, 1);
+                break;
+            }
+        }
+    }
 
+    let CM = CanvasManager.getInstance();
 
-	if( MOUSE_OVER_OBJ instanceof Symbol ){
-		removeFromList(MOUSE_OVER_OBJ, SYMBOLS);
-	}else{
-		removeFromList(MOUSE_OVER_OBJ, CUTS);
-	}
+    if( MOUSE_OVER_OBJ instanceof Symbol ){
+        removeFromList(MOUSE_OVER_OBJ, CM.getSyms());
+    }else{
+        removeFromList(MOUSE_OVER_OBJ, CM.getCuts());
+    }
 
-	IS_OVER_OBJ = false;
-	MOUSE_OVER_OBJ = null;
+    IS_OVER_OBJ = false;
+    MOUSE_OVER_OBJ = null;
 }

@@ -58,3 +58,9 @@ body{
 	position: absolute;
 	top: 100px;
 }
+
+#insert-graph{
+	width: 100px;
+	position: absolute;
+	top:100px;
+}

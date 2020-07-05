@@ -5,32 +5,32 @@
 * of clearing the previous frame
 */
 function renderGrid(context, width, height, line_width = 50){
-	context.fillStyle = 'white';
-	context.fillRect(0,0,width,height);
+  context.fillStyle = 'white';
+  context.fillRect(0,0,width,height);
 
-	//x direction
-	for(var i = 0; i < width; i += line_width){
+  //x direction
+  for(var i = 0; i < width; i += line_width){
 
-		context.strokeStyle = i % 150 === 0 ? "#787878" : "#D0D0D0";
+    context.strokeStyle = i % 150 === 0 ? "#787878" : "#D0D0D0";
 
-		context.beginPath();
-		context.moveTo(i,0)
-		context.lineTo(i, height);
-		context.stroke();
-	}
+    context.beginPath();
+    context.moveTo(i,0)
+    context.lineTo(i, height);
+    context.stroke();
+  }
 
-	//y direction
-	for(var i = 0; i < height; i += line_width){
+  //y direction
+  for(var i = 0; i < height; i += line_width){
 
-		context.strokeStyle = i % 150 === 0 ? "#787878" : "#D0D0D0";
+    context.strokeStyle = i % 150 === 0 ? "#787878" : "#D0D0D0";
 
-		context.beginPath();
-		context.moveTo(0,i)
-		context.lineTo(width, i);
-		context.stroke();
-	}
+    context.beginPath();
+    context.moveTo(0,i)
+    context.lineTo(width, i);
+    context.stroke();
+  }
 
-	return context;
+  return context;
 }
 
 
@@ -39,7 +39,7 @@ function renderGrid(context, width, height, line_width = 50){
 * @return {Number}
 */
 function getDeviceRatio () {
-	let CONTEXT = CanvasManager.getInstance().Context;
+  let CONTEXT = CanvasManager.getInstance().Context;
     dpr = window.devicePixelRatio || 1,
     bsr = CONTEXT.webkitBackingStorePixelRatio ||
           CONTEXT.mozBackingStorePixelRatio ||
@@ -58,21 +58,21 @@ function getDeviceRatio () {
 * corrects the canvas and resets the mouse pointer
 */
 function onResize() {
-	C_WIDTH = window.innerWidth;
-	C_HEIGHT = window.innerHeight;
+    C_WIDTH = window.innerWidth;
+    C_HEIGHT = window.innerHeight;
     MOUSE_POS = new Point(0,0);
 
     let CM = CanvasManager.getInstance();
     fixBlur(
-    	CM.Canvas, 
-    	CM.Context, 
-    	C_WIDTH, C_HEIGHT
+        CM.Canvas, 
+        CM.Context, 
+        C_WIDTH, C_HEIGHT
     );
 }
 
 
 function fixBlur(canvas, context, width, height){
-	ratio = getDeviceRatio();
+    ratio = getDeviceRatio();
     canvas.width = width * ratio;
     canvas.height = height * ratio;
     canvas.style.width = width + "px";

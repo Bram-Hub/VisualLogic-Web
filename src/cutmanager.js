@@ -1,17 +1,18 @@
 
 function drawDistancesOfCuts(){
-	
-	for (let i of CUTS){
-		for(let j of CUTS){
-			if ( j === i )
-				continue;
+    let CM = CanvasManager.getInstance();
 
-			drawVector(
-				new Vector( i.center, j.center )
-			);
+    for (let i of CM.cuts){
+        for(let j of CM.cuts){
+            if ( j === i )
+                continue;
 
-		}
-	}
+            drawVector(
+                new Vector( i.center, j.center )
+            );
+
+        }
+    }
 
 }
 
@@ -44,48 +45,50 @@ var CutManager = (function(){
 
 class __CUT_MANAGER{
     constructor(){
-   		this.objs = new Map();
+        let CM = CanvasManager.getInstance();
+        this.objs = new Map();
 
-   		for(let c of CUTS){
-   			this.objs.set(c.ID, c);
-   		}
+        for(let c of CM.cuts){
+            this.objs.set(c.ID, c);
+        }
 
-   		for(let s of SYMBOLS){
-   			this.objs.set(s.ID, s);
-   		}
+        for(let s of CM.cuts){
+            this.objs.set(s.ID, s);
+        }
 
-    }	
+    }   
 
 
     removeByID(id){
-    	return this.objs.delete(id);
+        return this.objs.delete(id);
     }
 
 
     addObj(obj){
-    	this.objs.set(obj.ID, obj);
+        this.objs.set(obj.ID, obj);
     }
 
 
     getById(id){
-    	let t = this.objs.get(id);
-    	if ( typeof t === "undefined")
-    		return null;
+        let t = this.objs.get(id);
+        if ( typeof t === "undefined")
+            return null;
 
-    	return t;
+        return t;
     }
 
 
     recalculate(){
-    	for(let c of CUTS){
-			c.level = 1;
-			c.child_syms = [];
-			c.child_cuts = [];
-		}
+        let CM = CanvasManager.getInstance();
+        for(let c of CM.getCuts()){
+            c.level = 1;
+            c.child_syms = [];
+            c.child_cuts = [];
+        }
 
-		
-        for(let i of CUTS){
-            for(let j of CUTS){
+        
+        for(let i of CM.getCuts()){
+            for(let j of CM.getCuts()){
                 if ( i.id === j.id )
                     continue;
 
@@ -103,9 +106,9 @@ class __CUT_MANAGER{
         }
 
 
-        for(let c of CUTS){
+        for(let c of CM.getCuts()){
             //update any symbols
-            for(let s of SYMBOLS){
+            for(let s of CM.getSyms()){
                 if( isWithinCut(s, c) ){
                     //add this to the innermost in this cut
                     s.level = c.level;
