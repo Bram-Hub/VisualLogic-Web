@@ -1,118 +1,128 @@
-var IS_DRAGGING, MOUSE_VEC,
-    IS_MOVING, IS_MOUSE_DOWN,
-    LAST_MOUSE_POS, SHIFT_DOWN,
-    MOUSE_OVER_OBJ = null,
-    IS_OVER_OBJ = false,
-    CURRENT_OBJ = null,
-    CTRL_DOWN, PROOF_MODE = false;
+
+var UserInputManager = (function(){
+    var instance = null;
+
+    function createInstance() {
+        return new __USER_INPUT_MANAGER();
+    }
+ 
+    return {
+        clear : function(){
+            instance = null;
+        },
+
+        getInstance: function () {
+            if (!instance) {
+                instance = createInstance();
+            }
+            return instance;
+        }
+    };
+})();
 
 
-function initUserInput(){
+/** Manages the user input state */
+class __USER_INPUT_MANAGER{
+    constructor(){
+        let CM = CanvasManager.getInstance();
+        let MINI_CANVAS = CM.MiniCanvas;
 
-    let CM = CanvasManager.getInstance();
-    let CANVAS = CM.Canvas;
-    let MINI_CANVAS = CM.MiniCanvas;
+        CM.Canvas.addEventListener('mousedown', onMouseDown);
+        CM.Canvas.addEventListener('mouseup', onMouseUp);
+        CM.Canvas.addEventListener('mousemove', this.onMouseMove);
+        window.addEventListener('keydown', onKeyDown);
+        window.addEventListener('keyup', onKeyUp);
 
-    CANVAS.addEventListener('mousedown', onMouseDown);
-    CANVAS.addEventListener('mouseup', onMouseUp);
-    CANVAS.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', onKeyUp);
+        MINI_CANVAS.addEventListener('mousedown', onMouseDown);
+        MINI_CANVAS.addEventListener('mouseup', onMouseUp);
+        MINI_CANVAS.addEventListener('mousemove', this.onMouseMove);
 
-    MINI_CANVAS.addEventListener('mousedown', onMouseDown);
-    MINI_CANVAS.addEventListener('mouseup', onMouseUp);
-    MINI_CANVAS.addEventListener('mousemove', onMouseMove);
+        this.is_dragging = false;
+        this.is_mouse_down = false;
+        this.is_shift_down = false;
+        this.is_ctrl_down = false;
+        this.mouse_pos = new Point(0,0);
+        this.last_mouse_pos = this.mouse_pos;
+        this.is_proof_mode = false;
+
+        this.current_obj = null;
+        this.obj_under_mouse = false;
+        this.is_over_obj = this.obj_under_mouse === null;
+
+    }
+
+    update(){
+        this.updateUserInput();
+    }
 
 
-    IS_DRAGGING = IS_MOVING = IS_MOUSE_DOWN = 
-    SHIFT_DOWN = CTRL_DOWN = false;
+    updateUserInput(){
+        this.is_dragging = this.is_mouse_down && this.is_moving;
+        this.is_moving = false;
 
-    //assume the cursor's position is in the center of the page on load
-    MOUSE_POS = new Point(C_WIDTH/2, C_HEIGHT/2);
-    LAST_MOUSE_POS = MOUSE_POS;
-}
-
-
-function updateUserInput(){
-    IS_DRAGGING = IS_MOUSE_DOWN && IS_MOVING;
-    IS_MOVING = false;
-
-    if (!PROOF_MODE){
-        if ( IS_DRAGGING && CURRENT_OBJ === null ){
-            CAMERA.updatePan( LAST_MOUSE_POS, MOUSE_POS );
+        if (!this.is_proof_mode){
+            if ( this.is_dragging && !(this.current_obj === null) ){
+                this.current_obj.updatePos( UserInputManager.getInstance().mouse_pos );
+            }
         }
 
-        if ( IS_DRAGGING && !(CURRENT_OBJ === null) ){
-            CURRENT_OBJ.updatePos( MOUSE_POS );
+        if ( this.current_obj === null ){
+            document.getElementById("canvas").style.cursor = "default"; 
         }
     }
 
-    if ( CURRENT_OBJ === null ){
-        document.getElementById("canvas").style.cursor = "default"; 
+
+    onMouseMove(e){
+        e.preventDefault();
+        e.stopPropagation();
+
+        let UM = UserInputManager.getInstance();
+        UM.mouse_pos = getRealMousePos(e);
+        UM.is_moving = true;
+
+        //TODO find a better a time to figure this out
+        CutManager.getInstance().recalculate();
     }
 }
+
 
 
 function onMouseDown(e){
     let CM = CanvasManager.getInstance();
-    IS_MOUSE_DOWN = true;
-    LAST_MOUSE_POS = getRealMousePos(e);
+    let UM = UserInputManager.getInstance();
+    UM.last_mouse_pos = getRealMousePos(e);
+    UM.is_mouse_down = true;
 
-    if ( SHIFT_DOWN )
+    if ( UM.is_shift_down ){
         return;
-
-    //are we over anything
-    //TODO move to 1 function
-    for (c of CM.cuts){
-        if ( c.is_mouse_over ){
-            CURRENT_OBJ = mouseOverInnerMost(c);
-            break;
-        }
     }
 
-    for (s of CM.syms){
-        if ( s.is_mouse_over ){
-            CURRENT_OBJ = s;
-            break;
+
+    function isOverAnything(tgt_list){
+        for(let x of tgt_list){
+            if(x.is_mouse_over){
+                UM.current_obj = (x instanceof Cut) ? mouseOverInnerMost(x) : x;
+                break;
+            }
         }
     }
 
 
-    for (c of CM.s_cuts){
-        if ( c.is_mouse_over ){
-            CURRENT_OBJ = mouseOverInnerMost(c);
-            break;
-        }
-    }
-
-    for (s of CM.s_syms){
-        if ( s.is_mouse_over ){
-            CURRENT_OBJ = s;
-            break;
-        }
+    if(CM.is_mini_open){
+        isOverAnything(CM.s_cuts);
+        isOverAnything(CM.s_syms);
+    }else{
+        isOverAnything(CM.cuts);
+        isOverAnything(CM.syms);
     }
 
 }
 
 
 function onMouseUp(e){
-    IS_MOUSE_DOWN = false;
-    CURRENT_OBJ = null;
-}
-
-
-function onMouseMove(e){
-    e.preventDefault();
-    e.stopPropagation();
-
-    IS_MOVING = true;
-
-    MOUSE_VEC = new Vector(MOUSE_POS, getRealMousePos(e));
-    MOUSE_POS = getRealMousePos(e);
-
-
-    //TODO find a better a time to figure this out
-    CutManager.getInstance().recalculate();
+    let UM = UserInputManager.getInstance();
+    UM.is_mouse_down = false;
+    UM.current_obj = null;
 }
 
 
@@ -127,32 +137,37 @@ function onMouseMove(e){
 * @returns {Point}
 */
 function getRealMousePos(pos){
-    return transformPoint(new Point(pos.offsetX, pos.offsetY), getDeviceRatio());
+    return transformPoint(
+        new Point(pos.offsetX, pos.offsetY), getDeviceRatio()
+    );
 }
 
 
 function onKeyDown(e){
+    let UM = UserInputManager.getInstance();
     if ( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
-        SHIFT_DOWN = true;
+        UM.is_shift_down = true;
     }else if(e.code === "ControlLeft" || e.code === "ControlRight" ){
-        CTRL_DOWN = true;
+        UM.is_ctrl_down = true;
     }
 }
 
 
 function onKeyUp(e){
+    let UM = UserInputManager.getInstance();
+    let CM = CanvasManager.getInstance();
     if ( e.keyCode === 27 ){
         //user decides to not create a cut, clear the temporary
-        TMP_CUT = null;
+        CM.tmp_cut = null;
     }else if( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
-        SHIFT_DOWN = false;
-    }else if( isAlpha(e.code) && !CTRL_DOWN && e.code != "KeyR" && !PROOF_MODE){
+        UM.is_shift_down = false;
+    }else if( isAlpha(e.code) && !UM.is_ctrl_down && e.code != "KeyR" && !UM.is_proof_mode){
         addSymbol( new Symbol(e.code[3]) );
     }else if( e.code === "Delete"){
         deleteObjectUnderMouse();
     }
 
-    SHIFT_DOWN = CTRL_DOWN = false;
+    UM.is_shift_down = UM.is_ctrl_down = false;
     function isAlpha(tgt){
         if ( tgt.length != 4 )
             return false;
@@ -168,12 +183,14 @@ function onKeyUp(e){
 * Toggles the different modes in VL, fired by onclick event
 */
 function toggleMode(){
-    PROOF_MODE = !PROOF_MODE;
+    let UM = UserInputManager.getInstance();
+    UM.is_proof_mode = !UM.is_proof_mode;
+
     let tgt = document.getElementById("toggle_mode");
 
-    tgt.innerHTML = PROOF_MODE ? "Proof Mode" : "Transform Mode";
-    tgt.className = "btn btn-" + (PROOF_MODE ? "proof" : "transform");
-    localStorage.setItem("proof_mode", (PROOF_MODE ? "active" : "inactive") );
+    tgt.innerHTML = UM.is_proof_mode ? "Proof Mode" : "Transform Mode";
+    tgt.className = "btn btn-" + (UM.is_proof_mode ? "proof" : "transform");
+    localStorage.setItem("proof_mode", (UM.is_proof_mode ? "active" : "inactive") );
 
     toggleInsertButton();
 }
@@ -181,12 +198,13 @@ function toggleMode(){
 
 function toggleInsertButton(){
     let tgt = document.getElementById("insert-btn");
-    tgt.style.display = PROOF_MODE ? "block" : "none";
+    tgt.style.display = UserInputManager.getInstance().is_proof_mode ? "block" : "none";
 }
 
 
 function deleteObjectUnderMouse(){
-    if(!IS_OVER_OBJ){
+    let UM = UserInputManager.getInstance();
+    if(!UM.is_over_obj){
         return;
     }
 
@@ -202,12 +220,13 @@ function deleteObjectUnderMouse(){
 
     let CM = CanvasManager.getInstance();
 
-    if( MOUSE_OVER_OBJ instanceof Symbol ){
-        removeFromList(MOUSE_OVER_OBJ, CM.getSyms());
+    if( UM.obj_under_mouse instanceof Symbol ){
+        removeFromList(UM.obj_under_mouse, CM.getSyms());
     }else{
-        removeFromList(MOUSE_OVER_OBJ, CM.getCuts());
+        removeFromList(UM.obj_under_mouse, CM.getCuts());
     }
 
-    IS_OVER_OBJ = false;
-    MOUSE_OVER_OBJ = null;
+    UM.obj_under_mouse = null;
 }
+
+ 

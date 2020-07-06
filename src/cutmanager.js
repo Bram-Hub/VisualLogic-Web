@@ -112,7 +112,7 @@ class __CUT_MANAGER{
                 if( isWithinCut(s, c) ){
                     //add this to the innermost in this cut
                     s.level = c.level;
-                    getInnerMostCut(c).addChildSym(s);
+                    getInnerMostCutWithSymbol(c, s).addChildSym(s);
                 }
             }
         }

@@ -60,7 +60,7 @@ function getDeviceRatio () {
 function onResize() {
     C_WIDTH = window.innerWidth;
     C_HEIGHT = window.innerHeight;
-    MOUSE_POS = new Point(0,0);
+    UserInputManager.getInstance().mouse_pos = new Point(0,0);
 
     let CM = CanvasManager.getInstance();
     fixBlur(

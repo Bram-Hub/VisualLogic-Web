@@ -33,6 +33,8 @@ class Cut{
 
 
     update(){
+        let UM = UserInputManager.getInstance();
+
         this.is_mouse_over = isMouseOverCut(this);
         this.is_mouse_in = isMouseInCut(this);
         this.is_mouse_in_border = isMouseInBorder(this);
@@ -43,12 +45,12 @@ class Cut{
         }
 
         if (this.is_mouse_over){
-            MOUSE_OVER_OBJ = this;
+            UM.obj_under_mouse = this;
         }
 
         for(var x of this.child_cuts){
             if ( x.is_mouse_over ){
-                MOUSE_OVER_OBJ = x;
+                UM.obj_under_mouse = x;
             }
         }
 
@@ -56,8 +58,9 @@ class Cut{
 
 
     updatePos( new_pos, root = true ){
-        let dx = new_pos.x - LAST_MOUSE_POS.x;
-        let dy = new_pos.y - LAST_MOUSE_POS.y;
+        let UM = UserInputManager.getInstance();
+        let dx = new_pos.x - UM.last_mouse_pos.x;
+        let dy = new_pos.y - UM.last_mouse_pos.y;
 
         this.x += dx;
         this.y += dy;
@@ -73,8 +76,9 @@ class Cut{
                 child.updatePos(new_pos, false);
         }
 
+
         if ( root ){
-            LAST_MOUSE_POS = new_pos;
+            UM.last_mouse_pos = new_pos;
         }
     }
 
@@ -116,13 +120,14 @@ class Cut{
 */
 function drawCut(cut){
     let CONTEXT = CanvasManager.getInstance().getContext();
+    let UM = UserInputManager.getInstance();
 
     let border_rad = 5;
 
     if ( cut.rad_x < border_rad*2 || cut.rad_y < border_rad*2 )
         return;
 
-    CONTEXT.strokeStyle = cut === MOUSE_OVER_OBJ ? 'blue' : 'black';
+    CONTEXT.strokeStyle = cut === UM.obj_under_mouse ? 'blue' : 'black';
     CONTEXT.lineWidth = cut.border_rad;
 
     CONTEXT.beginPath();
@@ -135,7 +140,7 @@ function drawCut(cut){
 
     CONTEXT.save();
     CONTEXT.globalAlpha = 0.7;
-    CONTEXT.fillStyle = cut === MOUSE_OVER_OBJ ? '#DCDCDC' : inner_style;
+    CONTEXT.fillStyle = cut === UM.obj_under_mouse ? '#DCDCDC' : inner_style;
     CONTEXT.beginPath();
     CONTEXT.ellipse(cut.x, cut.y, 
                     cut.rad_x - cut.border_rad, 
@@ -158,7 +163,10 @@ class CutBorder{
 * @param {Cut} cut
 */
 function isMouseOverCut(cut){
-    return isWithinEllipse(MOUSE_POS, cut.x, cut.y, cut.rad_x , cut.rad_y );
+    return isWithinEllipse(
+        UserInputManager.getInstance().mouse_pos, 
+        cut.x, cut.y, cut.rad_x , cut.rad_y 
+    );
 }
 
 /**
@@ -167,7 +175,12 @@ function isMouseOverCut(cut){
 * @param {Cut} cut
 */
 function isMouseInCut(cut){
-    return isWithinEllipse(MOUSE_POS, cut.x, cut.y, cut.rad_x - cut.border_rad , cut.rad_y - cut.border_rad);
+    return isWithinEllipse(
+        UserInputManager.getInstance().mouse_pos,  
+        cut.x, cut.y, 
+        cut.rad_x - cut.border_rad , 
+        cut.rad_y - cut.border_rad
+    );
 }
 
 /**
@@ -183,7 +196,7 @@ function updateCursor(cut){
     //depending on what quardrant we're in, update the cursor 
     //if we're on the border to indicate resizing
 
-    let v = new Vector(MOUSE_POS, cut.center);
+    let v = new Vector(UserInputManager.getInstance().mouse_pos, cut.center);
     let a = v.angle_degrees;
 
     let ptr = "pointer";
@@ -202,30 +215,33 @@ function updateCursor(cut){
     document.getElementById("canvas").style.cursor = ptr; 
 }
 
-var TMP_ORIGIN;
 function drawTemporaryCut(pos){
-    if ( TMP_CUT === null ){
-        TMP_ORIGIN = pos;
-        TMP_CUT = new Cut(TMP_ORIGIN);
-        TMP_CUT.rad_x = 1;
-        TMP_CUT.rad_y = 1;
+    let CM = CanvasManager.getInstance();
+    if ( CM.tmp_cut === null ){
+        CM.tmp_origin = pos;
+        CM.tmp_cut = new Cut(CM.tmp_origin);
+        CM.tmp_cut.rad_x = 1;
+        CM.tmp_cut.rad_y = 1;
     }
 
-    let v = new Vector(TMP_ORIGIN, pos);
-    drawVector(v);
+    let v = new Vector(CM.tmp_origin, pos);
 
-    TMP_CUT.rad_x = Math.abs(v.length);
-    TMP_CUT.rad_y = Math.abs(v.height);
+    if ( DEBUG ){
+        drawVector(v);
+    }
 
-    TMP_CUT.x = TMP_ORIGIN.x + v.length/4;
-    TMP_CUT.y = TMP_ORIGIN.y + v.height/4;
+    CM.tmp_cut.rad_x = Math.abs(v.length);
+    CM.tmp_cut.rad_y = Math.abs(v.height);
 
-    let CONTEXT = CanvasManager.getInstance().getContext();
+    CM.tmp_cut.x = CM.tmp_origin.x + v.length/4;
+    CM.tmp_cut.y = CM.tmp_origin.y + v.height/4;
 
-    CONTEXT.save();
-    CONTEXT.globalAlpha = 0.5;
-    drawCut(TMP_CUT);
-    CONTEXT.restore();
+    let context = CM.getContext();
+
+    context.save();
+    context.globalAlpha = 0.5;
+    drawCut(CM.tmp_cut);
+    context.restore();
 }
 
 
@@ -234,6 +250,13 @@ function resetCenter(cut){
 }
 
 
+/**
+* check if an object within a cut
+* 
+* @param {Cut|Symbol} a
+* @param {Cut}
+* @returns {Boolean}
+*/
 function isWithinCut(a,b){
     return isWithinEllipse(
         a.center, 
@@ -246,9 +269,14 @@ function isWithinCut(a,b){
 }
 
 
+/**
+* Gets the innermost cut thats being mouse'd over
+* @param {Cut} cut
+* @returns {Cut}
+*/
 function getInnerMostCut(cut){
     inner_most = null;
-    for ( x of cut.child_cuts ){
+    for (let x of cut.child_cuts ){
         if ( x.is_mouse_over ){
             inner_most = x;
         }
@@ -258,7 +286,31 @@ function getInnerMostCut(cut){
 }
 
 
-//TODO remove;
+/**
+* Given a symbol & root cut find the innermost cut 
+* we can place that symbol under
+*
+* @param {Cut} cut
+* @param {Symbol} sym
+* @returns {Cut}
+*/
+function getInnerMostCutWithSymbol(cut, sym){
+    inner_most = null;
+
+    for(let x of cut.child_cuts){
+        if( isWithinCut(sym, x) ){
+            inner_most = getInnerMostCutWithSymbol(x, sym);
+        }
+    }
+
+    return inner_most === null ? cut : inner_most;
+}
+
+
+/**
+* @param {Cut} cut
+* @returns {Cut}
+*/
 function mouseOverInnerMost(cut){
     return getInnerMostCut(cut);
 }
