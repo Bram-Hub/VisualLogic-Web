@@ -1,15 +1,13 @@
 
-var M_HEIGHT, M_WIDTH,
-    REQUEST;
 
 function loadMini(){
     let CM = CanvasManager.getInstance();
     CM.is_mini_open = true;
 
-    M_HEIGHT = CM.MiniCanvas.clientHeight; 
-    M_WIDTH = CM.MiniCanvas.clientWidth;
+    CM.m_width = CM.MiniCanvas.clientWidth;
+    CM.m_height = CM.MiniCanvas.clientHeight;
 
-    fixBlur(CM.MiniCanvas, CM.MiniContext, M_WIDTH, M_HEIGHT);
+    fixBlur(CM.MiniCanvas, CM.MiniContext, CM.m_width, CM.m_height);
     renderMiniCanvas();
 }
 
@@ -20,7 +18,7 @@ function toggleMiniRenderer(){
 
     if(container.style.display != "none"){
         container.style.display = "none";
-        cancelAnimationFrame(REQUEST);
+        cancelAnimationFrame(CM.animationRequest);
         CM.is_mini_open = false;
     }else{
         container.style.display = "block";
@@ -42,8 +40,10 @@ function toggleMiniRenderer(){
 //main application loop
 function renderMiniCanvas(){
     let CM = CanvasManager.getInstance();
-    renderGrid(CM.MiniContext, M_WIDTH, M_HEIGHT, 25);
-    updateUserInput();
+    let UM = UserInputManager.getInstance();
+
+    renderGrid(CM.MiniContext, CM.m_width, CM.m_height, 25);
+    UM.update();
 
 
     if( DEBUG ){
@@ -62,8 +62,7 @@ function renderMiniCanvas(){
 
 
         if ( c.is_mouse_over ){
-            MOUSE_OVER_OBJ = c;
-            IS_OVER_OBJ = true;
+            UM.obj_under_mouse = c;
         }
 
     }
@@ -79,8 +78,7 @@ function renderMiniCanvas(){
 
 
         if ( s.is_mouse_over ){
-            MOUSE_OVER_OBJ = s;
-            IS_OVER_OBJ = true;
+            UM.obj_under_mouse = s;
         }
     }
 
@@ -93,18 +91,18 @@ function renderMiniCanvas(){
         drawSymbol(s);
     }
 
-    //we realeased the mouse and a temporary cut exists, now create it
-    if ( !(TMP_CUT === null) && !IS_MOUSE_DOWN ){
-        addCut(TMP_CUT);
+    //we released the mouse and a temporary cut exists, now create it
+    if ( !(CM.tmp_cut === null) && !UM.is_mouse_down ){
+        addCut(CM.tmp_cut);
     }
 
 
-    if ( IS_MOUSE_DOWN && SHIFT_DOWN && !PROOF_MODE ){
-        drawTemporaryCut(MOUSE_POS);
+    if ( UM.is_mouse_down && UM.is_shift_down && !UM.is_proof_mode ){
+        drawTemporaryCut(UM.mouse_pos);
     }else{
-        TMP_CUT = null;
-        TMP_ORIGIN = null;
+        CM.tmp_cut = null;
+        CM.tmp_origin = null;
     }
 
-    REQUEST = requestAnimationFrame(renderMiniCanvas);
+    CM.animationRequest = requestAnimationFrame(renderMiniCanvas);
 }

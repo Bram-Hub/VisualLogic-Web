@@ -1,8 +1,10 @@
-var CONTEXT,
-    C_WIDTH, C_HEIGHT,
-    MOUSE_POS, CAMERA,
-    TMP_CUT = null, DEBUG = true;
+var C_WIDTH, C_HEIGHT
+    DEBUG = true;
 
+/**
+* Entry Point of the program
+* Init application and begin main render loop
+*/
 function main(){
     //initialize application
     let canvas = document.getElementById("canvas");
@@ -12,22 +14,21 @@ function main(){
     }
 
     let mini_canvas = document.getElementById("mini-canvas");
-
     if ( !mini_canvas || !mini_canvas.getContext("2d")){
         alert("Failed to initialized mini canvas element");
         return;
     }
 
     CanvasManager.init(canvas, mini_canvas);
-    CanvasManager.getInstance().Canvas.focus();
+    canvas.focus();
 
     //initialze the canvas dimensions
     onResize();
     window.addEventListener("resize", onResize);
 
-    CAMERA = new Camera();
+    //init user input
+    UserInputManager.getInstance();
 
-    initUserInput();
     renderLoop();
 
     //load default mode
@@ -44,13 +45,12 @@ function main(){
 //main application loop
 function renderLoop(){
     let CM = CanvasManager.getInstance();
-    let CONTEXT = CM.Context;
+    let UM = UserInputManager.getInstance();
 
-    renderGrid(CONTEXT, C_WIDTH, C_HEIGHT);
-    updateUserInput();
+    renderGrid(CM.Context, C_WIDTH, C_HEIGHT);
+    UM.update();
 
-    IS_OVER_OBJ = false;
-    MOUSE_OVER_OBJ = null;
+    UM.obj_under_mouse = null;
 
     if( DEBUG ){
         document.getElementById("debug").innerHTML = "";
@@ -68,8 +68,7 @@ function renderLoop(){
 
 
         if ( c.is_mouse_over ){
-            MOUSE_OVER_OBJ = c;
-            IS_OVER_OBJ = true;
+            UM.obj_under_mouse = c;
         }
 
     }
@@ -85,8 +84,7 @@ function renderLoop(){
 
 
         if ( s.is_mouse_over ){
-            MOUSE_OVER_OBJ = s;
-            IS_OVER_OBJ = true;
+            UM.obj_under_mouse = s;
         }
     }
 
@@ -99,26 +97,26 @@ function renderLoop(){
         drawSymbol(s);
     }
 
-    //we realeased the mouse and a temporary cut exists, now create it
-    if ( !(TMP_CUT === null) && !IS_MOUSE_DOWN ){
-        CM.addCut(TMP_CUT);
+    //we released the mouse and a temporary cut exists, now create it
+    if ( !(CM.tmp_cut === null) && !UM.is_mouse_down ){
+        CM.addCut(CM.tmp_cut);
     }
 
-    if ( IS_MOUSE_DOWN && SHIFT_DOWN && !PROOF_MODE ){
-        drawTemporaryCut(MOUSE_POS);
+    if ( UM.is_mouse_down && UM.is_shift_down && !UM.is_proof_mode ){
+        drawTemporaryCut(UM.mouse_pos);
     }else{
-        TMP_CUT = null;
-        TMP_ORIGIN = null;
+        CM.tmp_cut = null;
+        CM.tmp_origin = null;
     }
 
-    if (CURRENT_OBJ){
-        document.getElementById("debug").innerHTML += "<br>Current : " + CURRENT_OBJ.toString();
+    if (UM.current_obj && DEBUG){
+        document.getElementById("debug").innerHTML += "<br>Current : " + UM.current_obj.toString();
     }
 
     if ( DEBUG )
         drawDistancesOfCuts();  
 
-    requestAnimationFrame(renderLoop);
+    CM.animationRequest = requestAnimationFrame(renderLoop);
 }
 
 
@@ -131,7 +129,7 @@ function getRandomString(){
     window.crypto.getRandomValues(array);
 
     let ret = '';
-    for (var i = 0; i < array.length; i++) {
+    for (let i = 0; i < array.length; i++) {
         ret += array[i].toString();
     }
 

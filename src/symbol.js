@@ -9,9 +9,12 @@ class Symbol{
     * @param {String} The charactor representing the symbol
     */
     constructor(letter){
+
+        let UM = UserInputManager.getInstance();
+
         this.letter = letter;
-        this.x = MOUSE_POS.x;
-        this.y = MOUSE_POS.y;
+        this.x = UM.mouse_pos.x;
+        this.y = UM.mouse_pos.y;
 
         this.real_x = this.x - 25;
         this.real_y = this.y + 25;
@@ -27,14 +30,17 @@ class Symbol{
     }
 
     update(){
+        let UM = UserInputManager.getInstance();
         this.is_mouse_over = isMouseOverSym(this);
-        if (this.is_mouse_over)
-            MOUSE_OVER_OBJ = this;
+        if (this.is_mouse_over){
+            UM.obj_under_mouse = this;
+        }
     }
 
     updatePos( new_pos, root = true ){
-        let dx = new_pos.x - LAST_MOUSE_POS.x;
-        let dy = new_pos.y - LAST_MOUSE_POS.y;
+        let UM = UserInputManager.getInstance(); 
+        let dx = new_pos.x - UM.last_mouse_pos.x;
+        let dy = new_pos.y - UM.last_mouse_pos.y;
 
         this.x += dx;
         this.y += dy;
@@ -45,7 +51,7 @@ class Symbol{
         this.center = new Point(this.real_x, this.real_y);
 
         if ( root ){
-            LAST_MOUSE_POS = new_pos;
+            UserInputManager.getInstance().last_mouse_pos = new_pos;
         }
     }
 
@@ -53,6 +59,7 @@ class Symbol{
         return this.id;
     }
 }
+
 
 function addSymbol(sym){
     let CM = CanvasManager.getInstance();
@@ -69,7 +76,6 @@ function addSymbol(sym){
 function drawSymbol(sym){
 
     let context = CanvasManager.getInstance().getContext();
-
     context.fillStyle = sym.is_mouse_over ? "blue" : "black";
     context.font = "italic 70px Times New Roman";
 
@@ -83,6 +89,16 @@ function drawSymbol(sym){
 }
 
 
+/**
+* is the mouse over a symbol
+* 
+* @param {Symbol} sym - symbol to check
+* @returns {Boolean}
+*/
 function isMouseOverSym(sym){
-    return isPointWithinRect(MOUSE_POS, sym.x - 25, sym.y - 25, sym.width, sym.height);
+    return isPointWithinRect(
+        UserInputManager.getInstance().mouse_pos, 
+        sym.x - 25, sym.y - 25, 
+        sym.width, sym.height
+    );
 }

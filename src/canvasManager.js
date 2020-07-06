@@ -42,6 +42,13 @@ class __CANVAS_MANAGER{
 
         this.Context = this.Canvas.getContext("2d");
         this.MiniContext = this.MiniCanvas.getContext("2d");
+
+        this.animationRequest = null;
+        this.m_width ;
+        this.m_height ;
+
+        this.tmp_cut = null;
+        this.tmp_origin = null;
     }   
 
     /**
