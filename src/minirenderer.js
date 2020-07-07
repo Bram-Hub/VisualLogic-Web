@@ -1,4 +1,9 @@
-
+import {CanvasManager} from './canvasManager.js';
+import {fixBlur, renderGrid} from './renderer.js';
+import {UserInputManager, toggleMode} from './userInput.js';
+import {drawTemporaryCut, drawCut} from './cut.js';
+import {drawSymbol} from './symbol.js';
+import {DEBUG} from './main.js';
 
 function loadMini(){
     let CM = CanvasManager.getInstance();
@@ -105,4 +110,9 @@ function renderMiniCanvas(){
     }
 
     CM.animationRequest = requestAnimationFrame(renderMiniCanvas);
+}
+
+
+export {
+    toggleMiniRenderer
 }

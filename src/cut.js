@@ -1,3 +1,10 @@
+import {CanvasManager} from './canvasManager.js';
+import {UserInputManager} from './userInput.js';
+import {getRandomString, DEBUG} from './main.js';
+import {Point} from './lib/point.js';
+import {getEllipseArea, isWithinEllipse, isWithinTollerance} from './lib/math.js';
+import {Vector, drawVector} from './lib/vector.js';
+
 /** @typedef { import('./lib/point.js').Point } Point */
 
 /**
@@ -102,8 +109,8 @@ class Cut{
 
 
     /**
-    * adds a new child symbol to this cut, checks if unique
-    * @param {Symbol} new_child - sym to add
+    * adds a new child symbolic to this cut, checks if unique
+    * @param {Symbolic} new_child - sym to add
     */
     addChildSym(new_child){
         if( this.child_syms.includes(new_child) ){
@@ -111,6 +118,10 @@ class Cut{
         }
 
         this.child_syms.push(new_child);
+    }
+
+    resetCenter(){
+        this.center = new Point(this.x,this.y);
     }
 }
 
@@ -136,7 +147,7 @@ function drawCut(cut){
     CONTEXT.stroke();
     //now draw inner cut
 
-    inner_style = cut.level % 2 == 0 ? "white" : "#A9A9A9";
+    let inner_style = cut.level % 2 == 0 ? "white" : "#A9A9A9";
 
     CONTEXT.save();
     CONTEXT.globalAlpha = 0.7;
@@ -245,15 +256,10 @@ function drawTemporaryCut(pos){
 }
 
 
-function resetCenter(cut){
-    cut.center = new Point(cut.x,cut.y);
-}
-
-
 /**
 * check if an object within a cut
 * 
-* @param {Cut|Symbol} a
+* @param {Cut|Symbolic} a
 * @param {Cut}
 * @returns {Boolean}
 */
@@ -275,7 +281,7 @@ function isWithinCut(a,b){
 * @returns {Cut}
 */
 function getInnerMostCut(cut){
-    inner_most = null;
+    let inner_most = null;
     for (let x of cut.child_cuts ){
         if ( x.is_mouse_over ){
             inner_most = x;
@@ -287,15 +293,15 @@ function getInnerMostCut(cut){
 
 
 /**
-* Given a symbol & root cut find the innermost cut 
-* we can place that symbol under
+* Given a symbolic & root cut find the innermost cut 
+* we can place that symbolic under
 *
 * @param {Cut} cut
-* @param {Symbol} sym
+* @param {Symbolic} sym
 * @returns {Cut}
 */
 function getInnerMostCutWithSymbol(cut, sym){
-    inner_most = null;
+    let inner_most = null;
 
     for(let x of cut.child_cuts){
         if( isWithinCut(sym, x) ){
@@ -313,4 +319,14 @@ function getInnerMostCutWithSymbol(cut, sym){
 */
 function mouseOverInnerMost(cut){
     return getInnerMostCut(cut);
+}
+
+
+export{
+    drawTemporaryCut,
+    drawCut,
+    Cut,
+    mouseOverInnerMost,
+    isWithinCut,
+    getInnerMostCutWithSymbol
 }

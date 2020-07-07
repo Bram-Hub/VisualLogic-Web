@@ -1,3 +1,4 @@
+import {Point} from './point.js';
 /** @typedef { import('./point.js').Point } Point */
 
 /**
@@ -99,4 +100,27 @@ function transformPoint(p, ratio){
 
 	//divide by ratio?
     return new Point(m[0]/ratio,m[1]/ratio);
+}
+
+
+/**
+* gets the distance between two points
+* @param {Point} p1 
+* @param {Point} p2
+*/
+function getDistance(p1,p2){
+	let a = Math.pow( p2.x - p1.x,2 );
+	let b = Math.pow( p2.y - p1.y,2 );
+
+	return Math.sqrt( a + b );
+}
+
+export {
+	transformPoint,
+	getEllipseArea,
+	isWithinEllipse,
+	isWithinTollerance,
+	getEllipseArea,
+	getDistance,
+	isPointWithinRect
 }

@@ -1,9 +1,17 @@
+import {CanvasManager} from './canvasManager.js';
+import {UserInputManager, toggleMode} from './userInput.js';
+import {Point} from './lib/point.js';
+import {getRandomString} from './main.js';
+import {CutManager} from './cutmanager.js';
+import {isPointWithinRect} from './lib/math.js';
+import {DEBUG} from './main.js';
 /** @typedef { import('./lib/point.js').Point } Point */
 
 /**
 * A symbol represents a boolean variable in the sheet of assertion
+* Called symbolic since Symbol reserved by JS 
 */
-class Symbol{
+class Symbolic{
     /**
     * @constructor 
     * @param {String} The charactor representing the symbol
@@ -101,4 +109,11 @@ function isMouseOverSym(sym){
         sym.x - 25, sym.y - 25, 
         sym.width, sym.height
     );
+}
+
+
+export {
+    Symbolic,
+    drawSymbol,
+    addSymbol
 }

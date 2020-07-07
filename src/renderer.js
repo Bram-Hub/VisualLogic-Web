@@ -1,4 +1,6 @@
-
+import {CanvasManager} from './canvasManager.js';
+import {UserInputManager} from './userInput.js';
+import {Point} from './lib/point.js';
 
 /**
 * Draws the background grid, this also acts as a method
@@ -40,12 +42,12 @@ function renderGrid(context, width, height, line_width = 50){
 */
 function getDeviceRatio () {
   let CONTEXT = CanvasManager.getInstance().Context;
-    dpr = window.devicePixelRatio || 1,
-    bsr = CONTEXT.webkitBackingStorePixelRatio ||
-          CONTEXT.mozBackingStorePixelRatio ||
-          CONTEXT.msBackingStorePixelRatio ||
-          CONTEXT.oBackingStorePixelRatio ||
-          CONTEXT.backingStorePixelRatio || 1;
+  let dpr = window.devicePixelRatio || 1,
+      bsr = CONTEXT.webkitBackingStorePixelRatio ||
+            CONTEXT.mozBackingStorePixelRatio ||
+            CONTEXT.msBackingStorePixelRatio ||
+            CONTEXT.oBackingStorePixelRatio ||
+            CONTEXT.backingStorePixelRatio || 1;
 
     return dpr / bsr;
 }
@@ -58,21 +60,22 @@ function getDeviceRatio () {
 * corrects the canvas and resets the mouse pointer
 */
 function onResize() {
-    C_WIDTH = window.innerWidth;
-    C_HEIGHT = window.innerHeight;
+    let CM = CanvasManager.getInstance();
+    CM.c_width = window.innerWidth;
+    CM.c_height = window.innerHeight;
     UserInputManager.getInstance().mouse_pos = new Point(0,0);
 
-    let CM = CanvasManager.getInstance();
     fixBlur(
         CM.Canvas, 
         CM.Context, 
-        C_WIDTH, C_HEIGHT
+        CM.c_width, 
+        CM.c_height
     );
 }
 
 
 function fixBlur(canvas, context, width, height){
-    ratio = getDeviceRatio();
+    let ratio = getDeviceRatio();
     canvas.width = width * ratio;
     canvas.height = height * ratio;
     canvas.style.width = width + "px";
@@ -85,4 +88,12 @@ function fixBlur(canvas, context, width, height){
       0 0 1
     ]
     */
+}
+
+
+export {
+    onResize,
+    renderGrid,
+    getDeviceRatio,
+    fixBlur
 }

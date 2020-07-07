@@ -1,7 +1,7 @@
-
+import {CutManager} from './cutmanager.js';
 /** Handles object being drawn on the canvas or mini renderer */
 
-var CanvasManager = (function(){
+export var CanvasManager = (function(){
     var instance = null;
 
     function createInstance(canvas, mini_canvas) {
@@ -44,8 +44,10 @@ class __CANVAS_MANAGER{
         this.MiniContext = this.MiniCanvas.getContext("2d");
 
         this.animationRequest = null;
-        this.m_width ;
-        this.m_height ;
+        this.m_width;
+        this.m_height;
+        this.c_width;
+        this.c_height;
 
         this.tmp_cut = null;
         this.tmp_origin = null;
@@ -67,7 +69,7 @@ class __CANVAS_MANAGER{
     * @param {Cut} cut
     */
     addCut(cut){
-        resetCenter(cut);
+        cut.resetCenter();
         cut.update();
         CutManager.getInstance().addObj(cut);
 

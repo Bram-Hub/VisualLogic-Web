@@ -1,10 +1,20 @@
-var C_WIDTH, C_HEIGHT
-    DEBUG = true;
+import {CanvasManager} from './canvasManager.js';
+import {onResize, renderGrid} from './renderer.js';
+import {UserInputManager, toggleMode} from './userInput.js';
+import {drawDistancesOfCuts} from './cutmanager.js';
+import {drawTemporaryCut, drawCut} from './cut.js';
+import {drawSymbol} from './symbol.js';
+
+var DEBUG = true;
 
 /**
 * Entry Point of the program
 * Init application and begin main render loop
 */
+
+window.onload = main;
+
+
 function main(){
     //initialize application
     let canvas = document.getElementById("canvas");
@@ -47,7 +57,7 @@ function renderLoop(){
     let CM = CanvasManager.getInstance();
     let UM = UserInputManager.getInstance();
 
-    renderGrid(CM.Context, C_WIDTH, C_HEIGHT);
+    renderGrid(CM.Context, CM.c_width, CM.c_height);
     UM.update();
 
     UM.obj_under_mouse = null;
@@ -134,4 +144,9 @@ function getRandomString(){
     }
 
     return ret;
+}
+
+export {
+    getRandomString,
+    DEBUG
 }
