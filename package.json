@@ -1,0 +1,24 @@
+{
+  "name": "visual_logic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "serve": "npx serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shailpatels/VisualLogic-Web.git"
+  },
+  "author": "Shail Patel",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/shailpatels/VisualLogic-Web/issues"
+  },
+  "homepage": "https://github.com/shailpatels/VisualLogic-Web#readme",
+  "devDependencies": {
+    "jest": "^26.1.0",
+    "serve": "^11.3.2"
+  }
+}

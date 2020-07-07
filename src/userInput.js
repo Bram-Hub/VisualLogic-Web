@@ -1,3 +1,11 @@
+import {CanvasManager} from './canvasManager.js';
+import {Point} from './lib/point.js';
+import {transformPoint} from './lib/math.js';
+import {getDeviceRatio} from './renderer.js';
+import {CutManager} from './cutmanager.js';
+import {Cut, mouseOverInnerMost} from './cut.js';
+import {addSymbol, Symbolic} from './symbol.js';
+import {toggleMiniRenderer} from './minirenderer.js';
 
 var UserInputManager = (function(){
     var instance = null;
@@ -47,7 +55,10 @@ class __USER_INPUT_MANAGER{
 
         this.current_obj = null;
         this.obj_under_mouse = false;
-        this.is_over_obj = this.obj_under_mouse === null;
+
+        document.getElementById("toggle_mode").addEventListener('click', toggleMode);
+        document.getElementById("insert-btn").addEventListener('click', toggleMiniRenderer);
+        document.getElementById("exit-mini").addEventListener('click', toggleMiniRenderer);
 
     }
 
@@ -162,7 +173,7 @@ function onKeyUp(e){
     }else if( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
         UM.is_shift_down = false;
     }else if( isAlpha(e.code) && !UM.is_ctrl_down && e.code != "KeyR" && !UM.is_proof_mode){
-        addSymbol( new Symbol(e.code[3]) );
+        addSymbol( new Symbolic(e.code[3]) );
     }else if( e.code === "Delete"){
         deleteObjectUnderMouse();
     }
@@ -204,7 +215,7 @@ function toggleInsertButton(){
 
 function deleteObjectUnderMouse(){
     let UM = UserInputManager.getInstance();
-    if(!UM.is_over_obj){
+    if(UM.obj_under_mouse === null){
         return;
     }
 
@@ -220,7 +231,7 @@ function deleteObjectUnderMouse(){
 
     let CM = CanvasManager.getInstance();
 
-    if( UM.obj_under_mouse instanceof Symbol ){
+    if( UM.obj_under_mouse instanceof Symbolic ){
         removeFromList(UM.obj_under_mouse, CM.getSyms());
     }else{
         removeFromList(UM.obj_under_mouse, CM.getCuts());
@@ -230,3 +241,7 @@ function deleteObjectUnderMouse(){
 }
 
  
+export {
+    UserInputManager,
+    toggleMode
+}

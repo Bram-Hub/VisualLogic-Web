@@ -1,3 +1,5 @@
+import {getDistance} from './math.js';
+import {CanvasManager} from '../canvasManager.js';
 /** @typedef { import('./lib/point.js').Point } Point */
 
 
@@ -40,4 +42,10 @@ function drawVector(v){
     CONTEXT.moveTo(v.start.x, v.start.y);
     CONTEXT.lineTo(v.end.x,v.end.y);
     CONTEXT.stroke();
+}
+
+
+export {
+    Vector,
+    drawVector
 }

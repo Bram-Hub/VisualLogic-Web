@@ -2,34 +2,38 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<script type="text/javascript" src="src/main.js"></script>
-	<script type="text/javascript" src="src/renderer.js"></script>
-	<script type="text/javascript" src="src/cut.js"></script>
-	<script type="text/javascript" src="src/userInput.js"></script>
-	<script type="text/javascript" src="src/camera.js"></script>
-	<script type="text/javascript" src="src/cutmanager.js"></script>
-	<script type="text/javascript" src="src/symbol.js"></script>
-	<script type="text/javascript" src="src/minirenderer.js"></script>
-	<script type="text/javascript" src="src/canvasManager.js"></script>
+	<script type="module" src="src/main.js"></script>
+	<script type="module" src="src/renderer.js"></script>
+	<script type="module" src="src/cut.js"></script>
+	<script type="module" src="src/userInput.js"></script>
+	<script type="module" src="src/camera.js"></script>
+	<script type="module" src="src/cutmanager.js"></script>
+	<script type="module" src="src/symbol.js"></script>
+	<script type="module" src="src/minirenderer.js"></script>
+	<script type="module" src="src/canvasManager.js"></script>
 
-	<script type="text/javascript" src="src/lib/math.js"></script>
-	<script type="text/javascript" src="src/lib/point.js"></script>
-	<script type="text/javascript" src="src/lib/vector.js"></script>
+	<script type="module" src="src/lib/math.js"></script>
+	<script type="module" src="src/lib/point.js"></script>
+	<script type="module" src="src/lib/vector.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="index.css">
 </head>
 
 <p id="debug" style="position: absolute;z-index: 999;"></p>
-<button onclick="toggleMode()" id = "toggle_mode" class = "btn btn-transform">Transform Mode</button>
-<button onclick="toggleMiniRenderer()" id="insert-btn" class="btn">Insert</button>
 
-<body onload="main();">
+<body>
 	<canvas id="canvas" width="100%"></canvas>
+
+	<button id = "toggle_mode" class = "btn btn-transform">Transform Mode</button>
+
+	<button id="insert-btn" class="btn">Insert</button>
+
+
 </body>
 
 <div id="mini-renderer" style="display: none;">
 	<canvas id="mini-canvas"></canvas>
-	<button onclick="toggleMiniRenderer()" class="btn" id="exit-mini">Exit</button>
+	<button class="btn" id="exit-mini">Exit</button>
 	<button class="btn" id="insert-graph">Insert</button>
 </div>
 </html>
