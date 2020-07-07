@@ -12,7 +12,9 @@ var DEBUG = true;
 * Init application and begin main render loop
 */
 
-window.onload = main;
+if( typeof window !== "undefined" ){
+    window.onload = main;
+}
 
 
 function main(){
@@ -136,7 +138,14 @@ function renderLoop(){
 */
 function getRandomString(){
     var array = new Uint32Array(2);
-    window.crypto.getRandomValues(array);
+
+    if (typeof window.crypto !== "undefined"){
+        window.crypto.getRandomValues(array);
+    }else{
+        for(let i = 0; i < array.length; i++){
+            array[i] = Math.floor(Math.random() * Math.floor(500));
+        }
+    }
 
     let ret = '';
     for (let i = 0; i < array.length; i++) {
