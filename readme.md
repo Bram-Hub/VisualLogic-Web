@@ -19,7 +19,7 @@ npm install
 **Viewing the application locally**
 
 ```bash
-npm run-script serve
+npx serve
 ```
 
 The above command will start a local server, copy the URL the project is locally hosted at and view the application in a web browser.
