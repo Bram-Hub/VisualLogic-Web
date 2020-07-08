@@ -74,8 +74,14 @@ function renderLoop(){
         //cutSelectionControl(c);
 
         if ( c.is_mouse_over && DEBUG ){
+
+            let childs = "<br>Child Cuts : <br>";
+            for(let x of c.child_cuts){
+                childs += c.toString();
+            }
+
             document.getElementById("debug").innerHTML = c.toString() + 
-            "<br>Level : " + c.level.toString();
+            "<br>Level : " + c.level.toString() + childs;
         }
 
 

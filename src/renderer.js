@@ -91,9 +91,21 @@ function fixBlur(canvas, context, width, height){
 }
 
 
+/**
+* TODO
+* Display a message to the error
+*
+* @param {String} message - what to show
+* @param {Boolean} error true if error/warning, false if notice/success 
+*/
+function displayMessage(message, error){
+    console.log(message)
+}
+
 export {
     onResize,
     renderGrid,
     getDeviceRatio,
-    fixBlur
+    fixBlur,
+    displayMessage
 }

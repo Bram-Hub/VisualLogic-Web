@@ -6,6 +6,7 @@ import {CutManager} from './cutmanager.js';
 import {Cut, mouseOverInnerMost} from './cut.js';
 import {addSymbol, Symbolic} from './symbol.js';
 import {toggleMiniRenderer} from './minirenderer.js';
+import {doubleCut} from './logic/rules.js';
 
 var UserInputManager = (function(){
     var instance = null;
@@ -59,6 +60,12 @@ class __USER_INPUT_MANAGER{
         document.getElementById("toggle_mode").addEventListener('click', toggleMode);
         document.getElementById("insert-btn").addEventListener('click', toggleMiniRenderer);
         document.getElementById("exit-mini").addEventListener('click', toggleMiniRenderer);
+        document.getElementById("dbl-cut-btn").addEventListener('click', () => {
+            doubleCut(CM.proof_selected);
+        });
+
+
+        document.getElementById("dbl-cut-btn").disabled = true;
 
     }
 
@@ -104,7 +111,8 @@ function onMouseDown(e){
     UM.last_mouse_pos = getRealMousePos(e);
     UM.is_mouse_down = true;
 
-    if ( UM.is_shift_down ){
+
+    if ( UM.is_shift_down && !UM.is_proof_mode ){
         return;
     }
 
@@ -125,6 +133,18 @@ function onMouseDown(e){
     }else{
         isOverAnything(CM.cuts);
         isOverAnything(CM.syms);
+    }
+
+
+    //need to perform check after we check if anything under mouse
+    if(UM.is_shift_down && UM.is_proof_mode && UM.current_obj !== null){
+        UM.current_obj.is_proof_selected = !UM.current_obj.is_proof_selected;
+        if(UM.current_obj.is_proof_selected){
+            CM.addProofSelected(UM.current_obj);
+        }else{
+            //remove from list otherwise
+            CM.removeProofSelected(UM.current_obj);
+        }
     }
 
 }
@@ -174,7 +194,7 @@ function onKeyUp(e){
         UM.is_shift_down = false;
     }else if( isAlpha(e.code) && !UM.is_ctrl_down && e.code != "KeyR" && !UM.is_proof_mode){
         addSymbol( new Symbolic(e.code[3]) );
-    }else if( e.code === "Delete"){
+    }else if( e.code === "Delete" && !UM.is_proof_mode ){
         deleteObjectUnderMouse();
     }
 
@@ -195,6 +215,11 @@ function onKeyUp(e){
 */
 function toggleMode(){
     let UM = UserInputManager.getInstance();
+    let CM = CanvasManager.getInstance();
+    if(CM.is_mini_open){
+        return;
+    }
+
     UM.is_proof_mode = !UM.is_proof_mode;
 
     let tgt = document.getElementById("toggle_mode");
@@ -203,23 +228,18 @@ function toggleMode(){
     tgt.className = "btn btn-" + (UM.is_proof_mode ? "proof" : "transform");
     localStorage.setItem("proof_mode", (UM.is_proof_mode ? "active" : "inactive") );
 
-    toggleInsertButton();
+    toggleProofPanel();
 }
 
 
-function toggleInsertButton(){
-    let tgt = document.getElementById("insert-btn");
+function toggleProofPanel(){
+    let tgt = document.getElementById("proof-panel");
     tgt.style.display = UserInputManager.getInstance().is_proof_mode ? "block" : "none";
 }
 
-
-function deleteObjectUnderMouse(){
-    let UM = UserInputManager.getInstance();
-    if(UM.obj_under_mouse === null){
-        return;
-    }
-
-
+//TODO move somwhere else & remove obj from child cuts 
+function deleteObject(obj){
+    let CM = CanvasManager.getInstance();
     function removeFromList(tgt, list){
         for(let i = 0; i < list.length; i++){
             if ( list[i].id === tgt.id ){
@@ -229,13 +249,23 @@ function deleteObjectUnderMouse(){
         }
     }
 
-    let CM = CanvasManager.getInstance();
-
-    if( UM.obj_under_mouse instanceof Symbolic ){
-        removeFromList(UM.obj_under_mouse, CM.getSyms());
+    if( obj instanceof Symbolic ){
+        removeFromList(obj, CM.getSyms());
     }else{
-        removeFromList(UM.obj_under_mouse, CM.getCuts());
+        removeFromList(obj, CM.getCuts());
     }
+
+    removeFromList(obj,CM.proof_selected);
+}
+
+function deleteObjectUnderMouse(){
+    let UM = UserInputManager.getInstance();
+    if(UM.obj_under_mouse === null){
+        return;
+    }
+
+
+    deleteObject(UM.obj_under_mouse);
 
     UM.obj_under_mouse = null;
 }
@@ -243,5 +273,6 @@ function deleteObjectUnderMouse(){
  
 export {
     UserInputManager,
-    toggleMode
+    toggleMode,
+    deleteObject
 }

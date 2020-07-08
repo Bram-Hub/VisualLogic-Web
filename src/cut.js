@@ -36,6 +36,8 @@ class Cut{
         this.level = 1;
 
         this.area = getEllipseArea(this.rad_x, this.rad_y);
+
+        this.is_proof_selected = false;
     }
 
 
@@ -123,6 +125,30 @@ class Cut{
     resetCenter(){
         this.center = new Point(this.x,this.y);
     }
+
+
+    /**
+    * Gets children that are only 1 level distant from this cut
+    * ignores nested child objects, result can include cuts or symbolics
+    *
+    * @returns {Array}
+    */
+    getChildren(){
+        let ret = [];
+        for(let x of this.child_cuts){
+            if(x.level === this.level + 1){
+                ret.push(x);
+            }
+        }
+
+        for(let x of this.child_syms){
+            if(x.level === this.level){
+                ret.push(x);
+            }
+        }
+
+        return ret;
+    }
 }
 
 
@@ -148,6 +174,10 @@ function drawCut(cut){
     //now draw inner cut
 
     let inner_style = cut.level % 2 == 0 ? "white" : "#A9A9A9";
+
+    if(cut.is_proof_selected){
+        inner_style = "green";
+    }
 
     CONTEXT.save();
     CONTEXT.globalAlpha = 0.7;

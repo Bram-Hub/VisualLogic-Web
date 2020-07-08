@@ -16,6 +16,8 @@
 	<script type="module" src="src/lib/point.js"></script>
 	<script type="module" src="src/lib/vector.js"></script>
 
+	<script type="module" src="src/logic/rules.js"></script>
+
 	<link rel="stylesheet" type="text/css" href="index.css">
 </head>
 
@@ -26,8 +28,19 @@
 
 	<button id = "toggle_mode" class = "btn btn-transform">Transform Mode</button>
 
-	<button id="insert-btn" class="btn">Insert</button>
-
+	<div id="proof-panel">
+		<p>Rules of inference</p>
+		<button id="insert-btn" class="btn">Insertion</button>
+		<br><br>
+		<button id="erasure-btn" class="btn">Erasure</button>
+		<hr>
+		<p>Rules of equivalence</p>
+		<button disabled="true" id="dbl-cut-btn" class="btn">Double Cut</button>
+		<br><br>
+		<button id="iteration-btn" class="btn">Iteration</button>
+		<br><br>
+		<button id="deiteration-btn" class="btn">Deiteration</button>
+	</div>
 
 </body>
 

@@ -51,6 +51,8 @@ class __CANVAS_MANAGER{
 
         this.tmp_cut = null;
         this.tmp_origin = null;
+
+        this.proof_selected = [];
     }   
 
     /**
@@ -91,6 +93,39 @@ class __CANVAS_MANAGER{
     */
     getSyms(){
         return this.is_mini_open ? this.s_syms : this.syms; 
+    }
+
+
+    /**
+    * Adds object to the list of proof selected
+    *
+    * @param {Cut|Symbolic} tgt
+    */
+    addProofSelected(tgt){
+        this.proof_selected.push(tgt);
+
+        if(this.proof_selected.length === 2){
+            document.getElementById("dbl-cut-btn").disabled = false;
+        }
+
+    }
+
+    /**
+    * Remove from the list of proof selected
+    * 
+    * @param {Cut|Symbolic} tgt
+    */
+    removeProofSelected(tgt){
+        for(let i = 0; i < this.proof_selected.length; i++){
+            if ( this.proof_selected[i].id === tgt.id ){
+                this.proof_selected.splice(i, 1);
+                break;
+            }
+        }
+
+        if(this.proof_selected.length !== 2){
+            document.getElementById("dbl-cut-btn").disabled = true;
+        }
     }
 
 }

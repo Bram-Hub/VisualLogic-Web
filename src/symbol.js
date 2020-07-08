@@ -35,6 +35,8 @@ class Symbolic{
 
         this.id = Date.now().toString() + getRandomString();
         this.level = 1;
+
+        this.is_proof_selected = false;
     }
 
     update(){
@@ -81,10 +83,21 @@ function addSymbol(sym){
     CutManager.getInstance().addObj(sym);
 }
 
+
+/**
+* Render a given symbol on whichever context is opened
+*
+* @param {Symbolic} sym
+*/
 function drawSymbol(sym){
 
     let context = CanvasManager.getInstance().getContext();
     context.fillStyle = sym.is_mouse_over ? "blue" : "black";
+
+    if(sym.is_proof_selected){
+        context.fillStyle = "green";
+    }
+
     context.font = "italic 70px Times New Roman";
 
     context.fillText(sym.letter, sym.real_x, sym.real_y); 
