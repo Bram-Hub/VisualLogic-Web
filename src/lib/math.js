@@ -117,7 +117,6 @@ function getDistance(p1,p2){
 
 export {
 	transformPoint,
-	getEllipseArea,
 	isWithinEllipse,
 	isWithinTollerance,
 	getEllipseArea,

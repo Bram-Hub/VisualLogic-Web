@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/main.js",
   "scripts": {
-    "test": "jest --coverage",
+    "test": "jest  --config jest.config.js --coverage",
     "serve": "npx serve"
   },
   "repository": {
@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/shailpatels/VisualLogic-Web#readme",
   "devDependencies": {
+    "esm": "^3.2.25",
     "jest": "^26.1.0",
+    "jest-esm-transformer": "^1.0.0",
     "serve": "^11.3.2"
   }
 }

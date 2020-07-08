@@ -70,7 +70,6 @@ class __CANVAS_MANAGER{
     */
     addCut(cut){
         cut.resetCenter();
-        cut.update();
         CutManager.getInstance().addObj(cut);
 
         let tgt = this.is_mini_open ? this.s_cuts : this.cuts;
