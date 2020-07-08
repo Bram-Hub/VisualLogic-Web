@@ -1,5 +1,7 @@
 # Visual Logic
 
+![VL CI](https://github.com/shailpatels/VisualLogic-Web/workflows/VL%20CI/badge.svg)
+
 ### Development
 
 Start by cloning the project, installing dependencies and then run the 
