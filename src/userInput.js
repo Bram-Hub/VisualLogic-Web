@@ -3,7 +3,7 @@ import {Point} from './lib/point.js';
 import {transformPoint} from './lib/math.js';
 import {getDeviceRatio} from './renderer.js';
 import {CutManager} from './cutmanager.js';
-import {Cut, mouseOverInnerMost} from './cut.js';
+import {Cut, CutBorder, mouseOverInnerMost} from './cut.js';
 import {addSymbol, Symbolic} from './symbol.js';
 import {toggleMiniRenderer} from './minirenderer.js';
 import {doubleCut} from './logic/rules.js';
@@ -119,12 +119,23 @@ function onMouseDown(e){
 
     function isOverAnything(tgt_list){
         for(let x of tgt_list){
+            
+            if((x instanceof Cut) && (x.is_mouse_in_border || mouseOverInnerMost(x).is_mouse_in_border) ){
+                UM.current_obj = x.cut_border;
+                return;
+            }
+
+            if(x instanceof CutBorder){
+                UM.current_obj = x;
+                return;
+            }
+
             if(x.is_mouse_over){
                 UM.current_obj = (x instanceof Cut) ? mouseOverInnerMost(x) : x;
-                console.log(UM.current_obj);
-                break;
             }
         }
+
+
     }
 
 

@@ -2,7 +2,7 @@ import {CanvasManager} from './canvasManager.js';
 import {onResize, renderGrid} from './renderer.js';
 import {UserInputManager, toggleMode} from './userInput.js';
 import {drawDistancesOfCuts} from './cutmanager.js';
-import {drawTemporaryCut, drawCut} from './cut.js';
+import {drawTemporaryCut, drawCut, getInnerMostCut} from './cut.js';
 import {drawSymbol} from './symbol.js';
 
 var DEBUG = true;
@@ -71,13 +71,14 @@ function renderLoop(){
     for( let c of CM.cuts ){
         c.update();
 
+       // UM.obj_under_mouse = getInnerMostCut(c);
         //cutSelectionControl(c);
 
         if ( c.is_mouse_over && DEBUG ){
 
             let childs = "<br>Child Cuts : <br>";
             for(let x of c.child_cuts){
-                childs += c.toString();
+                childs += c.toString() + "<br>";
             }
 
             document.getElementById("debug").innerHTML = c.toString() + 
@@ -85,9 +86,9 @@ function renderLoop(){
         }
 
 
-        if ( c.is_mouse_over ){
-            UM.obj_under_mouse = c;
-        }
+        // if ( c.is_mouse_over ){
+        //     UM.obj_under_mouse = c;
+        // }
 
     }
 

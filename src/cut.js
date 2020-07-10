@@ -25,9 +25,10 @@ class Cut{
         this.rad_y = 100 + this.border_rad;
 
         this.is_mouse_over = false;
+        this.is_mouse_in_border = false;
         this.center = new Point(this.x,this.y);
 
-        this.cut_border = new CutBorder(pos);
+        this.cut_border = new CutBorder(this);
 
         this.child_cuts = [];
         this.child_syms = [];
@@ -42,6 +43,7 @@ class Cut{
     update(){
         let UM = UserInputManager.getInstance();
 
+        this.is_mouse_in_border = isMouseInBorder(this);
         this.is_mouse_over = isMouseInCut(this);
         this.area = getEllipseArea(this.rad_x, this.rad_y);
 
@@ -161,6 +163,11 @@ function drawCut(cut){
         return;
 
     CONTEXT.strokeStyle = cut === UM.obj_under_mouse ? 'blue' : 'black';
+
+    if(cut.is_mouse_in_border){
+        CONTEXT.strokeStyle = "lightblue";
+    }
+
     CONTEXT.lineWidth = cut.border_rad;
 
     CONTEXT.beginPath();
@@ -174,6 +181,7 @@ function drawCut(cut){
 
     let inner_style = cut.level % 2 == 0 ? "white" : "#A9A9A9";
 
+    //TODO fix appearence
     if(cut.is_proof_selected){
         inner_style = "green";
     }
@@ -193,17 +201,46 @@ function drawCut(cut){
     CONTEXT.lineWidth = 1;
 }
 
+
 class CutBorder{
-    constructor(_parent){
-        this.parent = _parent;
-        this.is_mouse_over = false;
+    constructor(par){
+        this.parent = par;
+        this.id = Date.now().toString() + getRandomString();
+
+        this.scale_speed = 1;
     }
 
     update(){
-        this.is_mouse_over = isMouseInBorder(this.parent);
+
     }
-    updatePos(){
-        //TODO
+
+    updatePos(new_pos){
+        let UM = UserInputManager.getInstance();
+        let dx = (new_pos.x - UM.last_mouse_pos.x) * this.scale_speed;
+        let dy = (new_pos.y - UM.last_mouse_pos.y) * this.scale_speed;
+
+        let v = new Vector(UM.last_mouse_pos, new_pos);
+        let c = this.parent;
+
+        if( new_pos.leftOf(c) ){
+            dx = -dx;
+        }
+
+        if( new_pos.above(c) ){
+            dy = -dy;
+        }
+
+        this.parent.rad_x += dx;
+        this.parent.rad_y += dy;
+
+
+        this.center = new Point(this.x,this.y);
+
+        UM.last_mouse_pos = new_pos;
+    }
+
+    toString(){
+        return this.id;
     }
 }
 
@@ -234,11 +271,11 @@ function isMouseInCut(cut){
 }
 
 /**
-* return true if the mouse is within the border of a cut
+* return true if the mouse is only within the border of a cut
 * @param {Cut} cut 
 */
 function isMouseInBorder(cut){
-    return !cut.is_mouse_in && cut.is_mouse_over;
+    return !isMouseInCut(cut) && isMouseOverCut(cut);
 }
 
 
@@ -263,6 +300,7 @@ function updateCursor(cut){
     }
 
     document.getElementById("canvas").style.cursor = ptr; 
+    return ptr;
 }
 
 function drawTemporaryCut(pos){
@@ -323,7 +361,7 @@ function getInnerMostCut(cut){
     let inner_most = null;
     for (let x of cut.child_cuts ){
         if ( x.is_mouse_over ){
-            inner_most = x;
+            inner_most = getInnerMostCut(x);
         }
     }
 
@@ -367,5 +405,7 @@ export{
     Cut,
     mouseOverInnerMost,
     isWithinCut,
-    getInnerMostCutWithSymbol
+    getInnerMostCutWithSymbol,
+    CutBorder,
+    getInnerMostCut
 }
