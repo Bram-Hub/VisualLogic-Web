@@ -121,6 +121,7 @@ function onMouseDown(e){
         for(let x of tgt_list){
             if(x.is_mouse_over){
                 UM.current_obj = (x instanceof Cut) ? mouseOverInnerMost(x) : x;
+                console.log(UM.current_obj);
                 break;
             }
         }
@@ -254,6 +255,13 @@ function deleteObject(obj){
     }else{
         removeFromList(obj, CM.getCuts());
     }
+
+
+    for(let x of CM.getCuts()){
+        removeFromList(obj, x.child_cuts);
+        removeFromList(obj, x.child_syms);
+    }
+
 
     removeFromList(obj,CM.proof_selected);
 }

@@ -25,11 +25,9 @@ class Cut{
         this.rad_y = 100 + this.border_rad;
 
         this.is_mouse_over = false;
-        this.is_mouse_in = false;
-        this.is_mouse_in_border = false;
         this.center = new Point(this.x,this.y);
 
-        this.cut_border = new CutBorder();
+        this.cut_border = new CutBorder(pos);
 
         this.child_cuts = [];
         this.child_syms = [];
@@ -44,9 +42,7 @@ class Cut{
     update(){
         let UM = UserInputManager.getInstance();
 
-        this.is_mouse_over = isMouseOverCut(this);
-        this.is_mouse_in = isMouseInCut(this);
-        this.is_mouse_in_border = isMouseInBorder(this);
+        this.is_mouse_over = isMouseInCut(this);
         this.area = getEllipseArea(this.rad_x, this.rad_y);
 
         if ( this.is_mouse_in_border ){
@@ -168,8 +164,11 @@ function drawCut(cut){
     CONTEXT.lineWidth = cut.border_rad;
 
     CONTEXT.beginPath();
-    CONTEXT.ellipse(cut.x, cut.y, cut.rad_x - cut.border_rad/2, 
-                    cut.rad_y - cut.border_rad/2, 0, 0, 2 * Math.PI);
+    CONTEXT.ellipse(
+        cut.x, cut.y, cut.rad_x - cut.border_rad/2, 
+        cut.rad_y - cut.border_rad/2, 0, 0, 2 * Math.PI
+    );
+
     CONTEXT.stroke();
     //now draw inner cut
 
@@ -183,9 +182,11 @@ function drawCut(cut){
     CONTEXT.globalAlpha = 0.7;
     CONTEXT.fillStyle = cut === UM.obj_under_mouse ? '#DCDCDC' : inner_style;
     CONTEXT.beginPath();
-    CONTEXT.ellipse(cut.x, cut.y, 
-                    cut.rad_x - cut.border_rad, 
-                    cut.rad_y - cut.border_rad, 0, 0, 2 * Math.PI);
+    CONTEXT.ellipse(
+        cut.x, cut.y, 
+        cut.rad_x - cut.border_rad, 
+        cut.rad_y - cut.border_rad, 0, 0, 2 * Math.PI
+    );
 
     CONTEXT.fill();
     CONTEXT.restore();
@@ -193,6 +194,14 @@ function drawCut(cut){
 }
 
 class CutBorder{
+    constructor(_parent){
+        this.parent = _parent;
+        this.is_mouse_over = false;
+    }
+
+    update(){
+        this.is_mouse_over = isMouseInBorder(this.parent);
+    }
     updatePos(){
         //TODO
     }

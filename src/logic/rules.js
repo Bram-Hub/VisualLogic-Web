@@ -10,7 +10,7 @@ function doubleCut(elements){
 
 	for( let x of elements ){
 		if( !(x instanceof Cut) ){
-			displayMessage("Can only perform a double cut with cut object");
+			displayMessage("Can only perform a double cut with a cut");
 			return;
 		}
 	}
