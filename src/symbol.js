@@ -33,7 +33,7 @@ class Symbolic{
         this.center = new Point(this.real_x, this.real_y);
         this.is_mouse_over = false;
 
-        this.id = Date.now().toString() + getRandomString();
+        this.id = getRandomString();
         this.level = 1;
 
         this.is_proof_selected = false;

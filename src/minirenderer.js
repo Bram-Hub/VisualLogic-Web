@@ -19,14 +19,17 @@ function loadMini(){
 
 function toggleMiniRenderer(){
     let container = document.getElementById("mini-renderer");
+    let UM = UserInputManager.getInstance();
     let CM = CanvasManager.getInstance();
 
     if(container.style.display != "none"){
         container.style.display = "none";
         cancelAnimationFrame(CM.animationRequest);
         CM.is_mini_open = false;
+        toggleMode();
     }else{
         container.style.display = "block";
+        toggleMode();
         loadMini();
         CM.is_mini_open = true;
     }
@@ -35,10 +38,6 @@ function toggleMiniRenderer(){
     btn.style.left = CM.MiniCanvas.offsetLeft + "px";
     btn = document.getElementById("insert-graph");
     btn.style.left = (CM.MiniCanvas.offsetLeft + 60) + "px";
-
-
-    //once insert has been hit - change back to transform mode
-    toggleMode();
 }
 
 

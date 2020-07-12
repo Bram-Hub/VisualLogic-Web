@@ -8,7 +8,7 @@ import {Vector, drawVector} from './lib/vector.js';
 /** @typedef { import('./lib/point.js').Point } Point */
 
 /**
-*A cut represents a negation in the sheet of assertion
+* A cut represents a negation in the sheet of assertion
 */
 class Cut{
     /**
@@ -18,7 +18,7 @@ class Cut{
     constructor(pos){
         this.x = pos.x;
         this.y = pos.y;
-        this.id = Date.now().toString() + getRandomString();
+        this.id = getRandomString();
 
         this.border_rad = 10;
         this.rad_x = 100 + this.border_rad;
@@ -44,10 +44,10 @@ class Cut{
         let UM = UserInputManager.getInstance();
 
         this.is_mouse_in_border = isMouseInBorder(this);
-        this.is_mouse_over = isMouseInCut(this);
+        this.is_mouse_over = UM.is_proof_mode ? isMouseOverCut(this) : isMouseInCut(this) ;
         this.area = getEllipseArea(this.rad_x, this.rad_y);
 
-        if ( this.is_mouse_in_border ){
+        if ( this.is_mouse_in_border && !UM.is_proof_mode ){
             updateCursor(this);
         }
 
@@ -64,6 +64,12 @@ class Cut{
     }
 
 
+    /**
+    * update this cut and its child cuts & syms
+    * 
+    * @param {Point} new_pos - the new position to move to
+    * @param {Boolean|Null} root - is this the root obj to move or false if getting moved by another
+    */
     updatePos( new_pos, root = true ){
         let UM = UserInputManager.getInstance();
         let dx = new_pos.x - UM.last_mouse_pos.x;
@@ -74,13 +80,15 @@ class Cut{
         this.center = new Point(this.x,this.y);
 
         for ( let child of this.child_cuts ){
-            if ( child.level === this.level + 1)
+            if ( child.level === this.level + 1){
                 child.updatePos( new_pos, false);
+            }
         }
 
         for ( let child of this.child_syms ){
-            if ( child.level === this.level )
+            if ( child.level === this.level ){
                 child.updatePos(new_pos, false);
+            }
         }
 
 
@@ -159,12 +167,13 @@ function drawCut(cut){
 
     let border_rad = 5;
 
-    if ( cut.rad_x < border_rad*2 || cut.rad_y < border_rad*2 )
+    if ( cut.rad_x < border_rad*2 || cut.rad_y < border_rad*2 ){
         return;
+    }
 
     CONTEXT.strokeStyle = cut === UM.obj_under_mouse ? 'blue' : 'black';
 
-    if(cut.is_mouse_in_border){
+    if(cut.is_mouse_in_border && !UM.is_proof_mode){
         CONTEXT.strokeStyle = "lightblue";
     }
 
@@ -205,13 +214,13 @@ function drawCut(cut){
 class CutBorder{
     constructor(par){
         this.parent = par;
-        this.id = Date.now().toString() + getRandomString();
+        this.id = getRandomString();
 
         this.scale_speed = 1;
     }
 
     update(){
-
+        //pass
     }
 
     updatePos(new_pos){
@@ -222,11 +231,11 @@ class CutBorder{
         let v = new Vector(UM.last_mouse_pos, new_pos);
         let c = this.parent;
 
-        if( new_pos.leftOf(c) ){
+        if( new_pos.leftOf(c.center) ){
             dx = -dx;
         }
 
-        if( new_pos.above(c) ){
+        if( new_pos.above(c.center) ){
             dy = -dy;
         }
 

@@ -148,9 +148,36 @@ function onMouseDown(e){
     }
 
 
+    //if CTRL + SHIFT select whatever gets clicked and all its children as 
+    //proof selected
+    if(UM.is_shift_down && UM.is_ctrl_down && UM.current_obj !== null){
+        for(let x of CM.getAllObjects(UM.current_obj)){
+            x.is_proof_selected = !x.is_proof_selected;
+            if(x.is_proof_selected){
+                CM.addProofSelected(x);
+            }else{
+                //remove from list otherwise
+                CM.removeProofSelected(x);
+            }
+        }
+
+
+        UM.current_obj.is_proof_selected = !UM.current_obj.is_proof_selected;
+        if(UM.current_obj.is_proof_selected){
+            CM.addProofSelected(UM.current_obj);
+        }else{
+            //remove from list otherwise
+            CM.removeProofSelected(UM.current_obj);
+        }
+
+        return;
+    }
+
+
     //need to perform check after we check if anything under mouse
     if(UM.is_shift_down && UM.is_proof_mode && UM.current_obj !== null){
         UM.current_obj.is_proof_selected = !UM.current_obj.is_proof_selected;
+
         if(UM.current_obj.is_proof_selected){
             CM.addProofSelected(UM.current_obj);
         }else{
@@ -228,6 +255,7 @@ function onKeyUp(e){
 function toggleMode(){
     let UM = UserInputManager.getInstance();
     let CM = CanvasManager.getInstance();
+
     if(CM.is_mini_open){
         return;
     }

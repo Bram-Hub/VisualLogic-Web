@@ -1,4 +1,12 @@
 import {CutManager} from './cutmanager.js';
+import {Symbolic} from './symbol.js';
+
+/**
+* @typedef { import('./cut.js').Cut } Cut 
+* @typedef { import('./symbol.js').Symbolic } Symbolic
+*/
+
+
 /** Handles object being drawn on the canvas or mini renderer */
 
 export var CanvasManager = (function(){
@@ -89,7 +97,7 @@ class __CANVAS_MANAGER{
     
 
     /**
-    * @returns {Symbol[]} returns either cuts or s_cuts based on if mini_renderer is open
+    * @returns {Symbolic[]} returns either cuts or s_cuts based on if mini_renderer is open
     */
     getSyms(){
         return this.is_mini_open ? this.s_syms : this.syms; 
@@ -106,6 +114,8 @@ class __CANVAS_MANAGER{
 
         if(this.proof_selected.length === 2){
             document.getElementById("dbl-cut-btn").disabled = false;
+        }else{
+            document.getElementById("dbl-cut-btn").disabled = true;
         }
 
     }
@@ -125,7 +135,39 @@ class __CANVAS_MANAGER{
 
         if(this.proof_selected.length !== 2){
             document.getElementById("dbl-cut-btn").disabled = true;
+        }else{
+            document.getElementById("dbl-cut-btn").disabled = false;
         }
+    }
+
+    /**
+    * get all objects from a root obj
+    * if not given a root will select everything from the assertion plane (i.e everything)
+    *
+    * @param {Cut|Symbolic|null} root
+    */ 
+    getAllObjects(root = null){
+        let ret = [];
+        if(root === null){
+            return this.cuts.concat(this.syms);
+        }
+
+
+        if(root instanceof Symbolic){
+            //symbols have no children
+            return [];
+        }
+
+        for(let x of root.child_cuts){
+            ret.push(x);
+            ret.concat(this.getAllObjects(x));
+        }
+
+        for(let x of root.child_syms){
+            ret.push(x);
+        }
+
+        return ret;
     }
 
 }

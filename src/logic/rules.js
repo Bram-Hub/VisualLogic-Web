@@ -2,6 +2,14 @@ import {displayMessage} from '../renderer.js';
 import {Cut} from '../cut.js';
 import {deleteObject} from '../userInput.js';
 
+/**
+* Given two cuts seperated by 1 level, erase both of them
+* Similar to a double negation
+*
+* Performs checks if double check possible
+*
+* @param {Array} elements - list of objects to try and perform a double cut
+*/
 function doubleCut(elements){
 	if(elements.length !== 2){
 		displayMessage("Can only double cut with 2 cuts selected");
@@ -39,8 +47,17 @@ function doubleCut(elements){
 
 	displayMessage("Double cut complete");
 
- }
+}
 
+
+/**
+* Insertion a subgraph at an odd level
+*/
+
+
+/**
+* Erasure erase any graph from even level
+*/
 
 export{
 	doubleCut

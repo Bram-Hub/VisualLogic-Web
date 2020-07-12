@@ -5,7 +5,7 @@ import {drawDistancesOfCuts} from './cutmanager.js';
 import {drawTemporaryCut, drawCut, getInnerMostCut} from './cut.js';
 import {drawSymbol} from './symbol.js';
 
-var DEBUG = true;
+var DEBUG = false;
 
 /**
 * Entry Point of the program
@@ -34,7 +34,7 @@ function main(){
     CanvasManager.init(canvas, mini_canvas);
     canvas.focus();
 
-    //initialze the canvas dimensions
+    //initi the canvas dimensions
     onResize();
     window.addEventListener("resize", onResize);
 
@@ -61,7 +61,6 @@ function renderLoop(){
 
     renderGrid(CM.Context, CM.c_width, CM.c_height);
     UM.update();
-
     UM.obj_under_mouse = null;
 
     if( DEBUG ){
@@ -69,41 +68,24 @@ function renderLoop(){
     }
 
     for( let c of CM.cuts ){
+        //check if this cut is under the mouse
         c.update();
 
-       // UM.obj_under_mouse = getInnerMostCut(c);
-        //cutSelectionControl(c);
-
         if ( c.is_mouse_over && DEBUG ){
-
             let childs = "<br>Child Cuts : <br>";
             for(let x of c.child_cuts){
-                childs += c.toString() + "<br>";
+                childs += x.toString() + "<br>";
             }
-
-            document.getElementById("debug").innerHTML = c.toString() + 
-            "<br>Level : " + c.level.toString() + childs;
+            document.getElementById("debug").innerHTML = c.toString() +"<br>Level : " + c.level.toString() + childs;
         }
-
-
-        // if ( c.is_mouse_over ){
-        //     UM.obj_under_mouse = c;
-        // }
-
     }
 
     for ( let s of CM.syms ){
         s.update();
 
-        //symSelectionControl(s);
-
         if ( s.is_mouse_over && DEBUG ){
-            document.getElementById("debug").innerHTML = s.toString();
-        }
-
-
-        if ( s.is_mouse_over ){
-            UM.obj_under_mouse = s;
+            document.getElementById("debug").innerHTML = s.toString() +
+                "<br>Level : " + s.level.toString();
         }
     }
 
@@ -132,8 +114,9 @@ function renderLoop(){
         document.getElementById("debug").innerHTML += "<br>Current : " + UM.current_obj.toString();
     }
 
-    if ( DEBUG )
+    if ( DEBUG ){
         drawDistancesOfCuts();  
+    }
 
     CM.animationRequest = requestAnimationFrame(renderLoop);
 }
@@ -146,6 +129,7 @@ function renderLoop(){
 function getRandomString(){
     var array = new Uint32Array(2);
 
+    //TODO: find better way if window is not defined
     if (typeof window.crypto !== "undefined"){
         window.crypto.getRandomValues(array);
     }else{
