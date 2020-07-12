@@ -1,4 +1,4 @@
-import {displayMessage} from '../renderer.js';
+import {displaySuccess, displayError} from '../renderer.js';
 import {Cut} from '../cut.js';
 import {deleteObject} from '../userInput.js';
 
@@ -12,13 +12,13 @@ import {deleteObject} from '../userInput.js';
 */
 function doubleCut(elements){
 	if(elements.length !== 2){
-		displayMessage("Can only double cut with 2 cuts selected");
+		displayError("Can only double cut 2 immediate cuts");
 		return;
 	}
 
 	for( let x of elements ){
 		if( !(x instanceof Cut) ){
-			displayMessage("Can only perform a double cut with a cut");
+			displayError("Cannot perform double cut with a Symbol");
 			return;
 		}
 	}
@@ -36,7 +36,7 @@ function doubleCut(elements){
 
 	for(let x of larger.getChildren()){
 		if(x.id !== smaller.id){
-			displayMessage("Found sub graph between double cut targets");
+			displayError("Found sub graph between double cuts");
 			return;
 		}
 	}
@@ -45,7 +45,7 @@ function doubleCut(elements){
 	deleteObject(larger);
 	deleteObject(smaller);
 
-	displayMessage("Double cut complete");
+	displaySuccess("Double cut complete");
 
 }
 

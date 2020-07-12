@@ -91,15 +91,37 @@ function fixBlur(canvas, context, width, height){
 }
 
 
+function displayError(message){
+    displayMessage(message, true);
+}
+
+
+function displaySuccess(message){
+    displayMessage(message, false);
+}
+
 /**
-* TODO
 * Display a message to the error
 *
 * @param {String} message - what to show
 * @param {Boolean} error true if error/warning, false if notice/success 
 */
 function displayMessage(message, error){
-    console.log(message)
+    let f = error ? console.error : console.log;
+    f(message);
+
+    let msg_buf = document.getElementById("msg-buff");
+    let new_msg = document.createElement("div");
+
+    let clss = error ? "msg err" : "msg";
+
+    new_msg.setAttribute("class", clss);
+    new_msg.innerHTML = message;
+    msg_buf.appendChild(new_msg);
+
+    setTimeout(function(){ 
+        msg_buf.innerHTML = "";
+    }, 3000);
 }
 
 export {
@@ -107,5 +129,6 @@ export {
     renderGrid,
     getDeviceRatio,
     fixBlur,
-    displayMessage
+    displayError,
+    displaySuccess
 }

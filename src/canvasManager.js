@@ -111,13 +111,6 @@ class __CANVAS_MANAGER{
     */
     addProofSelected(tgt){
         this.proof_selected.push(tgt);
-
-        if(this.proof_selected.length === 2){
-            document.getElementById("dbl-cut-btn").disabled = false;
-        }else{
-            document.getElementById("dbl-cut-btn").disabled = true;
-        }
-
     }
 
     /**
@@ -131,12 +124,6 @@ class __CANVAS_MANAGER{
                 this.proof_selected.splice(i, 1);
                 break;
             }
-        }
-
-        if(this.proof_selected.length !== 2){
-            document.getElementById("dbl-cut-btn").disabled = true;
-        }else{
-            document.getElementById("dbl-cut-btn").disabled = false;
         }
     }
 

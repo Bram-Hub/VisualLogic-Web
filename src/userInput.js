@@ -155,9 +155,11 @@ function onMouseDown(e){
             x.is_proof_selected = !x.is_proof_selected;
             if(x.is_proof_selected){
                 CM.addProofSelected(x);
+                toggleDoubleCutButton();
             }else{
                 //remove from list otherwise
                 CM.removeProofSelected(x);
+                toggleDoubleCutButton();
             }
         }
 
@@ -165,9 +167,11 @@ function onMouseDown(e){
         UM.current_obj.is_proof_selected = !UM.current_obj.is_proof_selected;
         if(UM.current_obj.is_proof_selected){
             CM.addProofSelected(UM.current_obj);
+            toggleDoubleCutButton();
         }else{
             //remove from list otherwise
             CM.removeProofSelected(UM.current_obj);
+            toggleDoubleCutButton();
         }
 
         return;
@@ -180,9 +184,11 @@ function onMouseDown(e){
 
         if(UM.current_obj.is_proof_selected){
             CM.addProofSelected(UM.current_obj);
+            toggleDoubleCutButton();
         }else{
             //remove from list otherwise
             CM.removeProofSelected(UM.current_obj);
+            toggleDoubleCutButton();
         }
     }
 
@@ -322,4 +328,10 @@ export {
     UserInputManager,
     toggleMode,
     deleteObject
+}
+
+
+function toggleDoubleCutButton(){
+    let CM = CanvasManager.getInstance();
+    document.getElementById('dbl-cut-btn').disabled = CM.proof_selected.length === 2 ? false : true;
 }
