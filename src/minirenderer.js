@@ -57,8 +57,6 @@ function renderMiniCanvas(){
     for( let c of CM.s_cuts ){
         c.update();
 
-        //cutSelectionControl(c);
-
         if ( c.is_mouse_over && DEBUG ){
             document.getElementById("debug").innerHTML = c.toString() + 
             "<br>Level : " + c.level.toString();

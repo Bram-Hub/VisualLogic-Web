@@ -59,6 +59,10 @@ function doubleCut(elements){
 * Erasure erase any graph from even level
 */
 
+function erasure(subgraph){
+	throw 'TODO';
+}
+
 export{
 	doubleCut
 }

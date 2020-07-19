@@ -34,7 +34,7 @@ function main(){
     CanvasManager.init(canvas, mini_canvas);
     canvas.focus();
 
-    //initi the canvas dimensions
+    //init the canvas dimensions
     onResize();
     window.addEventListener("resize", onResize);
 

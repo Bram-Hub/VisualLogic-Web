@@ -2,6 +2,8 @@ import {CanvasManager} from './canvasManager.js';
 import {Vector, drawVector} from './lib/vector.js';
 import {isWithinCut, getInnerMostCutWithSymbol} from './cut.js';
 
+//TODO remove
+
 function drawDistancesOfCuts(){
     let CM = CanvasManager.getInstance();
 
