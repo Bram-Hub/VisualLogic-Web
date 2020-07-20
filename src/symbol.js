@@ -37,6 +37,8 @@ class Symbolic{
         this.level = 1;
 
         this.is_proof_selected = false;
+
+        this.area = this.width * this.height;
     }
 
     update(){
