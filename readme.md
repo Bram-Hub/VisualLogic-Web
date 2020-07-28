@@ -11,6 +11,7 @@ Dependencies are managed by `npm`, current the following packages are used:
 
 - [Jest](https://jestjs.io/) - used for testing
 - [serve](https://www.npmjs.com/package/serve) - used to run a local development server
+- [esm](https://www.npmjs.com/package/esm) - used to allow Jest to run with ES6 syntax
 
 **Installing dependencies**. From the root directory of the project run the command:
 
