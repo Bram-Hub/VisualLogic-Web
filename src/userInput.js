@@ -7,6 +7,7 @@ import {Cut, CutBorder, mouseOverInnerMost} from './cut.js';
 import {addSymbol, Symbolic} from './symbol.js';
 import {toggleMiniRenderer} from './minirenderer.js';
 import {doubleCut} from './logic/rules.js';
+import {Subgraph} from './subgraph.js';
 
 var UserInputManager = (function(){
     var instance = null;
@@ -61,7 +62,8 @@ class __USER_INPUT_MANAGER{
         document.getElementById("insert-btn").addEventListener('click', toggleMiniRenderer);
         document.getElementById("exit-mini").addEventListener('click', toggleMiniRenderer);
         document.getElementById("dbl-cut-btn").addEventListener('click', () => {
-            doubleCut(CM.proof_selected);
+            doubleCut( new Subgraph(CM.proof_selected) );
+            toggleDoubleCutButton();
         });
 
 

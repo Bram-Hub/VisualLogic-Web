@@ -89,7 +89,6 @@ function renderLoop(){
         }
     }
 
-
     for ( let c of CM.cuts ){
         drawCut(c);
     }

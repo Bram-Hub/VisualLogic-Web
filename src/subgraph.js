@@ -8,11 +8,11 @@ import {getRandomString} from '../src/main.js';
 class Subgraph{
 	/**
 	* @param {Array} parts
-	* @param {Cut|Symbol} root
+	* @param {Cut|Symbol|null} root
 	*/ 
-	constructor(parts, root){
+	constructor(parts, root = null){
 		this.elements = parts;
-		this.root = root;
+		this.root = root === null ? parts[0] : root;
 		this.id = getRandomString();
 		//map the elements by what level they're on
 
@@ -67,10 +67,8 @@ class Subgraph{
 	* @returns {String}
 	*/
 	toString(){
-		ret = ""
-		for(let x of this.elements){
-
-		}
+		throw "TODO";
+		return "";
 	}
 
 }
