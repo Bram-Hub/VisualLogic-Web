@@ -34,7 +34,7 @@ function main(){
     CanvasManager.init(canvas, mini_canvas);
     canvas.focus();
 
-    //initi the canvas dimensions
+    //init the canvas dimensions
     onResize();
     window.addEventListener("resize", onResize);
 
@@ -88,7 +88,6 @@ function renderLoop(){
                 "<br>Level : " + s.level.toString();
         }
     }
-
 
     for ( let c of CM.cuts ){
         drawCut(c);
