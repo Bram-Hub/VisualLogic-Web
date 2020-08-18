@@ -1,4 +1,5 @@
 import {displaySuccess, displayError} from '../renderer.js';
+import {CanvasManager} from '../canvasManager.js';
 import {Subgraph} from '../subgraph.js';
 import {deleteObject} from '../userInput.js';
 import {Cut} from '../cut.js';
@@ -56,11 +57,20 @@ function doubleCut(subgraph){
 
 /**
 * Insertion a subgraph at an odd level
+*
+* @param {Subgraph} subgraph
 */
+function insertion(subgraph){
+	let CM = CanvasManager.getInstance();
+
+	//is there enough room
+}
 
 
 /**
 * Erasure erase any graph from even level
+*
+* @param {Subgraph} subgraph
 */
 
 function erasure(subgraph){
@@ -68,5 +78,6 @@ function erasure(subgraph){
 }
 
 export{
-	doubleCut
+	doubleCut,
+	insertion
 }

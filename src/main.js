@@ -5,7 +5,7 @@ import {drawDistancesOfCuts} from './cutmanager.js';
 import {drawTemporaryCut, drawCut, getInnerMostCut} from './cut.js';
 import {drawSymbol} from './symbol.js';
 
-var DEBUG = false;
+var DEBUG = true;
 
 /**
 * Entry Point of the program
@@ -15,7 +15,6 @@ var DEBUG = false;
 if( typeof window !== "undefined" ){
     window.onload = main;
 }
-
 
 function main(){
     //initialize application

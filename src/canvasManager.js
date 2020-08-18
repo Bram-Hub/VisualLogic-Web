@@ -1,5 +1,6 @@
 import {CutManager} from './cutmanager.js';
 import {Symbolic} from './symbol.js';
+import {toggleProofButtons} from './userInput.js';
 
 /**
 * @typedef { import('./cut.js').Cut } Cut 
@@ -111,6 +112,7 @@ class __CANVAS_MANAGER{
     */
     addProofSelected(tgt){
         this.proof_selected.push(tgt);
+        toggleProofButtons();
     }
 
     /**
@@ -119,12 +121,11 @@ class __CANVAS_MANAGER{
     * @param {Cut|Symbolic} tgt
     */
     removeProofSelected(tgt){
-        for(let i = 0; i < this.proof_selected.length; i++){
-            if ( this.proof_selected[i].id === tgt.id ){
-                this.proof_selected.splice(i, 1);
-                break;
-            }
+        const index = this.proof_selected.indexOf(tgt);
+        if(index > -1){
+            this.proof_selected.splice(index,1);
         }
+        toggleProofButtons();
     }
 
     /**

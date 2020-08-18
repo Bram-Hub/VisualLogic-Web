@@ -6,7 +6,7 @@ import {CutManager} from './cutmanager.js';
 import {Cut, CutBorder, mouseOverInnerMost} from './cut.js';
 import {addSymbol, Symbolic} from './symbol.js';
 import {toggleMiniRenderer} from './minirenderer.js';
-import {doubleCut} from './logic/rules.js';
+import {doubleCut, insertion} from './logic/rules.js';
 import {Subgraph} from './subgraph.js';
 
 var UserInputManager = (function(){
@@ -65,10 +65,15 @@ class __USER_INPUT_MANAGER{
             doubleCut( new Subgraph(CM.proof_selected) );
             toggleDoubleCutButton();
         });
+        document.getElementById("insert-graph").addEventListener('click', () => {
+            insertion( new Subgraph( CM.s_cuts.concat(CM.s_syms) ) );
+        });
 
 
-        document.getElementById("dbl-cut-btn").disabled = true;
 
+        document.getElementById('dbl-cut-btn').disabled = true;
+        document.getElementById('insert-btn').disabled = true;
+        
     }
 
     update(){
@@ -157,11 +162,9 @@ function onMouseDown(e){
             x.is_proof_selected = !x.is_proof_selected;
             if(x.is_proof_selected){
                 CM.addProofSelected(x);
-                toggleDoubleCutButton();
             }else{
                 //remove from list otherwise
                 CM.removeProofSelected(x);
-                toggleDoubleCutButton();
             }
         }
 
@@ -169,11 +172,9 @@ function onMouseDown(e){
         UM.current_obj.is_proof_selected = !UM.current_obj.is_proof_selected;
         if(UM.current_obj.is_proof_selected){
             CM.addProofSelected(UM.current_obj);
-            toggleDoubleCutButton();
         }else{
             //remove from list otherwise
             CM.removeProofSelected(UM.current_obj);
-            toggleDoubleCutButton();
         }
 
         return;
@@ -186,11 +187,9 @@ function onMouseDown(e){
 
         if(UM.current_obj.is_proof_selected){
             CM.addProofSelected(UM.current_obj);
-            toggleDoubleCutButton();
         }else{
             //remove from list otherwise
             CM.removeProofSelected(UM.current_obj);
-            toggleDoubleCutButton();
         }
     }
 
@@ -234,7 +233,7 @@ function onKeyDown(e){
 function onKeyUp(e){
     let UM = UserInputManager.getInstance();
     let CM = CanvasManager.getInstance();
-    if ( e.keyCode === 27 ){
+    if ( e.code === "Escape" ){
         //user decides to not create a cut, clear the temporary
         CM.tmp_cut = null;
     }else if( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
@@ -325,15 +324,27 @@ function deleteObjectUnderMouse(){
     UM.obj_under_mouse = null;
 }
 
- 
-export {
-    UserInputManager,
-    toggleMode,
-    deleteObject
-}
-
 
 function toggleDoubleCutButton(){
     let CM = CanvasManager.getInstance();
-    document.getElementById('dbl-cut-btn').disabled = CM.proof_selected.length === 2 ? false : true;
+    document.getElementById('dbl-cut-btn').disabled = CM.proof_selected.length !== 2;
+}
+
+
+function toggleInsertionButton(){
+    let CM = CanvasManager.getInstance();
+    document.getElementById('insert-btn').disabled = CM.proof_selected.length !== 1;
+}
+
+function toggleProofButtons(){
+    toggleDoubleCutButton();
+    toggleInsertionButton();
+}
+
+
+export {
+    UserInputManager,
+    toggleMode,
+    deleteObject,
+    toggleProofButtons
 }
