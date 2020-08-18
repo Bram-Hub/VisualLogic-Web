@@ -1,7 +1,7 @@
 import {CanvasManager} from './canvasManager.js';
 import {Point} from './lib/point.js';
 import {transformPoint} from './lib/math.js';
-import {getDeviceRatio} from './renderer.js';
+import {getDeviceRatio, displayError} from './renderer.js';
 import {CutManager} from './cutmanager.js';
 import {Cut, CutBorder, mouseOverInnerMost} from './cut.js';
 import {addSymbol, Symbolic} from './symbol.js';
@@ -68,7 +68,8 @@ class __USER_INPUT_MANAGER{
         document.getElementById("insert-graph").addEventListener('click', () => {
             insertion( new Subgraph( CM.s_cuts.concat(CM.s_syms) ) );
         });
-
+        document.getElementById('iteration-btn').addEventListener('click', () => { displayError("not implemented") });
+        document.getElementById('deiteration-btn').addEventListener('click', () => { displayError("not implemented") });
 
 
         document.getElementById('dbl-cut-btn').disabled = true;
