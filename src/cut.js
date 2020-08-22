@@ -55,7 +55,7 @@ class Cut{
             UM.obj_under_mouse = this;
         }
 
-        for(var x of this.child_cuts){
+        for(let x of this.child_cuts){
             if ( x.is_mouse_over ){
                 UM.obj_under_mouse = x;
             }
@@ -155,6 +155,26 @@ class Cut{
 
         return ret;
     }
+
+
+    serialize(){
+        function replacer(key, value){
+            if(key === "cut_border"){
+                return value.serialize();
+            }else if(key === "child_syms" || key === "child_cuts"){
+                let r = [];
+                for(let x of value){
+                    r.push(x.id);
+                }
+
+                return r;
+            }else{
+                return value;
+            }
+        }
+
+        return JSON.stringify(this, replacer);
+    }
 }
 
 
@@ -250,6 +270,17 @@ class CutBorder{
 
     toString(){
         return this.id;
+    }
+
+    serialize(){
+        function replacer(key,value){
+            if(key === "parent"){
+                return value.id;
+            }else{
+                return value;
+            }
+        }
+        return JSON.stringify(this, replacer);
     }
 }
 

@@ -1,22 +1,22 @@
-import {CanvasManager} from './canvasManager.js';
+import {CanvasManager,saveState,loadState} from './canvasManager.js';
 import {onResize, renderGrid} from './renderer.js';
 import {UserInputManager, toggleMode} from './userInput.js';
 import {drawDistancesOfCuts} from './cutmanager.js';
 import {drawTemporaryCut, drawCut, getInnerMostCut} from './cut.js';
 import {drawSymbol} from './symbol.js';
 
-var DEBUG = true;
+var DEBUG = false;
+
+window.onbeforeunload = () => {
+    //save to browser before leaving
+    saveState("localStorage");
+}
 
 /**
 * Entry Point of the program
 * Init application and begin main render loop
 */
-
-if( typeof window !== "undefined" ){
-    window.onload = main;
-}
-
-function main(){
+window.onload = () => {
     //initialize application
     let canvas = document.getElementById("canvas");
     if ( !canvas || !canvas.getContext("2d")){
@@ -40,15 +40,21 @@ function main(){
     //init user input
     UserInputManager.getInstance();
 
-    renderLoop();
-
     //load default mode
     let mode = localStorage.getItem("proof_mode");
-    if(!mode){
+    if(!localStorage.getItem("proof_mode")){
         localStorage.setItem("proof_mode", "active");
     }else if(mode === "active"){
         toggleMode();
     }
+
+    //load previous data
+    if(localStorage.getItem("save-state")){
+        loadState("localStorage");
+    }
+
+    //start app
+    renderLoop();
 
 }
 

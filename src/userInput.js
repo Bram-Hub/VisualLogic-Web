@@ -4,7 +4,7 @@ import {transformPoint} from './lib/math.js';
 import {getDeviceRatio, displayError} from './renderer.js';
 import {CutManager} from './cutmanager.js';
 import {Cut, CutBorder, mouseOverInnerMost} from './cut.js';
-import {addSymbol, Symbolic} from './symbol.js';
+import {Symbolic} from './symbol.js';
 import {toggleMiniRenderer} from './minirenderer.js';
 import {doubleCut, insertion} from './logic/rules.js';
 import {Subgraph} from './subgraph.js';
@@ -240,7 +240,7 @@ function onKeyUp(e){
     }else if( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
         UM.is_shift_down = false;
     }else if( isAlpha(e.code) && !UM.is_ctrl_down && e.code != "KeyR" && !UM.is_proof_mode){
-        addSymbol( new Symbolic(e.code[3]) );
+        CM.addSymbol( new Symbolic(e.code[3], UM.mouse_pos ) );
     }else if( e.code === "Delete" && !UM.is_proof_mode ){
         deleteObjectUnderMouse();
     }

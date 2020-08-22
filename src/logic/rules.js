@@ -17,7 +17,7 @@ function doubleCut(subgraph){
 	const elements = subgraph.elements;
 
 	if(elements.length !== 2){
-		displayError("Can only double cut 2 immediate cuts");
+		displayError("Can only double cut between 2 immediate cuts");
 		return;
 	}
 

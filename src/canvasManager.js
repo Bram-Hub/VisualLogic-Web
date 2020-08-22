@@ -1,6 +1,8 @@
 import {CutManager} from './cutmanager.js';
 import {Symbolic} from './symbol.js';
 import {toggleProofButtons} from './userInput.js';
+import {Cut, CutBorder} from './cut.js';
+import {Point} from './lib/point.js';
 
 /**
 * @typedef { import('./cut.js').Cut } Cut 
@@ -62,6 +64,7 @@ class __CANVAS_MANAGER{
         this.tmp_origin = null;
 
         this.proof_selected = [];
+        this.id_map = {};
     }   
 
     /**
@@ -87,7 +90,26 @@ class __CANVAS_MANAGER{
         //keep the cuts list sorted from biggest area to smallest
         tgt.push(cut);
         tgt.sort((a,b) => (b.area - a.area));
+
+        CanvasManager.getInstance().id_map[cut.id] = cut;
     }
+
+
+    /**
+    * adds a new symbolic to either syms or scratch syms depending if
+    * the mini renderer is open
+    *
+    * @param {Symbolic} sym
+    */
+    addSymbol(sym){
+        let tgt = this.is_mini_open ? this.s_syms : this.syms;
+
+        tgt.push(sym);
+        CutManager.getInstance().addObj(sym);
+
+        CanvasManager.getInstance().id_map[sym.id] = sym;
+    }
+
 
     /**
     * @returns {Cut[]} returns either cuts or s_cuts based on if mini_renderer is open
@@ -158,4 +180,126 @@ class __CANVAS_MANAGER{
         return ret;
     }
 
+}
+
+
+/**
+* save the application to a tgt destination
+*
+* @param {String} tgt - can either be "localStorage" | "file" | "string"
+*/
+function saveState(tgt){
+    if(tgt !== "localStorage" && tgt !== "file" && tgt !== "string"){
+        return;
+    }
+
+    let CM = CanvasManager.getInstance();
+    let todo = [];
+
+    for(let x of CM.cuts){
+        todo.push( x.serialize() );
+    }
+
+    for(let x of CM.syms){
+        todo.push( x.serialize() );
+    }
+
+    let data = JSON.stringify(todo);
+
+    if(tgt === "string"){
+        return data;
+    }else if(tgt === "localStorage"){
+        localStorage.setItem('save-state', data);
+    }
+}
+
+
+/**
+* load the application from a src destination
+*
+* @param {String} tgt - can either be "localStorage" | "file" | "string"
+* @param {String|null} data - if src is string, data is the string to parse
+* @returns {Array} of objects built from save data
+*/
+function loadState(src, data = null){
+    if(src !== "localStorage" && src !== "file" && src !== "string"){
+        return;
+    }
+
+    let CM = CanvasManager.getInstance();
+
+    if(src === "localStorage"){
+        data = JSON.parse(localStorage.getItem('save-state'));
+    }else{
+        data = JSON.parse(data);
+    }
+
+    let ret = [];
+    for(let x of data){
+        let tmp = JSON.parse(x);
+
+        if(typeof tmp["border_rad"] === "number"){
+            //cut
+            let c = rebuildCut(tmp);
+            ret.push(c);
+            CM.addCut(c);
+        }else{
+            //symbolic
+            let s = rebuildSymbol(tmp);
+            ret.push(s);
+            CM.addSymbol(s);
+        }
+    }
+
+    //once all the cuts have been created swap the ids with the objs
+    for(let x of CM.cuts){
+        for(let i = 0 ; i < x.child_cuts; i++){
+            x.child_cuts[i] = CM.id_map[x.child_cuts[i]];
+        }
+
+        for(let i = 0 ; i < x.child_syms; i++){
+            x.child_syms[i] = CM.id_map[x.child_syms[i]];
+        }
+    }
+
+    return ret;
+}
+
+
+function rebuildCut(data){
+    let ret = new Cut(new Point(0,0));
+
+    for(let prop in data){
+        ret[prop] = data[prop];
+    }
+
+    let cb = new CutBorder(null);
+    let cb_data = JSON.parse(ret["cut_border"]);
+    for(let prop in cb_data){
+        cb[prop] = cb_data[prop];
+    }
+
+    cb.parent = ret;
+    ret.cut_border = cb;
+
+    return ret;    
+}
+
+
+function rebuildSymbol(data){
+    let ret = new Symbolic("", new Point(0,0) );
+
+    for(let prop in data){
+        ret[prop] = data[prop];
+    }
+
+    ret.center = new Point(data["center"]["x"], data["center"]["y"]);
+
+    return ret;
+}
+
+
+export{
+    saveState,
+    loadState
 }
