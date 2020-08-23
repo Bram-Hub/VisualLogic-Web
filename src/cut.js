@@ -4,6 +4,7 @@ import {getRandomString, DEBUG} from './main.js';
 import {Point} from './lib/point.js';
 import {getEllipseArea, isWithinEllipse, isWithinTollerance} from './lib/math.js';
 import {Vector, drawVector} from './lib/vector.js';
+import {renderProofTexture} from './renderer.js';
 
 /** @typedef { import('./lib/point.js').Point } Point */
 
@@ -201,23 +202,32 @@ function drawCut(cut){
 
     CONTEXT.beginPath();
     CONTEXT.ellipse(
-        cut.x, cut.y, cut.rad_x - cut.border_rad/2, 
-        cut.rad_y - cut.border_rad/2, 0, 0, 2 * Math.PI
+        cut.x, cut.y, 
+        cut.rad_x - cut.border_rad/2, 
+        cut.rad_y - cut.border_rad/2, 
+        0, 0, 2 * Math.PI
     );
 
     CONTEXT.stroke();
     //now draw inner cut
 
-    let inner_style = cut.level % 2 == 0 ? "white" : "#A9A9A9";
+    let inner_style = "#A9A9A9";
 
-    //TODO fix appearence
-    if(cut.is_proof_selected){
-        inner_style = "green";
+    if(cut.level % 2 === 0){
+        inner_style = "white";
+    }
+
+    if(cut === UM.obj_under_mouse){
+        inner_style = '#DCDCDC';
+    }
+
+    if(cut.is_proof_selected && UM.is_proof_mode){
+        inner_style = renderProofTexture(inner_style);
     }
 
     CONTEXT.save();
     CONTEXT.globalAlpha = 0.7;
-    CONTEXT.fillStyle = cut === UM.obj_under_mouse ? '#DCDCDC' : inner_style;
+    CONTEXT.fillStyle = inner_style;
     CONTEXT.beginPath();
     CONTEXT.ellipse(
         cut.x, cut.y, 

@@ -7,32 +7,32 @@ import {Point} from './lib/point.js';
 * of clearing the previous frame
 */
 function renderGrid(context, width, height, line_width = 50){
-  context.fillStyle = 'white';
-  context.fillRect(0,0,width,height);
+    context.fillStyle = 'white';
+    context.fillRect(0,0,width,height);
 
-  //x direction
-  for(var i = 0; i < width; i += line_width){
+    //x direction
+    for(let i = 0; i < width; i += line_width){
 
-    context.strokeStyle = i % 150 === 0 ? "#787878" : "#D0D0D0";
+        context.strokeStyle = i % 150 === 0 ? "#787878" : "#D0D0D0";
 
-    context.beginPath();
-    context.moveTo(i,0)
-    context.lineTo(i, height);
-    context.stroke();
-  }
+        context.beginPath();
+        context.moveTo(i,0)
+        context.lineTo(i, height);
+        context.stroke();
+    }
 
-  //y direction
-  for(var i = 0; i < height; i += line_width){
+    //y direction
+    for(let i = 0; i < height; i += line_width){
 
-    context.strokeStyle = i % 150 === 0 ? "#787878" : "#D0D0D0";
+        context.strokeStyle = i % 150 === 0 ? "#787878" : "#D0D0D0";
 
-    context.beginPath();
-    context.moveTo(0,i)
-    context.lineTo(width, i);
-    context.stroke();
-  }
+        context.beginPath();
+        context.moveTo(0,i)
+        context.lineTo(width, i);
+        context.stroke();
+    }
 
-  return context;
+    return context;
 }
 
 
@@ -41,13 +41,13 @@ function renderGrid(context, width, height, line_width = 50){
 * @return {Number}
 */
 function getDeviceRatio () {
-  let CONTEXT = CanvasManager.getInstance().Context;
-  let dpr = window.devicePixelRatio || 1,
-      bsr = CONTEXT.webkitBackingStorePixelRatio ||
-            CONTEXT.mozBackingStorePixelRatio ||
-            CONTEXT.msBackingStorePixelRatio ||
-            CONTEXT.oBackingStorePixelRatio ||
-            CONTEXT.backingStorePixelRatio || 1;
+    let CONTEXT = CanvasManager.getInstance().Context;
+    let dpr = window.devicePixelRatio              || 1,
+        bsr = CONTEXT.webkitBackingStorePixelRatio ||
+              CONTEXT.mozBackingStorePixelRatio    ||
+              CONTEXT.msBackingStorePixelRatio     ||
+              CONTEXT.oBackingStorePixelRatio      ||
+              CONTEXT.backingStorePixelRatio       || 1;
 
     return dpr / bsr;
 }
@@ -124,11 +124,35 @@ function displayMessage(message, error){
     }, 3000);
 }
 
+
+function renderProofTexture(inner_style){
+    let scratch = document.createElement("canvas");
+    let scratch_ctx = scratch.getContext('2d');
+    const CM = CanvasManager.getInstance();
+
+    scratch.width = 50;
+    scratch.height = 50;
+
+    scratch_ctx.fillStyle = inner_style;
+    scratch_ctx.globalAlpha = 0.7;
+    scratch_ctx.fillRect(0,0,scratch.width,scratch.height);
+        scratch_ctx.fillStyle = 'green';
+    scratch_ctx.fillRect(0, 0, scratch.width/2, scratch.height);
+    //scratch_ctx.fillRect(25, 25, scratch.width/2, scratch.height/2);
+
+
+    scratch_ctx.stroke();
+
+    let ptn = scratch_ctx.createPattern(scratch, 'repeat');
+    return ptn;
+}
+
 export {
     onResize,
     renderGrid,
     getDeviceRatio,
     fixBlur,
     displayError,
-    displaySuccess
+    displaySuccess,
+    renderProofTexture
 }

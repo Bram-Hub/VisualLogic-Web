@@ -40,6 +40,8 @@ window.onload = () => {
     //init user input
     UserInputManager.getInstance();
 
+    //localStorage.clear();
+
     //load default mode
     let mode = localStorage.getItem("proof_mode");
     if(!localStorage.getItem("proof_mode")){

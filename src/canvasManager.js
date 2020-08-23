@@ -76,6 +76,17 @@ class __CANVAS_MANAGER{
         return this.is_mini_open ? this.MiniContext : this.Context;
     }
 
+
+    /**
+    * Get the current open context
+    *
+    * @returns {HTMLCanvasElement}
+    */
+    getCanvas(){
+        return this.is_mini_open ? this.MiniCanvas : this.Canvas;
+    }
+
+
     /**
     * adds a new cut to either cuts or scratch cuts depending if
     * the mini renderer is open
@@ -253,11 +264,11 @@ function loadState(src, data = null){
 
     //once all the cuts have been created swap the ids with the objs
     for(let x of CM.cuts){
-        for(let i = 0 ; i < x.child_cuts; i++){
+        for(let i = 0 ; i < x.child_cuts.length; i++){
             x.child_cuts[i] = CM.id_map[x.child_cuts[i]];
         }
 
-        for(let i = 0 ; i < x.child_syms; i++){
+        for(let i = 0 ; i < x.child_syms.length; i++){
             x.child_syms[i] = CM.id_map[x.child_syms[i]];
         }
     }
