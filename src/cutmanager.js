@@ -9,8 +9,9 @@ function drawDistancesOfCuts(){
 
     for (let i of CM.cuts){
         for(let j of CM.cuts){
-            if ( j === i )
+            if ( j === i ){
                 continue;
+            }
 
             drawVector(
                 new Vector( i.center, j.center )
@@ -51,13 +52,15 @@ var CutManager = (function(){
 class __CUT_MANAGER{
     constructor(){
         let CM = CanvasManager.getInstance();
+
+        /** deprecated use Canavas manager id_map --- uses  */
         this.objs = new Map();
 
         for(let c of CM.cuts){
             this.objs.set(c.ID, c);
         }
 
-        for(let s of CM.cuts){
+        for(let s of CM.syms){
             this.objs.set(s.ID, s);
         }
 
@@ -76,8 +79,9 @@ class __CUT_MANAGER{
 
     getById(id){
         let t = this.objs.get(id);
-        if ( typeof t === "undefined")
+        if ( typeof t === "undefined"){
             return null;
+        }
 
         return t;
     }
@@ -94,8 +98,9 @@ class __CUT_MANAGER{
         
         for(let i of CM.getCuts()){
             for(let j of CM.getCuts()){
-                if ( i.id === j.id )
+                if ( i.id === j.id ){
                     continue;
+                }
 
                 if ( isWithinCut(i,j) || isWithinCut(j,i) ){
 

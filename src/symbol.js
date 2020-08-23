@@ -16,13 +16,11 @@ class Symbolic{
     * @constructor 
     * @param {String} The charactor representing the symbol
     */
-    constructor(letter){
-
-        let UM = UserInputManager.getInstance();
+    constructor(letter, position){
 
         this.letter = letter;
-        this.x = UM.mouse_pos.x;
-        this.y = UM.mouse_pos.y;
+        this.x = position.x;
+        this.y = position.y;
 
         this.real_x = this.x - 25;
         this.real_y = this.y + 25;
@@ -70,19 +68,10 @@ class Symbolic{
     toString(){
         return this.id;
     }
-}
 
-
-function addSymbol(sym){
-    let CM = CanvasManager.getInstance();
-    if(CM.is_mini_open){
-        CM.s_syms.push(sym);
-        return;
+    serialize(){
+        return JSON.stringify(this);
     }
-
-
-    CM.syms.push(sym);
-    CutManager.getInstance().addObj(sym);
 }
 
 
@@ -130,5 +119,4 @@ function isMouseOverSym(sym){
 export {
     Symbolic,
     drawSymbol,
-    addSymbol
 }
