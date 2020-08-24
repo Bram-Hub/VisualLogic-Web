@@ -10,6 +10,10 @@
 
 Visual Logic is a tool for formal logic by manipulating [Existential Graphs](https://en.wikipedia.org/wiki/Existential_graph).
 
+*Read more about using it under the [wiki](https://github.com/shailpatels/VisualLogic-Web/wiki/Instructions)*
+
+
+
 ### Development
 
 Start by cloning the project, installing dependencies and then run the 
