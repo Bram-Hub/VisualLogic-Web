@@ -66,6 +66,7 @@ class __USER_INPUT_MANAGER{
             toggleDoubleCutButton();
         });
         document.getElementById("insert-graph").addEventListener('click', () => {
+            toggleMiniRenderer();
             insertion( new Subgraph( CM.s_cuts.concat(CM.s_syms) ) );
         });
         document.getElementById('iteration-btn').addEventListener('click', () => { displayError("not implemented") });
@@ -75,6 +76,7 @@ class __USER_INPUT_MANAGER{
         document.getElementById('dbl-cut-btn').disabled = true;
         document.getElementById('insert-btn').disabled = true;
         
+        toggleProofButtons();
     }
 
     update(){

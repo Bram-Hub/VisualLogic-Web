@@ -3,6 +3,7 @@ import {CanvasManager} from '../canvasManager.js';
 import {Subgraph} from '../subgraph.js';
 import {deleteObject} from '../userInput.js';
 import {Cut} from '../cut.js';
+import {Symbolic} from '../symbol.js';
 
 
 /**
@@ -64,6 +65,36 @@ function insertion(subgraph){
 	let CM = CanvasManager.getInstance();
 
 	//is there enough room
+	if(CM.proof_selected.length !== 1){
+		displayError("Can only insert into 1 subgraph");
+		return;
+	}
+
+	let tgt = CM.proof_selected[0];
+
+	if(tgt instanceof Symbolic){
+		displayError("Cannot insert into a symbol");
+		return;
+	}
+
+	//copy over the elements from the mini canvas to the normal canvas
+	for(let x of subgraph.elements){
+		x = repositonObj(x, tgt);
+		if(x instanceof Cut){
+			CM.addCut(x);
+		}else{
+			CM.addSymbol(x);
+		}
+	}
+}
+
+
+//TODO find better way of doing
+function repositonObj(new_obj, tgt){
+	new_obj.x = tgt.x;
+	new_obj.y = tgt.y;
+
+	return new_obj;
 }
 
 

@@ -136,15 +136,11 @@ function renderProofTexture(inner_style){
     scratch_ctx.fillStyle = inner_style;
     scratch_ctx.globalAlpha = 0.7;
     scratch_ctx.fillRect(0,0,scratch.width,scratch.height);
-        scratch_ctx.fillStyle = 'green';
+    scratch_ctx.fillStyle = 'green';
     scratch_ctx.fillRect(0, 0, scratch.width/2, scratch.height);
-    //scratch_ctx.fillRect(25, 25, scratch.width/2, scratch.height/2);
-
-
     scratch_ctx.stroke();
 
-    let ptn = scratch_ctx.createPattern(scratch, 'repeat');
-    return ptn;
+    return scratch_ctx.createPattern(scratch, 'repeat');
 }
 
 export {

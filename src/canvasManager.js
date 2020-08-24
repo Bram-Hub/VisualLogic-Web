@@ -30,7 +30,7 @@ export var CanvasManager = (function(){
 
         getInstance: function () {
             if (!instance) {
-                throw "Tried to get uninitialized canvas manager, call init first"
+                throw "Tried to get uninitialized canvas manager, call init first";
             }
             return instance;
         }
