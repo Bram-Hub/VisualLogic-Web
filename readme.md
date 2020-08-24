@@ -2,6 +2,14 @@
 
 ![VL CI](https://github.com/shailpatels/VisualLogic-Web/workflows/VL%20CI/badge.svg)
 
+### About
+
+<p align="center">
+	<img width="75%" src="doc/readme_img_1.png" style="border: 2px solid black" />
+</p>
+
+Visual Logic is a tool for formal logic by manipulating [Existential Graphs](https://en.wikipedia.org/wiki/Existential_graph).
+
 ### Development
 
 Start by cloning the project, installing dependencies and then run the 
