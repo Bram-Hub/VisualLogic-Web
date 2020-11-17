@@ -5,7 +5,7 @@ import {drawDistancesOfCuts} from './cutmanager.js';
 import {drawTemporaryCut, drawCut, getInnerMostCut} from './cut.js';
 import {drawSymbol} from './symbol.js';
 
-var DEBUG = true;
+var DEBUG = false;
 
 window.onbeforeunload = () => {
     //save to browser before leaving
