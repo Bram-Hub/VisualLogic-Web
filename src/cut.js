@@ -49,6 +49,8 @@ class Cut{
             this.rad_x*2,this.rad_y*2
         ];
 
+        this.bounded_area = this.bounding_box[2] * this.bounding_box[3];
+
         let inner_bb = getInteriorBoundingBox(this.rad_x, this.rad_y);
         let diff_x = (this.rad_x * 2) - (inner_bb[0] * 2);
         let diff_y = (this.rad_y * 2) - (inner_bb[1] * 2);
@@ -88,6 +90,7 @@ class Cut{
             this.rad_x*2,this.rad_y*2
         ];
 
+        this.bounded_area = this.bounding_box[2] * this.bounding_box[3];
 
         let inner_bb = getInteriorBoundingBox(this.rad_x, this.rad_y);
         let diff_x = (this.rad_x * 2) - (inner_bb[0] * 2);

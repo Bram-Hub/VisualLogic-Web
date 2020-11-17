@@ -128,6 +128,7 @@ function getInteriorBoundingBox(rad_x,rad_y){
 	return [ rad_x / Math.sqrt(2), rad_y / Math.sqrt(2) ];
 } 
 
+
 export {
 	transformPoint,
 	isWithinEllipse,

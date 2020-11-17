@@ -4,7 +4,6 @@ import {UserInputManager, toggleMode} from './userInput.js';
 import {drawDistancesOfCuts} from './cutmanager.js';
 import {drawTemporaryCut, drawCut, getInnerMostCut} from './cut.js';
 import {drawSymbol} from './symbol.js';
-import {pack} from './subgraph.js';
 
 var DEBUG = true;
 
@@ -86,7 +85,7 @@ function renderLoop(){
             for(let x of c.child_cuts){
                 childs += x.toString() + "<br>";
             }
-            document.getElementById("debug").innerHTML = c.toString() +"<br>Level : " + c.level.toString() + childs;
+            document.getElementById("debug").innerHTML = c.toString() +"<br>Level : " + c.level.toString() + childs + "<br>" + c.bounded_area.toString();
         }
     }
 
