@@ -32,10 +32,9 @@ class Vector{
 }
 
 /**
-*@param {Vector} v draws a given vector, primarlly for debugging
+* @param {Vector} v draws a given vector, primarily for debugging
 */
 function drawVector(v){
-
     let CONTEXT = CanvasManager.getInstance().getContext();
 
     CONTEXT.beginPath();

@@ -55,6 +55,8 @@ window.onload = () => {
         loadState("localStorage");
     }
 
+//    pack(CanvasManager.getInstance().cuts[0]);
+
     //start app
     renderLoop();
 
@@ -83,7 +85,7 @@ function renderLoop(){
             for(let x of c.child_cuts){
                 childs += x.toString() + "<br>";
             }
-            document.getElementById("debug").innerHTML = c.toString() +"<br>Level : " + c.level.toString() + childs;
+            document.getElementById("debug").innerHTML = c.toString() +"<br>Level : " + c.level.toString() + childs + "<br>" + c.bounded_area.toString();
         }
     }
 
