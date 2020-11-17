@@ -1,4 +1,5 @@
 import {Cut} from './cut.js';
+import {Symbolic} from './symbol.js';
 import {getRandomString} from '../src/main.js';
 
 /**
@@ -17,6 +18,8 @@ class Subgraph{
 		//map the elements by what level they're on
 
 		this.levels = {};
+		this.free_symbols = [];
+		this.captured_symbols = [];
 
 		for(let x of this.elements){
 			if( typeof this.levels[x.level] === 'undefined' ){
@@ -25,11 +28,26 @@ class Subgraph{
 				let old = this.levels[x.level];
 				this.levels[old] = (old.push(x));
 			}
+
+
+			if (x instanceof Cut){
+				this.captured_symbols = this.captured_symbols.concat(x.child_syms);
+			}
+		}
+
+		for(let x of this.elements){
+			if (x instanceof Symbolic){
+				if(!this.captured_symbols.includes(x)){
+					this.free_symbols.push(x);
+				}
+			}
 		}
 	}
 
 
 	/**
+	* Calculate the real area of all the ellipses and free symbols in this subgraph
+	*
 	* @returns {Number}
 	*/
 	getArea(){
@@ -38,6 +56,29 @@ class Subgraph{
 			if(x instanceof Cut){
 				ret += x.area;
 			}
+		}
+		for(let x of this.free_symbols){
+			ret += x.area;
+		}
+		return ret;
+	}
+
+
+	/**
+	* Calculate area based on the outer bounding box of the cuts in this subgraph
+	*
+	* @returns {Number}
+	*/
+	getBoundedArea(){
+		let ret = 0;
+		for(let x of this.elements){
+			if(x instanceof Cut){
+				ret += x.bounded_area;
+			}
+		}
+
+		for(let x of this.free_symbols){
+			ret += x.area;
 		}
 		return ret;
 	}
@@ -58,6 +99,8 @@ class Subgraph{
 			return true;
 		}
 
+		//TODO
+
 	}
 
 
@@ -75,5 +118,5 @@ class Subgraph{
 
 
 export{
-	Subgraph
+	Subgraph,
 }

@@ -107,6 +107,7 @@ function transformPoint(p, ratio){
 * gets the distance between two points
 * @param {Point} p1 
 * @param {Point} p2
+* @return {Number}
 */
 function getDistance(p1,p2){
 	let a = Math.pow( p2.x - p1.x,2 );
@@ -115,11 +116,25 @@ function getDistance(p1,p2){
 	return Math.sqrt( a + b );
 }
 
+
+/**
+* Given the x and y radius of an ecllipse, get the x,y values for
+* the largest rectange that can be inscribed inside of the ecllipse
+* @param {Number} rad_x
+* @param {Number} rad_y
+* @returns {Array.<Number>}
+*/
+function getInteriorBoundingBox(rad_x,rad_y){
+	return [ rad_x / Math.sqrt(2), rad_y / Math.sqrt(2) ];
+} 
+
+
 export {
 	transformPoint,
 	isWithinEllipse,
 	isWithinTollerance,
 	getEllipseArea,
 	getDistance,
-	isPointWithinRect
+	isPointWithinRect,
+	getInteriorBoundingBox,
 }

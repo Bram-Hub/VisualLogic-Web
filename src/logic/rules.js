@@ -4,6 +4,8 @@ import {Subgraph} from '../subgraph.js';
 import {deleteObject} from '../userInput.js';
 import {Cut} from '../cut.js';
 import {Symbolic} from '../symbol.js';
+import {Point} from '../lib/point.js';
+import {UserInputManager} from '../userInput.js';
 
 
 /**
@@ -60,6 +62,8 @@ function doubleCut(subgraph){
 * Insertion a subgraph at an odd level
 *
 * @param {Subgraph} subgraph
+*
+* TODO: get current elements in tgt graph level and recalculate the subgraph with them
 */
 function insertion(subgraph){
 	let CM = CanvasManager.getInstance();
@@ -77,15 +81,57 @@ function insertion(subgraph){
 		return;
 	}
 
-	//copy over the elements from the mini canvas to the normal canvas
+	if(tgt.bounded_area <= subgraph.getBoundedArea()){
+		//scale the entire graph outwards
+	}
+
+	let start_x = tgt.interier_bounding_box[0];
+	let start_y = tgt.interier_bounding_box[1];
+	let UM = UserInputManager.getInstance();
+
+	//copy over the elements from the subgraph into the real canvas
 	for(let x of subgraph.elements){
-		x = repositonObj(x, tgt);
 		if(x instanceof Cut){
 			CM.addCut(x);
 		}else{
 			CM.addSymbol(x);
 		}
 	}
+
+	//reposition to fit the graph
+	//TODO: calculate bounding box correctly, consider leftmost offset of the interior bounding box
+	//move the logic of calculating next free space into math.js
+	for(let x of subgraph.elements){
+		if( x instanceof Cut){
+			UM.last_mouse_pos = new Point(x.x, x.y);
+			x.updatePos( new Point( start_x + x.rad_x, start_y + x.rad_y  ) );
+
+			let new_width = x.rad_x *2;
+			let new_height = x.rad_y * 2;
+			if ( (start_x + new_width) <= tgt.interier_bounding_box[2] ){
+				start_x += (x.rad_x * 2);
+			}else if( (start_y + new_height) <= tgt.interier_bounding_box[3] ){
+				start_y += (x.rad_y * 2);
+			}
+		}
+	}
+
+	for(let x of subgraph.free_symbols){
+		UM.last_mouse_pos = x.center;
+		console.log(UM.last_mouse_pos);
+		x.updatePos( new Point( start_x, start_y + x.height), false );
+
+		let new_width = x.width;
+		let new_height = x.height;
+		console.log(start_x + new_width, tgt.interier_bounding_box[2]);
+		if ( (start_x + new_width) <= tgt.interier_bounding_box[2] ){
+			start_x += x.width;
+		}else if( (start_y + new_height) <= tgt.interier_bounding_box[3] ){
+			start_y += x.height;
+		}
+		
+	}
+	
 }
 
 

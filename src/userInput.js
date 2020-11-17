@@ -234,6 +234,7 @@ function onKeyDown(e){
 
 
 function onKeyUp(e){
+    event.preventDefault();
     let UM = UserInputManager.getInstance();
     let CM = CanvasManager.getInstance();
     if ( e.code === "Escape" ){
@@ -243,9 +244,10 @@ function onKeyUp(e){
         UM.is_shift_down = false;
     }else if( isAlpha(e.code) && !UM.is_ctrl_down && e.code != "KeyR" && !UM.is_proof_mode){
         CM.addSymbol( new Symbolic(e.code[3], UM.mouse_pos ) );
-    }else if( e.code === "Delete" && !UM.is_proof_mode ){
+    }else if( (e.code === "Delete" || e.code === "Backspace") && !UM.is_proof_mode ){
         deleteObjectUnderMouse();
     }
+
 
     UM.is_shift_down = UM.is_ctrl_down = false;
     function isAlpha(tgt){
@@ -255,7 +257,7 @@ function onKeyUp(e){
         let n = tgt.charCodeAt(3);
         return n >=65 && n <= 90;
     }
-
+    e.stopPropagation();
 }
 
 

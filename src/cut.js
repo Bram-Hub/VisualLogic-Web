@@ -2,9 +2,14 @@ import {CanvasManager} from './canvasManager.js';
 import {UserInputManager} from './userInput.js';
 import {getRandomString, DEBUG} from './main.js';
 import {Point} from './lib/point.js';
-import {getEllipseArea, isWithinEllipse, isWithinTollerance} from './lib/math.js';
+import {
+    getEllipseArea, 
+    isWithinEllipse, 
+    isWithinTollerance,
+    getInteriorBoundingBox,
+} from './lib/math.js';
 import {Vector, drawVector} from './lib/vector.js';
-import {renderProofTexture} from './renderer.js';
+import {renderProofTexture, drawPoint} from './renderer.js';
 
 /** @typedef { import('./lib/point.js').Point } Point */
 
@@ -38,6 +43,23 @@ class Cut{
         this.area = getEllipseArea(this.rad_x, this.rad_y);
 
         this.is_proof_selected = false;
+        this.bounding_box = [
+            this.x - this.rad_x, 
+            this.y - this.rad_y,
+            this.rad_x*2,this.rad_y*2
+        ];
+
+        this.bounded_area = this.bounding_box[2] * this.bounding_box[3];
+
+        let inner_bb = getInteriorBoundingBox(this.rad_x, this.rad_y);
+        let diff_x = (this.rad_x * 2) - (inner_bb[0] * 2);
+        let diff_y = (this.rad_y * 2) - (inner_bb[1] * 2);
+
+        this.interier_bounding_box = [
+            this.x - this.rad_x + diff_x/2, 
+            this.y - this.rad_y + diff_y/2,
+            inner_bb[0]*2,inner_bb[1]*2
+        ];
     }
 
 
@@ -62,6 +84,23 @@ class Cut{
             }
         }
 
+        this.bounding_box = [
+            this.x - this.rad_x, 
+            this.y - this.rad_y,
+            this.rad_x*2,this.rad_y*2
+        ];
+
+        this.bounded_area = this.bounding_box[2] * this.bounding_box[3];
+
+        let inner_bb = getInteriorBoundingBox(this.rad_x, this.rad_y);
+        let diff_x = (this.rad_x * 2) - (inner_bb[0] * 2);
+        let diff_y = (this.rad_y * 2) - (inner_bb[1] * 2);
+
+        this.interier_bounding_box = [
+            this.x - this.rad_x + diff_x/2, 
+            this.y - this.rad_y + diff_y/2,
+            inner_bb[0]*2,inner_bb[1]*2
+        ];
     }
 
 
@@ -69,7 +108,7 @@ class Cut{
     * update this cut and its child cuts & syms
     * 
     * @param {Point} new_pos - the new position to move to
-    * @param {Boolean|Null} root - is this the root obj to move or false if getting moved by another
+    * @param {Boolean|null} root - is this the root obj to move or false if getting moved by another
     */
     updatePos( new_pos, root = true ){
         let UM = UserInputManager.getInstance();
@@ -183,7 +222,7 @@ class Cut{
 * @param {Cut} cut
 */
 function drawCut(cut){
-    let CONTEXT = CanvasManager.getInstance().getContext();
+    let context = CanvasManager.getInstance().getContext();
     let UM = UserInputManager.getInstance();
 
     let border_rad = 5;
@@ -192,23 +231,41 @@ function drawCut(cut){
         return;
     }
 
-    CONTEXT.strokeStyle = cut === UM.obj_under_mouse ? 'blue' : 'black';
+    context.strokeStyle = cut === UM.obj_under_mouse ? 'blue' : 'black';
 
     if(cut.is_mouse_in_border && !UM.is_proof_mode){
-        CONTEXT.strokeStyle = "lightblue";
+        context.strokeStyle = "lightblue";
     }
 
-    CONTEXT.lineWidth = cut.border_rad;
+    context.lineWidth = cut.border_rad;
 
-    CONTEXT.beginPath();
-    CONTEXT.ellipse(
+    context.beginPath();
+    context.ellipse(
         cut.x, cut.y, 
         cut.rad_x - cut.border_rad/2, 
         cut.rad_y - cut.border_rad/2, 
         0, 0, 2 * Math.PI
     );
 
-    CONTEXT.stroke();
+    context.stroke();
+
+    if(DEBUG){
+        context.beginPath();
+        context.lineWidth = 2;
+        let bb = cut.bounding_box;
+        context.rect(
+            bb[0],bb[1],bb[2],bb[3]
+        );
+
+        let i_bb = cut.interier_bounding_box;
+       // console.log(bb);
+        context.rect(
+            i_bb[0],i_bb[1],i_bb[2],i_bb[3]
+        );
+        context.stroke();
+    }
+
+
     //now draw inner cut
 
     let inner_style = "#A9A9A9";
@@ -225,19 +282,19 @@ function drawCut(cut){
         inner_style = renderProofTexture(inner_style);
     }
 
-    CONTEXT.save();
-    CONTEXT.globalAlpha = 0.7;
-    CONTEXT.fillStyle = inner_style;
-    CONTEXT.beginPath();
-    CONTEXT.ellipse(
+    context.save();
+    context.globalAlpha = 0.7;
+    context.fillStyle = inner_style;
+    context.beginPath();
+    context.ellipse(
         cut.x, cut.y, 
         cut.rad_x - cut.border_rad, 
         cut.rad_y - cut.border_rad, 0, 0, 2 * Math.PI
     );
 
-    CONTEXT.fill();
-    CONTEXT.restore();
-    CONTEXT.lineWidth = 1;
+    context.fill();
+    context.restore();
+    context.lineWidth = 1;
 }
 
 
