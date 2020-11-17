@@ -143,6 +143,23 @@ function renderProofTexture(inner_style){
     return scratch_ctx.createPattern(scratch, 'repeat');
 }
 
+/**
+* Draw a dot on the current opened canvas
+* @param {Point}
+* @param {Number|null} rad - radius of the dot, default 5
+* @param {String|null} col - color of the dot, default red
+*/
+function drawPoint(Point, rad = 10, col='red'){
+    let CM = CanvasManager.getInstance();
+    let context = CM.getContext();
+
+    context.beginPath();
+    context.fillStyle = col;
+    context.arc(Point.x,Point.y, rad, 0,2*Math.PI);
+    context.fill();
+}
+
+
 export {
     onResize,
     renderGrid,
@@ -150,5 +167,6 @@ export {
     fixBlur,
     displayError,
     displaySuccess,
-    renderProofTexture
+    renderProofTexture,
+    drawPoint
 }

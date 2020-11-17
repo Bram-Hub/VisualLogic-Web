@@ -58,6 +58,8 @@ class Subgraph{
 			return true;
 		}
 
+		//TODO
+
 	}
 
 
@@ -74,6 +76,46 @@ class Subgraph{
 }
 
 
+function pack(cut){
+	//compress children first
+	for(const x of cut.child_cuts){
+		pack(x);
+	}
+
+
+	//if empty
+	if(cut.child_cuts.length === 0 && cut.child_syms.length === 0){
+		//set to default small size
+		cut.rad_x = 60;
+		cut.rad_y = 60;
+		return;
+	}
+
+
+	//get width & height of all inner cuts & symbols
+	const pad = 50;
+	let t_w = pad;
+	let t_h = pad;
+	for(let x of cut.child_cuts){
+		t_w += (2*x.rad_x);
+		t_h += (2*x.rad_y);
+	}
+
+	for(let x of cut.child_syms){
+		t_w += x.width;
+		t_h += x.width;
+	}
+
+	cut.rad_x = t_w/2;
+	cut.rad_y = t_h/2;
+
+	//make sure all elements are within the new cut
+
+
+}
+
+
 export{
-	Subgraph
+	Subgraph,
+	pack
 }

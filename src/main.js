@@ -4,8 +4,9 @@ import {UserInputManager, toggleMode} from './userInput.js';
 import {drawDistancesOfCuts} from './cutmanager.js';
 import {drawTemporaryCut, drawCut, getInnerMostCut} from './cut.js';
 import {drawSymbol} from './symbol.js';
+import {pack} from './subgraph.js';
 
-var DEBUG = false;
+var DEBUG = true;
 
 window.onbeforeunload = () => {
     //save to browser before leaving
@@ -54,6 +55,8 @@ window.onload = () => {
     if(localStorage.getItem("save-state")){
         loadState("localStorage");
     }
+
+//    pack(CanvasManager.getInstance().cuts[0]);
 
     //start app
     renderLoop();
