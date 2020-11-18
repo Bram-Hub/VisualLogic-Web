@@ -10,15 +10,15 @@ import {Point} from './point.js';
 * @param {Number} y the y position of the ellipse
 * @param {Number} rad_x the radius in the x axis
 * @param {Number} rad_y the radius in the y axis
-* @return {Boolean}
+* @returns {Boolean}
 */
 function isWithinEllipse(point, x, y, rad_x, rad_y){
-	// (x-h)^2/a^2 + (y-k)^2/b^2 <= 1
+    // (x-h)^2/a^2 + (y-k)^2/b^2 <= 1
 	
-	let a = Math.pow( point.x - x, 2) / Math.pow(rad_x, 2);
-	let b = Math.pow( point.y - y, 2) / Math.pow(rad_y, 2);
+    let a = Math.pow( point.x - x, 2) / Math.pow(rad_x, 2);
+    let b = Math.pow( point.y - y, 2) / Math.pow(rad_y, 2);
 
-	return a+b <= 1;	
+    return a+b <= 1;	
 }
 
 
@@ -28,10 +28,10 @@ function isWithinEllipse(point, x, y, rad_x, rad_y){
 * @param {Number} tgt
 * @param {Number} base
 * @param {Number} tol 
-* @return {Boolean}
+* @returns {Boolean}
 */
 function isWithinTollerance(tgt, base, tol){
-	return tgt >= ( base - tol ) && tgt <= ( base + tol );
+    return tgt >= ( base - tol ) && tgt <= ( base + tol );
 }
 
 
@@ -43,11 +43,11 @@ function isWithinTollerance(tgt, base, tol){
 * @param {Number} y location of the rect
 * @param {Number} width of the rect
 * @param {Number} height of the rect
-* @return {Boolean}
+* @returns {Boolean}
 */
 function isPointWithinRect(point, x,y, width, height){
-	return point.x >= x && point.x <= x + width &&
-		   point.y >= y && point.y <= y + height;	
+    return point.x >= x && point.x <= x + width &&
+           point.y >= y && point.y <= y + height;	
 }
 
 
@@ -56,10 +56,10 @@ function isPointWithinRect(point, x,y, width, height){
 *
 * @param {Number} rad_x
 * @param {Number} rad_y 
-* @return {Number}
+* @returns {Number}
 */
 function getEllipseArea(rad_x, rad_y){
-	return rad_x * rad_y * Math.PI;
+    return rad_x * rad_y * Math.PI;
 }
 
 
@@ -69,16 +69,16 @@ function getEllipseArea(rad_x, rad_y){
 *
 * @param {Array.<Number>} A
 * @param {Array.<Number>} B
-* @return {Array.<Array.<Number>>}
+* @returns {Array.<Array.<Number>>}
 */
 function matrixDot (A, B) {
-    var result = new Array(A.length).fill(0).map(row => new Array(B[0].length).fill(0));
+    let result = new Array(A.length).fill(0).map(() => new Array(B[0].length).fill(0));
 
     return result.map((row, i) => {
         return row.map((val, j) => {
-            return A[i].reduce((sum, elm, k) => sum + (elm*B[k][j]) ,0)
-        })
-    })
+            return A[i].reduce((sum, elm, k) => sum + (elm*B[k][j]) ,0);
+        });
+    });
 }
 
 
@@ -87,18 +87,16 @@ function matrixDot (A, B) {
 * transformation done on the canvas
 *
 * @param {Point} p - the point to transform
-* @return {Point}
+* @returns {Point}
 */
 function transformPoint(p, ratio){
-	//use the transformation matrix to get the real canvas position
-	let m = matrixDot(
-		[[p.x, p.y]], 
-      	[[ratio, 0, 0 ], 
-       	 [0, ratio, 0], 
-       	 [0,0,1]]
+    //use the transformation matrix to get the real canvas position
+    let m = matrixDot(
+        [[p.x, p.y]], 
+        [[ratio, 0, 0 ], [0, ratio, 0], [0,0,1]]
     )[0];
 
-	//divide by ratio?
+    //divide by ratio?
     return new Point(m[0]/ratio,m[1]/ratio);
 }
 
@@ -107,13 +105,13 @@ function transformPoint(p, ratio){
 * gets the distance between two points
 * @param {Point} p1 
 * @param {Point} p2
-* @return {Number}
+* @returns {Number}
 */
 function getDistance(p1,p2){
-	let a = Math.pow( p2.x - p1.x,2 );
-	let b = Math.pow( p2.y - p1.y,2 );
+    let a = Math.pow( p2.x - p1.x,2 );
+    let b = Math.pow( p2.y - p1.y,2 );
 
-	return Math.sqrt( a + b );
+    return Math.sqrt( a + b );
 }
 
 
@@ -125,16 +123,16 @@ function getDistance(p1,p2){
 * @returns {Array.<Number>}
 */
 function getInteriorBoundingBox(rad_x,rad_y){
-	return [ rad_x / Math.sqrt(2), rad_y / Math.sqrt(2) ];
+    return [ rad_x / Math.sqrt(2), rad_y / Math.sqrt(2) ];
 } 
 
 
 export {
-	transformPoint,
-	isWithinEllipse,
-	isWithinTollerance,
-	getEllipseArea,
-	getDistance,
-	isPointWithinRect,
-	getInteriorBoundingBox,
-}
+    transformPoint,
+    isWithinEllipse,
+    isWithinTollerance,
+    getEllipseArea,
+    getDistance,
+    isPointWithinRect,
+    getInteriorBoundingBox,
+};

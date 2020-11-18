@@ -21,6 +21,7 @@ var UserInputManager = (function(){
             instance = null;
         },
 
+        /** @returns {__USER_INPUT_MANAGER} */
         getInstance: function () {
             if (!instance) {
                 instance = createInstance();
@@ -58,19 +59,19 @@ class __USER_INPUT_MANAGER{
         this.current_obj = null;
         this.obj_under_mouse = false;
 
-        document.getElementById("toggle_mode").addEventListener('click', toggleMode);
-        document.getElementById("insert-btn").addEventListener('click', toggleMiniRenderer);
-        document.getElementById("exit-mini").addEventListener('click', toggleMiniRenderer);
-        document.getElementById("dbl-cut-btn").addEventListener('click', () => {
+        document.getElementById('toggle_mode').addEventListener('click', toggleMode);
+        document.getElementById('insert-btn').addEventListener('click', toggleMiniRenderer);
+        document.getElementById('exit-mini').addEventListener('click', toggleMiniRenderer);
+        document.getElementById('dbl-cut-btn').addEventListener('click', () => {
             doubleCut( new Subgraph(CM.proof_selected) );
             toggleDoubleCutButton();
         });
-        document.getElementById("insert-graph").addEventListener('click', () => {
+        document.getElementById('insert-graph').addEventListener('click', () => {
             toggleMiniRenderer();
             insertion( new Subgraph( CM.s_cuts.concat(CM.s_syms) ) );
         });
-        document.getElementById('iteration-btn').addEventListener('click', () => { displayError("not implemented") });
-        document.getElementById('deiteration-btn').addEventListener('click', () => { displayError("not implemented") });
+        document.getElementById('iteration-btn').addEventListener('click', () => { displayError('not implemented'); });
+        document.getElementById('deiteration-btn').addEventListener('click', () => { displayError('not implemented'); });
 
 
         document.getElementById('dbl-cut-btn').disabled = true;
@@ -95,11 +96,11 @@ class __USER_INPUT_MANAGER{
         }
 
         if ( this.current_obj === null ){
-            document.getElementById("canvas").style.cursor = "default"; 
+            document.getElementById('canvas').style.cursor = 'default'; 
         }
     }
 
-
+    /** @param {MouseEvent} e */
     onMouseMove(e){
         e.preventDefault();
         e.stopPropagation();
@@ -113,8 +114,7 @@ class __USER_INPUT_MANAGER{
     }
 }
 
-
-
+/** @param {MouseEvent} e */
 function onMouseDown(e){
     let CM = CanvasManager.getInstance();
     let UM = UserInputManager.getInstance();
@@ -199,7 +199,7 @@ function onMouseDown(e){
 }
 
 
-function onMouseUp(e){
+function onMouseUp(){
     let UM = UserInputManager.getInstance();
     UM.is_mouse_down = false;
     UM.current_obj = null;
@@ -222,29 +222,30 @@ function getRealMousePos(pos){
     );
 }
 
-
+/** @param {MouseEvent} e */
 function onKeyDown(e){
     let UM = UserInputManager.getInstance();
-    if ( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
+    if ( e.code === 'ShiftLeft' || e.code === 'ShiftRight' ){
         UM.is_shift_down = true;
-    }else if(e.code === "ControlLeft" || e.code === "ControlRight" ){
+    }else if(e.code === 'ControlLeft' || e.code === 'ControlRight' ){
         UM.is_ctrl_down = true;
     }
 }
 
 
+/** @param {MouseEvent} e */
 function onKeyUp(e){
     event.preventDefault();
     let UM = UserInputManager.getInstance();
     let CM = CanvasManager.getInstance();
-    if ( e.code === "Escape" ){
+    if ( e.code === 'Escape' ){
         //user decides to not create a cut, clear the temporary
         CM.tmp_cut = null;
-    }else if( e.code === "ShiftLeft" || e.code === "ShiftRight" ){
+    }else if( e.code === 'ShiftLeft' || e.code === 'ShiftRight' ){
         UM.is_shift_down = false;
-    }else if( isAlpha(e.code) && !UM.is_ctrl_down && e.code != "KeyR" && !UM.is_proof_mode){
+    }else if( isAlpha(e.code) && !UM.is_ctrl_down && e.code != 'KeyR' && !UM.is_proof_mode){
         CM.addSymbol( new Symbolic(e.code[3], UM.mouse_pos ) );
-    }else if( (e.code === "Delete" || e.code === "Backspace") && !UM.is_proof_mode ){
+    }else if( (e.code === 'Delete' || e.code === 'Backspace') && !UM.is_proof_mode ){
         deleteObjectUnderMouse();
     }
 
@@ -274,22 +275,23 @@ function toggleMode(){
 
     UM.is_proof_mode = !UM.is_proof_mode;
 
-    let tgt = document.getElementById("toggle_mode");
+    let tgt = document.getElementById('toggle_mode');
 
-    tgt.innerHTML = UM.is_proof_mode ? "Proof Mode" : "Transform Mode";
-    tgt.className = "btn btn-" + (UM.is_proof_mode ? "proof" : "transform");
-    localStorage.setItem("proof_mode", (UM.is_proof_mode ? "active" : "inactive") );
+    tgt.innerHTML = UM.is_proof_mode ? 'Proof Mode' : 'Transform Mode';
+    tgt.className = 'btn btn-' + (UM.is_proof_mode ? 'proof' : 'transform');
+    localStorage.setItem('proof_mode', (UM.is_proof_mode ? 'active' : 'inactive') );
 
     toggleProofPanel();
 }
 
 
 function toggleProofPanel(){
-    let tgt = document.getElementById("proof-panel");
-    tgt.style.display = UserInputManager.getInstance().is_proof_mode ? "block" : "none";
+    let tgt = document.getElementById('proof-panel');
+    tgt.style.display = UserInputManager.getInstance().is_proof_mode ? 'block' : 'none';
 }
 
 //TODO move somwhere else & remove obj from child cuts 
+/** @param{Cut|Symbolic} obj */
 function deleteObject(obj){
     let CM = CanvasManager.getInstance();
     function removeFromList(tgt, list){
@@ -352,4 +354,4 @@ export {
     toggleMode,
     deleteObject,
     toggleProofButtons
-}
+};

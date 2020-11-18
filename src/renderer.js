@@ -5,6 +5,12 @@ import {Point} from './lib/point.js';
 /**
 * Draws the background grid, this also acts as a method
 * of clearing the previous frame
+*
+* @param {CanvasRenderingContext2D} 
+* @param {Number} width
+* @param {Number} height
+* @param {Number|null} line_width (50 by default)
+* @returns {CanvasRenderingContext2D}
 */
 function renderGrid(context, width, height, line_width = 50){
     context.fillStyle = 'white';
@@ -13,10 +19,10 @@ function renderGrid(context, width, height, line_width = 50){
     //x direction
     for(let i = 0; i < width; i += line_width){
 
-        context.strokeStyle = i % 150 === 0 ? "#787878" : "#D0D0D0";
+        context.strokeStyle = i % 150 === 0 ? '#787878' : '#D0D0D0';
 
         context.beginPath();
-        context.moveTo(i,0)
+        context.moveTo(i,0);
         context.lineTo(i, height);
         context.stroke();
     }
@@ -24,10 +30,10 @@ function renderGrid(context, width, height, line_width = 50){
     //y direction
     for(let i = 0; i < height; i += line_width){
 
-        context.strokeStyle = i % 150 === 0 ? "#787878" : "#D0D0D0";
+        context.strokeStyle = i % 150 === 0 ? '#787878' : '#D0D0D0';
 
         context.beginPath();
-        context.moveTo(0,i)
+        context.moveTo(0,i);
         context.lineTo(width, i);
         context.stroke();
     }
@@ -38,7 +44,8 @@ function renderGrid(context, width, height, line_width = 50){
 
 /** 
 * returns the device's pixel ratio for HiDPI displays 
-* @return {Number}
+*
+* @returns {Number}
 */
 function getDeviceRatio () {
     let CONTEXT = CanvasManager.getInstance().Context;
@@ -73,13 +80,21 @@ function onResize() {
     );
 }
 
-
+/**
+ * TODO: use canvasManager instead of passing in variables
+ * TODO: just scale the entire canvas up by the device pixel ratio 
+ * 
+ * @param {HTMLCanvasElement} canvas 
+ * @param {CanvasRenderingContext2DSettings} context 
+ * @param {Number} width 
+ * @param {Number} height 
+ */
 function fixBlur(canvas, context, width, height){
     let ratio = getDeviceRatio();
     canvas.width = width * ratio;
     canvas.height = height * ratio;
-    canvas.style.width = width + "px";
-    canvas.style.height = height + "px";
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
     //                    a     b  c  d      e  f
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     /**
@@ -90,12 +105,12 @@ function fixBlur(canvas, context, width, height){
     */
 }
 
-
+/** @param {String} message*/
 function displayError(message){
     displayMessage(message, true);
 }
 
-
+/** @param {String} message*/
 function displaySuccess(message){
     displayMessage(message, false);
 }
@@ -110,25 +125,29 @@ function displayMessage(message, error){
     let f = error ? console.error : console.log;
     f(message);
 
-    let msg_buf = document.getElementById("msg-buff");
-    let new_msg = document.createElement("div");
+    let msg_buf = document.getElementById('msg-buff');
+    let new_msg = document.createElement('div');
 
-    let clss = error ? "msg err" : "msg";
+    let clss = error ? 'msg err' : 'msg';
 
-    new_msg.setAttribute("class", clss);
+    new_msg.setAttribute('class', clss);
     new_msg.innerHTML = message;
     msg_buf.appendChild(new_msg);
 
     setTimeout(function(){ 
-        msg_buf.innerHTML = "";
+        msg_buf.innerHTML = '';
     }, 3000);
 }
 
-
+/** 
+ * Create a texture that will display over a cut's area to indicate its selected in proof mode
+ * 
+ * @param {String} inner_style - fill style of the cut 
+ * @returns {CanvasPattern}
+ * */
 function renderProofTexture(inner_style){
-    let scratch = document.createElement("canvas");
+    let scratch = document.createElement('canvas');
     let scratch_ctx = scratch.getContext('2d');
-    const CM = CanvasManager.getInstance();
 
     scratch.width = 50;
     scratch.height = 50;
@@ -145,9 +164,10 @@ function renderProofTexture(inner_style){
 
 /**
 * Draw a dot on the current opened canvas
+*
 * @param {Point}
-* @param {Number|null} rad - radius of the dot, default 5
-* @param {String|null} col - color of the dot, default red
+* @param {Number|null} rad - radius of the dot, (default 10)
+* @param {String|null} col - color of the dot (default red)
 */
 function drawPoint(Point, rad = 10, col='red'){
     let CM = CanvasManager.getInstance();
@@ -169,4 +189,4 @@ export {
     displaySuccess,
     renderProofTexture,
     drawPoint
-}
+};

@@ -24,13 +24,21 @@ export var CanvasManager = (function(){
             instance = null;
         },
 
+        /** 
+        * @param {HTMLCanvasElement} canvas 
+        * @param {HTMLCanvasElement} mini_canvas
+        */
         init : function(canvas, mini_canvas){
             instance = createInstance(canvas, mini_canvas);
         },
 
+        /** 
+         * @returns {__CANVAS_MANAGER} 
+         * @throws If canvas manager is not initialized
+        */
         getInstance: function () {
             if (!instance) {
-                throw "Tried to get uninitialized canvas manager, call init first";
+                throw 'Tried to get uninitialized canvas manager, call init first';
             }
             return instance;
         }
@@ -51,8 +59,8 @@ class __CANVAS_MANAGER{
         this.Canvas = canvas;
         this.MiniCanvas = mini_canvas;
 
-        this.Context = this.Canvas.getContext("2d");
-        this.MiniContext = this.MiniCanvas.getContext("2d");
+        this.Context = this.Canvas.getContext('2d');
+        this.MiniContext = this.MiniCanvas.getContext('2d');
 
         this.animationRequest = null;
         this.m_width;
@@ -200,7 +208,7 @@ class __CANVAS_MANAGER{
 * @param {String} tgt - can either be "localStorage" | "file" | "string"
 */
 function saveState(tgt){
-    if(tgt !== "localStorage" && tgt !== "file" && tgt !== "string"){
+    if(tgt !== 'localStorage' && tgt !== 'file' && tgt !== 'string'){
         return;
     }
 
@@ -217,9 +225,9 @@ function saveState(tgt){
 
     let data = JSON.stringify(todo);
 
-    if(tgt === "string"){
+    if(tgt === 'string'){
         return data;
-    }else if(tgt === "localStorage"){
+    }else if(tgt === 'localStorage'){
         localStorage.setItem('save-state', data);
     }
 }
@@ -233,13 +241,13 @@ function saveState(tgt){
 * @returns {Array} of objects built from save data
 */
 function loadState(src, data = null){
-    if(src !== "localStorage" && src !== "file" && src !== "string"){
+    if(src !== 'localStorage' && src !== 'file' && src !== 'string'){
         return;
     }
 
     let CM = CanvasManager.getInstance();
 
-    if(src === "localStorage"){
+    if(src === 'localStorage'){
         data = JSON.parse(localStorage.getItem('save-state'));
     }else{
         data = JSON.parse(data);
@@ -249,7 +257,7 @@ function loadState(src, data = null){
     for(let x of data){
         let tmp = JSON.parse(x);
 
-        if(typeof tmp["border_rad"] === "number"){
+        if(typeof tmp['border_rad'] === 'number'){
             //cut
             let c = rebuildCut(tmp);
             ret.push(c);
@@ -285,7 +293,7 @@ function rebuildCut(data){
     }
 
     let cb = new CutBorder(null);
-    let cb_data = JSON.parse(ret["cut_border"]);
+    let cb_data = JSON.parse(ret['cut_border']);
     for(let prop in cb_data){
         cb[prop] = cb_data[prop];
     }
@@ -298,13 +306,13 @@ function rebuildCut(data){
 
 
 function rebuildSymbol(data){
-    let ret = new Symbolic("", new Point(0,0) );
+    let ret = new Symbolic('', new Point(0,0) );
 
     for(let prop in data){
         ret[prop] = data[prop];
     }
 
-    ret.center = new Point(data["center"]["x"], data["center"]["y"]);
+    ret.center = new Point(data['center']['x'], data['center']['y']);
 
     return ret;
 }
@@ -313,4 +321,4 @@ function rebuildSymbol(data){
 export{
     saveState,
     loadState
-}
+};

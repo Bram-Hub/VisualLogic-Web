@@ -18,30 +18,30 @@ function loadMini(){
 
 
 function toggleMiniRenderer(){
-    let container = document.getElementById("mini-renderer");
-    let UM = UserInputManager.getInstance();
+    let container = document.getElementById('mini-renderer');
     let CM = CanvasManager.getInstance();
 
-    if(container.style.display != "none"){
-        container.style.display = "none";
+    if(container.style.display != 'none'){
+        container.style.display = 'none';
         cancelAnimationFrame(CM.animationRequest);
         CM.is_mini_open = false;
         toggleMode();
     }else{
-        container.style.display = "block";
+        container.style.display = 'block';
         toggleMode();
         loadMini();
         CM.is_mini_open = true;
     }
 
-    let btn = document.getElementById("exit-mini");
-    btn.style.left = CM.MiniCanvas.offsetLeft + "px";
-    btn = document.getElementById("insert-graph");
-    btn.style.left = (CM.MiniCanvas.offsetLeft + 60) + "px";
+    let btn = document.getElementById('exit-mini');
+    btn.style.left = CM.MiniCanvas.offsetLeft + 'px';
+    btn = document.getElementById('insert-graph');
+    btn.style.left = (CM.MiniCanvas.offsetLeft + 60) + 'px';
 }
 
 
 //main application loop
+//TODO: reduce duplication between rednering miniCanvas and normal canvas
 function renderMiniCanvas(){
     let CM = CanvasManager.getInstance();
     let UM = UserInputManager.getInstance();
@@ -51,15 +51,15 @@ function renderMiniCanvas(){
 
 
     if( DEBUG ){
-        document.getElementById("debug").innerHTML = "";
+        document.getElementById('debug').innerHTML = '';
     }
 
     for( let c of CM.s_cuts ){
         c.update();
 
         if ( c.is_mouse_over && DEBUG ){
-            document.getElementById("debug").innerHTML = c.toString() + 
-            "<br>Level : " + c.level.toString();
+            document.getElementById('debug').innerHTML = c.toString() + 
+            '<br>Level : ' + c.level.toString();
         }
 
 
@@ -75,7 +75,7 @@ function renderMiniCanvas(){
         //symSelectionControl(s);
 
         if ( s.is_mouse_over && DEBUG ){
-            document.getElementById("debug").innerHTML = s.toString();
+            document.getElementById('debug').innerHTML = s.toString();
         }
 
 
@@ -95,7 +95,7 @@ function renderMiniCanvas(){
 
     //we released the mouse and a temporary cut exists, now create it
     if ( !(CM.tmp_cut === null) && !UM.is_mouse_down ){
-        addCut(CM.tmp_cut);
+        CM.addCut(CM.tmp_cut);
     }
 
 
@@ -112,4 +112,4 @@ function renderMiniCanvas(){
 
 export {
     toggleMiniRenderer
-}
+};

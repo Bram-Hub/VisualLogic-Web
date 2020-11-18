@@ -47,4 +47,4 @@ function drawVector(v){
 export {
     Vector,
     drawVector
-}
+};

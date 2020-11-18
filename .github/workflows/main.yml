@@ -23,3 +23,23 @@ jobs:
       run: npm install
     - name: Run NPM test
       run: npm test
+      
+  eslint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2.1.2
+      with:
+        node-version: '14'
+    - name: Cache Node Modules
+      uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-cache-node-modules-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-cache-node-modules-
+    - name: Install Node Modules
+      run: npm install
+    - name: Run Lint 
+      run: npm run lint 
