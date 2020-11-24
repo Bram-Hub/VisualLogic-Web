@@ -11,7 +11,5 @@ describe('Vector tests', () => {
 		expect(v.r).toBe(1);
 		expect(v.left_to_right).toBe(true);
 		expect(v.angle_degrees).toBe(90);
-
-        drawVector(v);
 	});
 });
