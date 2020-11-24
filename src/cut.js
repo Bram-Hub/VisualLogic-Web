@@ -9,7 +9,7 @@ import {
     getInteriorBoundingBox,
 } from './lib/math.js';
 import {Vector, drawVector} from './lib/vector.js';
-import {renderProofTexture, drawPoint} from './renderer.js';
+import {renderProofTexture} from './renderer.js';
 
 /** @typedef { import('./lib/point.js').Point } Point */
 
@@ -199,9 +199,9 @@ class Cut{
 
     serialize(){
         function replacer(key, value){
-            if(key === "cut_border"){
+            if(key === 'cut_border'){
                 return value.serialize();
-            }else if(key === "child_syms" || key === "child_cuts"){
+            }else if(key === 'child_syms' || key === 'child_cuts'){
                 let r = [];
                 for(let x of value){
                     r.push(x.id);
@@ -234,7 +234,7 @@ function drawCut(cut){
     context.strokeStyle = cut === UM.obj_under_mouse ? 'blue' : 'black';
 
     if(cut.is_mouse_in_border && !UM.is_proof_mode){
-        context.strokeStyle = "lightblue";
+        context.strokeStyle = 'lightblue';
     }
 
     context.lineWidth = cut.border_rad;
@@ -258,7 +258,7 @@ function drawCut(cut){
         );
 
         let i_bb = cut.interier_bounding_box;
-       // console.log(bb);
+        // console.log(bb);
         context.rect(
             i_bb[0],i_bb[1],i_bb[2],i_bb[3]
         );
@@ -268,10 +268,10 @@ function drawCut(cut){
 
     //now draw inner cut
 
-    let inner_style = "#A9A9A9";
+    let inner_style = '#A9A9A9';
 
     if(cut.level % 2 === 0){
-        inner_style = "white";
+        inner_style = 'white';
     }
 
     if(cut === UM.obj_under_mouse){
@@ -314,8 +314,6 @@ class CutBorder{
         let UM = UserInputManager.getInstance();
         let dx = (new_pos.x - UM.last_mouse_pos.x) * this.scale_speed;
         let dy = (new_pos.y - UM.last_mouse_pos.y) * this.scale_speed;
-
-        let v = new Vector(UM.last_mouse_pos, new_pos);
         let c = this.parent;
 
         if( new_pos.leftOf(c.center) ){
@@ -341,7 +339,7 @@ class CutBorder{
 
     serialize(){
         function replacer(key,value){
-            if(key === "parent"){
+            if(key === 'parent'){
                 return value.id;
             }else{
                 return value;
@@ -386,6 +384,12 @@ function isMouseInBorder(cut){
 }
 
 
+/** 
+ * Depending on the mouse position on the cut border select a cursor to indicate what direction to scale under
+ * 
+ * @param {Cut} cut 
+ * @returns {String} 
+ */
 function updateCursor(cut){
     //depending on what quardrant we're in, update the cursor 
     //if we're on the border to indicate resizing
@@ -393,23 +397,28 @@ function updateCursor(cut){
     let v = new Vector(UserInputManager.getInstance().mouse_pos, cut.center);
     let a = v.angle_degrees;
 
-    let ptr = "pointer";
+    let ptr = 'pointer';
     if( isWithinTollerance(a,270,10) || isWithinTollerance(a,90,20) ){
-        ptr = "ns-resize";
+        ptr = 'ns-resize';
     }else if( (a > 110 && a < 170) || (a > 290 && a < 340) ){
-        ptr = "nesw-resize";
+        ptr = 'nesw-resize';
     }else if( isWithinTollerance(a, 180, 20) || isWithinTollerance(a,360,20) || a < 20){
-        ptr = "ew-resize";
+        ptr = 'ew-resize';
     }else if( (a > 200 && a < 250) || (a > 20 && a < 70) ){
-        ptr = "nwse-resize";
+        ptr = 'nwse-resize';
     }else{
-        ptr = "default";
+        ptr = 'default';
     }
 
-    document.getElementById("canvas").style.cursor = ptr; 
+    document.getElementById('canvas').style.cursor = ptr; 
     return ptr;
 }
 
+/**
+ * draw a temporay cut to the user to visualize where it will be craeted
+ * 
+ * @param {Point} pos 
+ */
 function drawTemporaryCut(pos){
     let CM = CanvasManager.getInstance();
     if ( CM.tmp_cut === null ){
@@ -515,4 +524,4 @@ export{
     getInnerMostCutWithSymbol,
     CutBorder,
     getInnerMostCut
-}
+};

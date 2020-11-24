@@ -1,8 +1,7 @@
 import {CanvasManager} from './canvasManager.js';
-import {UserInputManager, toggleMode} from './userInput.js';
+import {UserInputManager} from './userInput.js';
 import {Point} from './lib/point.js';
 import {getRandomString} from './main.js';
-import {CutManager} from './cutmanager.js';
 import {isPointWithinRect} from './lib/math.js';
 import {DEBUG} from './main.js';
 /** @typedef { import('./lib/point.js').Point } Point */
@@ -12,10 +11,10 @@ import {DEBUG} from './main.js';
 * Called symbolic since Symbol reserved by JS 
 */
 class Symbolic{
-    /**
-    * @constructor 
-    * @param {String} The charactor representing the symbol
-    */
+    /** 
+     * @param {String} letter charactor representing the symbol
+     * @param {Point} position
+     */
     constructor(letter, position){
 
         this.letter = letter;
@@ -47,6 +46,12 @@ class Symbolic{
         }
     }
 
+    /**
+     * Update this objects position, if root the last mouse position will be updated as well
+     * 
+     * @param {Point} new_pos 
+     * @param {Boolean|null} root (true by default)
+    */
     updatePos( new_pos, root = true ){
         let UM = UserInputManager.getInstance(); 
         let dx = new_pos.x - UM.last_mouse_pos.x;
@@ -65,10 +70,20 @@ class Symbolic{
         }
     }
 
+    /** 
+     * Get this object's ID
+     * 
+     * @returns {String} 
+     * */
     toString(){
         return this.id;
     }
 
+    /**
+     * Serialize this object into a JSON string
+     *  
+     * @returns {String} 
+     * */
     serialize(){
         return JSON.stringify(this);
     }
@@ -83,13 +98,13 @@ class Symbolic{
 function drawSymbol(sym){
 
     let context = CanvasManager.getInstance().getContext();
-    context.fillStyle = sym.is_mouse_over ? "blue" : "black";
+    context.fillStyle = sym.is_mouse_over ? 'blue' : 'black';
 
     if(sym.is_proof_selected){
-        context.fillStyle = "green";
+        context.fillStyle = 'green';
     }
 
-    context.font = "italic 70px Times New Roman";
+    context.font = 'italic 70px Times New Roman';
 
     context.fillText(sym.letter, sym.real_x, sym.real_y); 
 
@@ -119,4 +134,4 @@ function isMouseOverSym(sym){
 export {
     Symbolic,
     drawSymbol,
-}
+};

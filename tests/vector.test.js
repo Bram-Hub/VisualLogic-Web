@@ -1,5 +1,5 @@
 
-import {Vector} from '../src/lib/vector.js';
+import {Vector, drawVector} from '../src/lib/vector.js';
 import {Point} from '../src/lib/point.js';
 
 describe('Vector tests', () => {

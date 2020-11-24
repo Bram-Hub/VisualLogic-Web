@@ -2,7 +2,7 @@ import {CanvasManager} from './canvasManager.js';
 import {Vector, drawVector} from './lib/vector.js';
 import {isWithinCut, getInnerMostCutWithSymbol} from './cut.js';
 
-//TODO remove
+//TODO remove cutManager and move logic into canvasManager
 
 function drawDistancesOfCuts(){
     let CM = CanvasManager.getInstance();
@@ -79,7 +79,7 @@ class __CUT_MANAGER{
 
     getById(id){
         let t = this.objs.get(id);
-        if ( typeof t === "undefined"){
+        if ( typeof t === 'undefined'){
             return null;
         }
 
@@ -136,4 +136,4 @@ class __CUT_MANAGER{
 export{
     drawDistancesOfCuts,
     CutManager
-}
+};

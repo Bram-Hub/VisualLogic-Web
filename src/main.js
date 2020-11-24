@@ -2,15 +2,15 @@ import {CanvasManager,saveState,loadState} from './canvasManager.js';
 import {onResize, renderGrid} from './renderer.js';
 import {UserInputManager, toggleMode} from './userInput.js';
 import {drawDistancesOfCuts} from './cutmanager.js';
-import {drawTemporaryCut, drawCut, getInnerMostCut} from './cut.js';
+import {drawTemporaryCut, drawCut} from './cut.js';
 import {drawSymbol} from './symbol.js';
 
 var DEBUG = false;
 
 window.onbeforeunload = () => {
     //save to browser before leaving
-    saveState("localStorage");
-}
+    saveState('localStorage');
+};
 
 /**
 * Entry Point of the program
@@ -18,15 +18,15 @@ window.onbeforeunload = () => {
 */
 window.onload = () => {
     //initialize application
-    let canvas = document.getElementById("canvas");
-    if ( !canvas || !canvas.getContext("2d")){
-        alert("Failed to initialized canvas element");
+    let canvas = document.getElementById('canvas');
+    if ( !canvas || !canvas.getContext('2d')){
+        alert('Failed to initialized canvas element');
         return;
     }
 
-    let mini_canvas = document.getElementById("mini-canvas");
-    if ( !mini_canvas || !mini_canvas.getContext("2d")){
-        alert("Failed to initialized mini canvas element");
+    let mini_canvas = document.getElementById('mini-canvas');
+    if ( !mini_canvas || !mini_canvas.getContext('2d')){
+        alert('Failed to initialized mini canvas element');
         return;
     }
 
@@ -35,7 +35,7 @@ window.onload = () => {
 
     //init the canvas dimensions
     onResize();
-    window.addEventListener("resize", onResize);
+    window.addEventListener('resize', onResize);
 
     //init user input
     UserInputManager.getInstance();
@@ -43,24 +43,24 @@ window.onload = () => {
     //localStorage.clear();
 
     //load default mode
-    let mode = localStorage.getItem("proof_mode");
-    if(!localStorage.getItem("proof_mode")){
-        localStorage.setItem("proof_mode", "active");
-    }else if(mode === "active"){
+    let mode = localStorage.getItem('proof_mode');
+    if(!localStorage.getItem('proof_mode')){
+        localStorage.setItem('proof_mode', 'active');
+    }else if(mode === 'active'){
         toggleMode();
     }
 
     //load previous data
-    if(localStorage.getItem("save-state")){
-        loadState("localStorage");
+    if(localStorage.getItem('save-state')){
+        loadState('localStorage');
     }
 
-//    pack(CanvasManager.getInstance().cuts[0]);
+    //    pack(CanvasManager.getInstance().cuts[0]);
 
     //start app
     renderLoop();
 
-}
+};
 
 
 //main application loop
@@ -73,7 +73,7 @@ function renderLoop(){
     UM.obj_under_mouse = null;
 
     if( DEBUG ){
-        document.getElementById("debug").innerHTML = "";
+        document.getElementById('debug').innerHTML = '';
     }
 
     for( let c of CM.cuts ){
@@ -81,11 +81,11 @@ function renderLoop(){
         c.update();
 
         if ( c.is_mouse_over && DEBUG ){
-            let childs = "<br>Child Cuts : <br>";
+            let childs = '<br>Child Cuts : <br>';
             for(let x of c.child_cuts){
-                childs += x.toString() + "<br>";
+                childs += x.toString() + '<br>';
             }
-            document.getElementById("debug").innerHTML = c.toString() +"<br>Level : " + c.level.toString() + childs + "<br>" + c.bounded_area.toString();
+            document.getElementById('debug').innerHTML = c.toString() +'<br>Level : ' + c.level.toString() + childs + '<br>' + c.bounded_area.toString();
         }
     }
 
@@ -93,8 +93,8 @@ function renderLoop(){
         s.update();
 
         if ( s.is_mouse_over && DEBUG ){
-            document.getElementById("debug").innerHTML = s.toString() +
-                "<br>Level : " + s.level.toString();
+            document.getElementById('debug').innerHTML = s.toString() +
+                '<br>Level : ' + s.level.toString();
         }
     }
 
@@ -119,7 +119,7 @@ function renderLoop(){
     }
 
     if (UM.current_obj && DEBUG){
-        document.getElementById("debug").innerHTML += "<br>Current : " + UM.current_obj.toString();
+        document.getElementById('debug').innerHTML += '<br>Current : ' + UM.current_obj.toString();
     }
 
     if ( DEBUG ){
@@ -138,7 +138,7 @@ function getRandomString(){
     var array = new Uint32Array(2);
 
     //TODO: find better way if window is not defined
-    if (typeof window.crypto !== "undefined"){
+    if (typeof window.crypto !== 'undefined'){
         window.crypto.getRandomValues(array);
     }else{
         for(let i = 0; i < array.length; i++){
@@ -157,4 +157,4 @@ function getRandomString(){
 export {
     getRandomString,
     DEBUG
-}
+};
