@@ -58,10 +58,9 @@ class __CANVAS_MANAGER{
 
         this.Canvas = canvas;
         this.MiniCanvas = mini_canvas;
-
         this.Context = this.Canvas.getContext('2d');
         this.MiniContext = this.MiniCanvas.getContext('2d');
-
+       
         this.animationRequest = null;
         this.m_width;
         this.m_height;
@@ -284,7 +283,10 @@ function loadState(src, data = null){
     return ret;
 }
 
-
+/**
+ * @param {Object} data 
+ * @returns {Cut}
+ */
 function rebuildCut(data){
     let ret = new Cut(new Point(0,0));
 
@@ -305,6 +307,11 @@ function rebuildCut(data){
 }
 
 
+/**
+ * 
+ * @param {Object} data
+ * @returns {Symbolic} 
+ */
 function rebuildSymbol(data){
     let ret = new Symbolic('', new Point(0,0) );
 
@@ -312,7 +319,10 @@ function rebuildSymbol(data){
         ret[prop] = data[prop];
     }
 
-    ret.center = new Point(data['center']['x'], data['center']['y']);
+    ret.center = new Point(
+        data['center']['x'], 
+        data['center']['y']
+    );
 
     return ret;
 }

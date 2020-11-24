@@ -1,13 +1,13 @@
-import {CanvasManager} from './canvasManager.js';
-import {Point} from './lib/point.js';
-import {transformPoint} from './lib/math.js';
-import {getDeviceRatio, displayError} from './renderer.js';
-import {CutManager} from './cutmanager.js';
 import {Cut, CutBorder, mouseOverInnerMost} from './cut.js';
-import {Symbolic} from './symbol.js';
-import {toggleMiniRenderer} from './minirenderer.js';
+import {getDeviceRatio, displayError} from './renderer.js';
 import {doubleCut, insertion} from './logic/rules.js';
+import {toggleMiniRenderer} from './minirenderer.js';
+import {CanvasManager} from './canvasManager.js';
+import {transformPoint} from './lib/math.js';
+import {CutManager} from './cutmanager.js';
 import {Subgraph} from './subgraph.js';
+import {Point} from './lib/point.js';
+import {Symbolic} from './symbol.js';
 
 var UserInputManager = (function(){
     var instance = null;
