@@ -16,6 +16,10 @@ export var CanvasManager = (function(){
     var instance = null;
  
     return {
+        /** Delete this singleton instance */
+        clear : function(){
+            instance = null;
+        },
         /** 
         * @param {HTMLCanvasElement} canvas 
         * @param {HTMLCanvasElement} mini_canvas
