@@ -19,6 +19,7 @@
 	<script type="module" src="src/logic/rules.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="index.css">
+	<title>VisualLogic-Web</title>
 </head>
 
 <p id="debug" style="position: absolute;z-index: 999;"></p>
@@ -42,6 +43,17 @@
 		<button id="deiteration-btn" class="btn">Deiteration</button>
 	</div>
 
+	<button id = "options-btn" class="btn">Options</button>
+	<div id="model-background" style="display: flex;">
+		<div id="model-panel">
+			Options Menu
+			<button id="close-btn" class="exit-btn" title="Close Button">X</button>
+			<br>
+			<hr>
+			<button id = "clear-btn" class="btn" title="Erase all canvas state data, and save data">Clear Canvas</button>
+		</div>
+	</div>
+
 </body>
 
 <div id="mini-renderer" style="display: none;">
@@ -54,5 +66,6 @@
 <div id="msg-buff">
 	<!-- <div class="msg"> </div> -->
 </div>
+
 
 </html>

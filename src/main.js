@@ -154,7 +154,15 @@ function getRandomString(){
     return ret;
 }
 
+/** Clear all canvas state data and whatever is stored in localstorage */
+function clearCanvas(){
+    CanvasManager.getInstance().clearData();
+    UserInputManager.getInstance().clearData();
+    localStorage.removeItem('save-state');
+}
+
 export {
     getRandomString,
+    clearCanvas,
     DEBUG
 };

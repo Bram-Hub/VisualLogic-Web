@@ -14,22 +14,18 @@ import {Point} from './lib/point.js';
 
 export var CanvasManager = (function(){
     var instance = null;
-
-    function createInstance(canvas, mini_canvas) {
-        return new __CANVAS_MANAGER(canvas, mini_canvas);
-    }
  
     return {
+        /** Delete this singleton instance */
         clear : function(){
             instance = null;
         },
-
         /** 
         * @param {HTMLCanvasElement} canvas 
         * @param {HTMLCanvasElement} mini_canvas
         */
         init : function(canvas, mini_canvas){
-            instance = createInstance(canvas, mini_canvas);
+            instance = new __CANVAS_MANAGER(canvas, mini_canvas);
         },
 
         /** 
@@ -73,6 +69,15 @@ class __CANVAS_MANAGER{
         this.proof_selected = [];
         this.id_map = {};
     }   
+
+    clearData(){
+        this.cuts = [];
+        this.syms = [];
+        this.s_cuts = [];
+        this.s_syms = [];
+        this.proof_selected = [];
+        this.id_map = {};
+    }
 
     /**
     * Get the current open context

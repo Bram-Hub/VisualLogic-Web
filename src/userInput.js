@@ -6,6 +6,7 @@ import {CanvasManager} from './canvasManager.js';
 import {transformPoint} from './lib/math.js';
 import {CutManager} from './cutmanager.js';
 import {Subgraph} from './subgraph.js';
+import {clearCanvas} from './main.js';
 import {Point} from './lib/point.js';
 import {Symbolic} from './symbol.js';
 
@@ -17,10 +18,6 @@ var UserInputManager = (function(){
     }
  
     return {
-        clear : function(){
-            instance = null;
-        },
-
         /** @returns {__USER_INPUT_MANAGER} */
         getInstance: function () {
             if (!instance) {
@@ -58,6 +55,7 @@ class __USER_INPUT_MANAGER{
 
         this.current_obj = null;
         this.obj_under_mouse = false;
+        this.is_options_menu_open = false;
 
         document.getElementById('toggle_mode').addEventListener('click', toggleMode);
         document.getElementById('insert-btn').addEventListener('click', toggleMiniRenderer);
@@ -72,12 +70,18 @@ class __USER_INPUT_MANAGER{
         });
         document.getElementById('iteration-btn').addEventListener('click', () => { displayError('not implemented'); });
         document.getElementById('deiteration-btn').addEventListener('click', () => { displayError('not implemented'); });
-
-
-        document.getElementById('dbl-cut-btn').disabled = true;
-        document.getElementById('insert-btn').disabled = true;
+        document.getElementById('close-btn').addEventListener('click', toggleOptions);
+        document.getElementById('options-btn').addEventListener('click', toggleOptions);
+        document.getElementById('clear-btn').addEventListener('click', clearCanvas);
         
         toggleProofButtons();
+        toggleOptions();
+    }
+
+    clearData(){
+        this.current_obj = null;
+        this.obj_under_mouse = false;
+        toggleOptions();
     }
 
     update(){
@@ -346,6 +350,12 @@ function toggleInsertionButton(){
 function toggleProofButtons(){
     toggleDoubleCutButton();
     toggleInsertionButton();
+}
+
+
+function toggleOptions(){
+    let tgt = document.getElementById('model-background');
+    tgt.style.display = tgt.style.display === 'flex' ? 'none' : 'flex';  
 }
 
 
