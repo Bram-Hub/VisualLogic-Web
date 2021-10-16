@@ -19,7 +19,7 @@ Visual Logic is a tool for formal logic by manipulating [Existential Graphs](htt
 Start by cloning the project, installing dependencies and then run the 
 page locally.
 
-Dependencies are managed by `npm`, current the following packages are used:
+Dependencies are managed by `npm`, currently the following packages are used:
 
 - [Jest](https://jestjs.io/) - used for testing
 - [serve](https://www.npmjs.com/package/serve) - used to run a local development server
