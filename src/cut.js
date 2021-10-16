@@ -424,8 +424,8 @@ function drawTemporaryCut(pos){
     if ( CM.tmp_cut === null ){
         CM.tmp_origin = pos;
         CM.tmp_cut = new Cut(CM.tmp_origin);
-        CM.tmp_cut.rad_x = 1;
-        CM.tmp_cut.rad_y = 1;
+        CM.tmp_cut.rad_x = 0;
+        CM.tmp_cut.rad_y = 0;
     }
 
     let v = new Vector(CM.tmp_origin, pos);
@@ -446,6 +446,8 @@ function drawTemporaryCut(pos){
     context.globalAlpha = 0.5;
     drawCut(CM.tmp_cut);
     context.restore();
+
+    CM.tmp_cut.update();
 }
 
 
