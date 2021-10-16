@@ -37,11 +37,6 @@ window.onload = () => {
     onResize();
     window.addEventListener('resize', onResize);
 
-    //init user input
-    UserInputManager.getInstance();
-
-    //localStorage.clear();
-
     //load default mode
     let mode = localStorage.getItem('proof_mode');
     if(!localStorage.getItem('proof_mode')){
@@ -55,7 +50,8 @@ window.onload = () => {
         loadState('localStorage');
     }
 
-    //    pack(CanvasManager.getInstance().cuts[0]);
+    //init user input
+    UserInputManager.getInstance();
 
     //start app
     renderLoop();

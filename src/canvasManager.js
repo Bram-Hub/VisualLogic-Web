@@ -283,6 +283,10 @@ function loadState(src, data = null){
         for(let i = 0 ; i < x.child_syms.length; i++){
             x.child_syms[i] = CM.id_map[x.child_syms[i]];
         }
+
+        if(x.is_proof_selected){
+            CM.addProofSelected(x);
+        }
     }
 
     return ret;
