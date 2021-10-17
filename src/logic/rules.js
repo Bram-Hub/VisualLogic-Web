@@ -1,6 +1,6 @@
 import {displaySuccess, displayError} from '../renderer.js';
 import {CanvasManager} from '../canvasManager.js';
-import {deleteObject} from '../userInput.js';
+import {deleteObject, deleteObjectRecursive} from '../userInput.js';
 import {Cut} from '../cut.js';
 import {Symbolic} from '../symbol.js';
 import {Point} from '../lib/point.js';
@@ -138,11 +138,39 @@ function insertion(subgraph){
 /**
 * Erasure erase any graph from even level
 *
-* @param {Subgraph} subgraph
 */
-
 function erasure(){
-    throw 'TODO';
+    let CM = CanvasManager.getInstance();
+
+    if(CM.proof_selected.length !== 1){
+        displayError('Can only apply erasure to 1 subgraph at a time');
+        return;
+    }
+
+    let tgt = CM.proof_selected[0];
+    if(tgt instanceof Symbolic){
+
+        if(tgt.level % 2 != 0){
+            displayError('Can only apply erasure to subgraph on an even level');
+            return;
+        }
+
+
+        deleteObject(tgt);
+        displaySuccess('Erasure Complete');
+        return;
+    }
+
+
+    //a cut has its own level, but is considered to be on its parent's level
+    //so check if odd in this case
+    if(tgt.level % 2 == 0){
+        displayError('Can only apply erasure to subgraph on an even level');
+        return;
+    }
+
+    deleteObjectRecursive(tgt);
+    displaySuccess('Erasure Complete');
 }
 
 export{

@@ -1,6 +1,6 @@
+import {doubleCut, insertion, erasure} from './logic/rules.js';
 import {Cut, CutBorder, mouseOverInnerMost} from './cut.js';
 import {getDeviceRatio, displayError} from './renderer.js';
-import {doubleCut, insertion} from './logic/rules.js';
 import {toggleMiniRenderer} from './minirenderer.js';
 import {CanvasManager} from './canvasManager.js';
 import {transformPoint} from './lib/math.js';
@@ -67,6 +67,9 @@ class __USER_INPUT_MANAGER{
         document.getElementById('insert-graph').addEventListener('click', () => {
             toggleMiniRenderer();
             insertion( new Subgraph( CM.s_cuts.concat(CM.s_syms) ) );
+        });
+        document.getElementById('erasure-btn').addEventListener('click', () => {
+            erasure();
         });
         document.getElementById('iteration-btn').addEventListener('click', () => { displayError('not implemented'); });
         document.getElementById('deiteration-btn').addEventListener('click', () => { displayError('not implemented'); });
@@ -295,7 +298,7 @@ function toggleProofPanel(){
 }
 
 //TODO move somwhere else & remove obj from child cuts 
-/** @param{Cut|Symbolic} obj */
+/** @param {Cut|Symbolic} obj */
 function deleteObject(obj){
     let CM = CanvasManager.getInstance();
     function removeFromList(tgt, list){
@@ -323,6 +326,24 @@ function deleteObject(obj){
     removeFromList(obj,CM.proof_selected);
 }
 
+
+/**
+ * Delete an object and any child objs
+ * @param {Cut|Symbolic} obj
+ */ 
+function deleteObjectRecursive(obj){
+    if(obj instanceof Symbolic){
+        deleteObject(obj);
+        return;
+    }
+
+    const next = obj.getChildren();
+    deleteObject(obj);
+
+    next.forEach(child => deleteObjectRecursive(child));
+}
+
+
 function deleteObjectUnderMouse(){
     let UM = UserInputManager.getInstance();
     if(UM.obj_under_mouse === null){
@@ -347,9 +368,16 @@ function toggleInsertionButton(){
     document.getElementById('insert-btn').disabled = CM.proof_selected.length !== 1;
 }
 
+
+function toggleErasureButton(){
+    document.getElementById('erasure-btn').disabled =  CanvasManager.getInstance().proof_selected.length !== 1;
+}
+
+
 function toggleProofButtons(){
     toggleDoubleCutButton();
     toggleInsertionButton();
+    toggleErasureButton();
 }
 
 
@@ -363,5 +391,6 @@ export {
     UserInputManager,
     toggleMode,
     deleteObject,
+    deleteObjectRecursive,
     toggleProofButtons
 };
