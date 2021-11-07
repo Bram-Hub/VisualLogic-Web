@@ -66,7 +66,7 @@ function doubleCut(subgraph){
 * TODO: get current elements in tgt graph level and recalculate the subgraph with them
 */
 function insertion(subgraph){
-    let CM = CanvasManager.getInstance();
+    let CM = CanvasManager;
 
     //is there enough room
     if(CM.proof_selected.length !== 1){
@@ -87,7 +87,7 @@ function insertion(subgraph){
 
     let start_x = tgt.interier_bounding_box[0];
     let start_y = tgt.interier_bounding_box[1];
-    let UM = UserInputManager.getInstance();
+    let UM = UserInputManager;
 
     //copy over the elements from the subgraph into the real canvas
     for(let x of subgraph.elements){
@@ -140,7 +140,7 @@ function insertion(subgraph){
 *
 */
 function erasure(){
-    let CM = CanvasManager.getInstance();
+    let CM = CanvasManager;
 
     if(CM.proof_selected.length !== 1){
         displayError('Can only apply erasure to 1 subgraph at a time');

@@ -35,12 +35,12 @@ class Vector{
 * @param {Vector} v draws a given vector, primarily for debugging
 */
 function drawVector(v){
-    let CONTEXT = CanvasManager.getInstance().getContext();
+    const context = CanvasManager.getContext();
 
-    CONTEXT.beginPath();
-    CONTEXT.moveTo(v.start.x, v.start.y);
-    CONTEXT.lineTo(v.end.x,v.end.y);
-    CONTEXT.stroke();
+    context.beginPath();
+    context.moveTo(v.start.x, v.start.y);
+    context.lineTo(v.end.x,v.end.y);
+    context.stroke();
 }
 
 

@@ -1,7 +1,6 @@
-import {CutManager} from './cutmanager.js';
-import {Symbolic} from './symbol.js';
+import {Cut, CutBorder, isWithinCut, getInnerMostCutWithSymbol} from './cut.js';
 import {toggleProofButtons} from './userInput.js';
-import {Cut, CutBorder} from './cut.js';
+import {Symbolic} from './symbol.js';
 import {Point} from './lib/point.js';
 
 /**
@@ -11,38 +10,7 @@ import {Point} from './lib/point.js';
 
 
 /** Handles object being drawn on the canvas or mini renderer */
-
-export var CanvasManager = (function(){
-    var instance = null;
- 
-    return {
-        /** Delete this singleton instance */
-        clear : function(){
-            instance = null;
-        },
-        /** 
-        * @param {HTMLCanvasElement} canvas 
-        * @param {HTMLCanvasElement} mini_canvas
-        */
-        init : function(canvas, mini_canvas){
-            instance = new __CANVAS_MANAGER(canvas, mini_canvas);
-        },
-
-        /** 
-         * @returns {__CANVAS_MANAGER} 
-         * @throws If canvas manager is not initialized
-        */
-        getInstance: function () {
-            if (!instance) {
-                throw 'Tried to get uninitialized canvas manager, call init first';
-            }
-            return instance;
-        }
-    };
-})();
-
-
-class __CANVAS_MANAGER{
+class __CanvasManager{
     constructor(canvas, mini_canvas){
         this.cuts = [];
         this.syms = [];
@@ -107,14 +75,13 @@ class __CANVAS_MANAGER{
     */
     addCut(cut){
         cut.resetCenter();
-        CutManager.getInstance().addObj(cut);
 
         let tgt = this.is_mini_open ? this.s_cuts : this.cuts;
         //keep the cuts list sorted from biggest area to smallest
         tgt.push(cut);
         tgt.sort((a,b) => (b.area - a.area));
 
-        CanvasManager.getInstance().id_map[cut.id] = cut;
+        this.id_map[cut.id] = cut;
     }
 
 
@@ -128,9 +95,8 @@ class __CANVAS_MANAGER{
         let tgt = this.is_mini_open ? this.s_syms : this.syms;
 
         tgt.push(sym);
-        CutManager.getInstance().addObj(sym);
 
-        CanvasManager.getInstance().id_map[sym.id] = sym;
+        this.id_map[sym.id] = sym;
     }
 
 
@@ -203,20 +169,92 @@ class __CANVAS_MANAGER{
         return ret;
     }
 
+    /**
+    * save the application to a tgt destination
+    *
+    * @param {String} tgt - can either be "localStorage" | "file" | "string"
+    */
+    save(tgt = 'localStorage'){
+        if(tgt !== 'localStorage' && tgt !== 'file' && tgt !== 'string'){
+            return;
+        }
+    
+        let todo = [];
+    
+        for(let x of this.cuts){
+            todo.push( x.serialize() );
+        }
+    
+        for(let x of this.syms){
+            todo.push( x.serialize() );
+        }
+    
+        const data = JSON.stringify(todo);
+    
+        if(tgt === 'string'){
+            return data;
+        }else if(tgt === 'localStorage'){
+            localStorage.setItem('save-state', data);
+        }
+    }
+
+    /**
+     * Recalculate cuts by updating which ones are children of which
+     * TODO: find better time to calc this from
+     * TODO: reduce search space of which Cuts to recalc
+     */
+    recalculateCuts(){
+        let CM = CanvasManager;
+        for(let c of CM.getCuts()){
+            c.level = 1;
+            c.child_syms = [];
+            c.child_cuts = [];
+        }
+
+        
+        for(let i of CM.getCuts()){
+            for(let j of CM.getCuts()){
+                if ( i.id === j.id ){
+                    continue;
+                }
+
+                if ( isWithinCut(i,j) || isWithinCut(j,i) ){
+
+                    if ( i.area > j.area ){
+                        i.addChildCut(j);
+                        j.level = i.level + 1;
+                    }
+                }
+
+            }
+
+
+        }
+
+
+        for(let c of CM.getCuts()){
+            //update any symbols
+            for(let s of CM.getSyms()){
+                if( isWithinCut(s, c) ){
+                    //add this to the innermost in this cut
+                    s.level = c.level;
+                    getInnerMostCutWithSymbol(c, s).addChildSym(s);
+                }
+            }
+        }
+
+
+    }
+
 }
 
 
-/**
-* save the application to a tgt destination
-*
-* @param {String} tgt - can either be "localStorage" | "file" | "string"
-*/
 function saveState(tgt){
     if(tgt !== 'localStorage' && tgt !== 'file' && tgt !== 'string'){
         return;
     }
 
-    let CM = CanvasManager.getInstance();
+    let CM = CanvasManager;
     let todo = [];
 
     for(let x of CM.cuts){
@@ -249,8 +287,6 @@ function loadState(src, data = null){
         return;
     }
 
-    let CM = CanvasManager.getInstance();
-
     if(src === 'localStorage'){
         data = JSON.parse(localStorage.getItem('save-state'));
     }else{
@@ -265,27 +301,27 @@ function loadState(src, data = null){
             //cut
             let c = rebuildCut(tmp);
             ret.push(c);
-            CM.addCut(c);
+            CanvasManager.addCut(c);
         }else{
             //symbolic
             let s = rebuildSymbol(tmp);
             ret.push(s);
-            CM.addSymbol(s);
+            CanvasManager.addSymbol(s);
         }
     }
 
     //once all the cuts have been created swap the ids with the objs
-    for(let x of CM.cuts){
+    for(let x of CanvasManager.cuts){
         for(let i = 0 ; i < x.child_cuts.length; i++){
-            x.child_cuts[i] = CM.id_map[x.child_cuts[i]];
+            x.child_cuts[i] = CanvasManager.id_map[x.child_cuts[i]];
         }
 
         for(let i = 0 ; i < x.child_syms.length; i++){
-            x.child_syms[i] = CM.id_map[x.child_syms[i]];
+            x.child_syms[i] = CanvasManager.id_map[x.child_syms[i]];
         }
 
         if(x.is_proof_selected){
-            CM.addProofSelected(x);
+            CanvasManager.addProofSelected(x);
         }
     }
 
@@ -337,7 +373,18 @@ function rebuildSymbol(data){
 }
 
 
+var CanvasManager;
+/**
+ * @param {HTMLCanvasElement} canvas 
+ * @param {HTMLCanvasElement} mini_canvas 
+ */
+function InitializeCanvasManager(canvas, mini_canvas){
+    CanvasManager = new __CanvasManager(canvas,mini_canvas);
+}
+
+
 export{
-    saveState,
+    CanvasManager,
+    InitializeCanvasManager,
     loadState
 };

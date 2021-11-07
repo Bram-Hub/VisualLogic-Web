@@ -6,7 +6,7 @@ import {drawSymbol} from './symbol.js';
 import {DEBUG} from './main.js';
 
 function loadMini(){
-    let CM = CanvasManager.getInstance();
+    let CM = CanvasManager;
     CM.is_mini_open = true;
 
     CM.m_width = CM.MiniCanvas.clientWidth;
@@ -19,7 +19,7 @@ function loadMini(){
 
 function toggleMiniRenderer(){
     let container = document.getElementById('mini-renderer');
-    let CM = CanvasManager.getInstance();
+    let CM = CanvasManager;
 
     if(container.style.display != 'none'){
         container.style.display = 'none';
@@ -43,8 +43,8 @@ function toggleMiniRenderer(){
 //main application loop
 //TODO: reduce duplication between rednering miniCanvas and normal canvas
 function renderMiniCanvas(){
-    let CM = CanvasManager.getInstance();
-    let UM = UserInputManager.getInstance();
+    let CM = CanvasManager;
+    let UM = UserInputManager;
 
     renderGrid(CM.MiniContext, CM.m_width, CM.m_height, 25);
     UM.update();

@@ -1,16 +1,10 @@
-import {CanvasManager,saveState,loadState} from './canvasManager.js';
-import {onResize, renderGrid} from './renderer.js';
-import {UserInputManager, toggleMode} from './userInput.js';
-import {drawDistancesOfCuts} from './cutmanager.js';
+import {CanvasManager, InitializeCanvasManager, loadState} from './canvasManager.js';
+import {onResize, renderGrid, drawDistancesOfCuts} from './renderer.js';
+import {UserInputManager, InitializeUserInputManager, toggleMode} from './userInput.js';
 import {drawTemporaryCut, drawCut} from './cut.js';
 import {drawSymbol} from './symbol.js';
 
 var DEBUG = false;
-
-window.onbeforeunload = () => {
-    //save to browser before leaving
-    saveState('localStorage');
-};
 
 /**
 * Entry Point of the program
@@ -30,7 +24,9 @@ window.onload = () => {
         return;
     }
 
-    CanvasManager.init(canvas, mini_canvas);
+    InitializeCanvasManager(canvas, mini_canvas);
+    InitializeUserInputManager();
+
     canvas.focus();
 
     //init the canvas dimensions
@@ -50,8 +46,11 @@ window.onload = () => {
         loadState('localStorage');
     }
 
-    //init user input
-    UserInputManager.getInstance();
+
+    window.onbeforeunload = () => {
+        //save to browser before leaving
+        CanvasManager.save();
+    };
 
     //start app
     renderLoop();
@@ -61,12 +60,12 @@ window.onload = () => {
 
 //main application loop
 function renderLoop(){
-    let CM = CanvasManager.getInstance();
-    let UM = UserInputManager.getInstance();
+    let CM = CanvasManager;
+    let UM = UserInputManager;
 
     renderGrid(CM.Context, CM.c_width, CM.c_height);
-    UM.update();
     UM.obj_under_mouse = null;
+    UM.update();
 
     if( DEBUG ){
         document.getElementById('debug').innerHTML = '';
@@ -150,10 +149,10 @@ function getRandomString(){
     return ret;
 }
 
-/** Clear all canvas state data and whatever is stored in localstorage */
+/** Clear all canvas state and whatever is stored in localstorage */
 function clearCanvas(){
-    CanvasManager.getInstance().clearData();
-    UserInputManager.getInstance().clearData();
+    CanvasManager.clearData();
+    UserInputManager.clearData();
     localStorage.removeItem('save-state');
 }
 

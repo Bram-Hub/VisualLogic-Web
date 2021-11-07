@@ -64,7 +64,7 @@ class Cut{
 
 
     update(){
-        let UM = UserInputManager.getInstance();
+        let UM = UserInputManager;
 
         this.is_mouse_in_border = isMouseInBorder(this);
         this.is_mouse_over = UM.is_proof_mode ? isMouseOverCut(this) : isMouseInCut(this) ;
@@ -111,7 +111,7 @@ class Cut{
     * @param {Boolean|null} root - is this the root obj to move or false if getting moved by another
     */
     updatePos( new_pos, root = true ){
-        let UM = UserInputManager.getInstance();
+        let UM = UserInputManager;
         let dx = new_pos.x - UM.last_mouse_pos.x;
         let dy = new_pos.y - UM.last_mouse_pos.y;
 
@@ -222,8 +222,8 @@ class Cut{
 * @param {Cut} cut
 */
 function drawCut(cut){
-    let context = CanvasManager.getInstance().getContext();
-    let UM = UserInputManager.getInstance();
+    let context = CanvasManager.getContext();
+    let UM = UserInputManager;
 
     let border_rad = 5;
 
@@ -311,7 +311,7 @@ class CutBorder{
     }
 
     updatePos(new_pos){
-        let UM = UserInputManager.getInstance();
+        let UM = UserInputManager;
         let dx = (new_pos.x - UM.last_mouse_pos.x) * this.scale_speed;
         let dy = (new_pos.y - UM.last_mouse_pos.y) * this.scale_speed;
         let c = this.parent;
@@ -356,7 +356,7 @@ class CutBorder{
 */
 function isMouseOverCut(cut){
     return isWithinEllipse(
-        UserInputManager.getInstance().mouse_pos, 
+        UserInputManager.mouse_pos, 
         cut.x, cut.y, cut.rad_x , cut.rad_y 
     );
 }
@@ -368,7 +368,7 @@ function isMouseOverCut(cut){
 */
 function isMouseInCut(cut){
     return isWithinEllipse(
-        UserInputManager.getInstance().mouse_pos,  
+        UserInputManager.mouse_pos,  
         cut.x, cut.y, 
         cut.rad_x - cut.border_rad , 
         cut.rad_y - cut.border_rad
@@ -394,7 +394,7 @@ function updateCursor(cut){
     //depending on what quardrant we're in, update the cursor 
     //if we're on the border to indicate resizing
 
-    let v = new Vector(UserInputManager.getInstance().mouse_pos, cut.center);
+    let v = new Vector(UserInputManager.mouse_pos, cut.center);
     let a = v.angle_degrees;
 
     let ptr = 'pointer';
@@ -420,7 +420,7 @@ function updateCursor(cut){
  * @param {Point} pos 
  */
 function drawTemporaryCut(pos){
-    let CM = CanvasManager.getInstance();
+    let CM = CanvasManager;
     if ( CM.tmp_cut === null ){
         CM.tmp_origin = pos;
         CM.tmp_cut = new Cut(CM.tmp_origin);

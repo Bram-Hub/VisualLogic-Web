@@ -39,7 +39,7 @@ class Symbolic{
     }
 
     update(){
-        let UM = UserInputManager.getInstance();
+        let UM = UserInputManager;
         this.is_mouse_over = isMouseOverSym(this);
         if (this.is_mouse_over){
             UM.obj_under_mouse = this;
@@ -53,7 +53,7 @@ class Symbolic{
      * @param {Boolean|null} root (true by default)
     */
     updatePos( new_pos, root = true ){
-        let UM = UserInputManager.getInstance(); 
+        let UM = UserInputManager; 
         let dx = new_pos.x - UM.last_mouse_pos.x;
         let dy = new_pos.y - UM.last_mouse_pos.y;
 
@@ -66,7 +66,7 @@ class Symbolic{
         this.center = new Point(this.real_x, this.real_y);
 
         if ( root ){
-            UserInputManager.getInstance().last_mouse_pos = new_pos;
+            UserInputManager.last_mouse_pos = new_pos;
         }
     }
 
@@ -97,7 +97,7 @@ class Symbolic{
 */
 function drawSymbol(sym){
 
-    let context = CanvasManager.getInstance().getContext();
+    let context = CanvasManager.getContext();
     context.fillStyle = sym.is_mouse_over ? 'blue' : 'black';
 
     if(sym.is_proof_selected){
@@ -124,7 +124,7 @@ function drawSymbol(sym){
 */
 function isMouseOverSym(sym){
     return isPointWithinRect(
-        UserInputManager.getInstance().mouse_pos, 
+        UserInputManager.mouse_pos, 
         sym.x - 25, sym.y - 25, 
         sym.width, sym.height
     );

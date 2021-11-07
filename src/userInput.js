@@ -4,46 +4,25 @@ import {getDeviceRatio, displayError} from './renderer.js';
 import {toggleMiniRenderer} from './minirenderer.js';
 import {CanvasManager} from './canvasManager.js';
 import {transformPoint} from './lib/math.js';
-import {CutManager} from './cutmanager.js';
 import {Subgraph} from './subgraph.js';
 import {clearCanvas} from './main.js';
 import {Point} from './lib/point.js';
 import {Symbolic} from './symbol.js';
 
-var UserInputManager = (function(){
-    var instance = null;
-
-    function createInstance() {
-        return new __USER_INPUT_MANAGER();
-    }
- 
-    return {
-        /** @returns {__USER_INPUT_MANAGER} */
-        getInstance: function () {
-            if (!instance) {
-                instance = createInstance();
-            }
-            return instance;
-        }
-    };
-})();
-
-
 /** Manages the user input state */
-class __USER_INPUT_MANAGER{
+class __UserInputManager{
     constructor(){
-        let CM = CanvasManager.getInstance();
-        let MINI_CANVAS = CM.MiniCanvas;
+        let MiniCanvas = CanvasManager.MiniCanvas;
 
-        CM.Canvas.addEventListener('mousedown', onMouseDown);
-        CM.Canvas.addEventListener('mouseup', onMouseUp);
-        CM.Canvas.addEventListener('mousemove', this.onMouseMove);
+        CanvasManager.Canvas.addEventListener('mousedown', onMouseDown);
+        CanvasManager.Canvas.addEventListener('mouseup', onMouseUp);
+        CanvasManager.Canvas.addEventListener('mousemove', this.onMouseMove);
         window.addEventListener('keydown', onKeyDown);
         window.addEventListener('keyup', onKeyUp);
 
-        MINI_CANVAS.addEventListener('mousedown', onMouseDown);
-        MINI_CANVAS.addEventListener('mouseup', onMouseUp);
-        MINI_CANVAS.addEventListener('mousemove', this.onMouseMove);
+        MiniCanvas.addEventListener('mousedown', onMouseDown);
+        MiniCanvas.addEventListener('mouseup', onMouseUp);
+        MiniCanvas.addEventListener('mousemove', this.onMouseMove);
 
         this.is_dragging = false;
         this.is_mouse_down = false;
@@ -98,7 +77,7 @@ class __USER_INPUT_MANAGER{
 
         if (!this.is_proof_mode){
             if ( this.is_dragging && !(this.current_obj === null) ){
-                this.current_obj.updatePos( UserInputManager.getInstance().mouse_pos );
+                this.current_obj.updatePos( UserInputManager.mouse_pos );
             }
         }
 
@@ -112,19 +91,26 @@ class __USER_INPUT_MANAGER{
         e.preventDefault();
         e.stopPropagation();
 
-        let UM = UserInputManager.getInstance();
-        UM.mouse_pos = getRealMousePos(e);
-        UM.is_moving = true;
+        UserInputManager.mouse_pos = getRealMousePos(e);
+        UserInputManager.is_moving = true;
 
         //TODO find a better a time to figure this out
-        CutManager.getInstance().recalculate();
+        CanvasManager.recalculateCuts();
     }
+}
+
+
+var UserInputManager;
+
+function InitializeUserInputManager(){
+    UserInputManager = new __UserInputManager();
 }
 
 /** @param {MouseEvent} e */
 function onMouseDown(e){
-    let CM = CanvasManager.getInstance();
-    let UM = UserInputManager.getInstance();
+    let CM = CanvasManager;
+    let UM = UserInputManager;
+
     UM.last_mouse_pos = getRealMousePos(e);
     UM.is_mouse_down = true;
 
@@ -181,10 +167,10 @@ function onMouseDown(e){
 
         UM.current_obj.is_proof_selected = !UM.current_obj.is_proof_selected;
         if(UM.current_obj.is_proof_selected){
-            CM.addProofSelected(UM.current_obj);
+            CM.addProofSelected(UserInputManager.current_obj);
         }else{
             //remove from list otherwise
-            CM.removeProofSelected(UM.current_obj);
+            CM.removeProofSelected(UserInputManager.current_obj);
         }
 
         return;
@@ -193,7 +179,7 @@ function onMouseDown(e){
 
     //need to perform check after we check if anything under mouse
     if(UM.is_shift_down && UM.is_proof_mode && UM.current_obj !== null){
-        UM.current_obj.is_proof_selected = !UM.current_obj.is_proof_selected;
+        UserInputManager.current_obj.is_proof_selected = !UserInputManager.current_obj.is_proof_selected;
 
         if(UM.current_obj.is_proof_selected){
             CM.addProofSelected(UM.current_obj);
@@ -207,9 +193,8 @@ function onMouseDown(e){
 
 
 function onMouseUp(){
-    let UM = UserInputManager.getInstance();
-    UM.is_mouse_down = false;
-    UM.current_obj = null;
+    UserInputManager.is_mouse_down = false;
+    UserInputManager.current_obj = null;
 }
 
 
@@ -231,27 +216,25 @@ function getRealMousePos(pos){
 
 /** @param {MouseEvent} e */
 function onKeyDown(e){
-    let UM = UserInputManager.getInstance();
     if ( e.code === 'ShiftLeft' || e.code === 'ShiftRight' ){
-        UM.is_shift_down = true;
+        UserInputManager.is_shift_down = true;
     }else if(e.code === 'ControlLeft' || e.code === 'ControlRight' ){
-        UM.is_ctrl_down = true;
+        UserInputManager.is_ctrl_down = true;
     }
 }
 
 
 /** @param {MouseEvent} e */
 function onKeyUp(e){
-    event.preventDefault();
-    let UM = UserInputManager.getInstance();
-    let CM = CanvasManager.getInstance();
+    e.preventDefault();
+    let UM = UserInputManager;
     if ( e.code === 'Escape' ){
         //user decides to not create a cut, clear the temporary
         CM.tmp_cut = null;
     }else if( e.code === 'ShiftLeft' || e.code === 'ShiftRight' ){
         UM.is_shift_down = false;
     }else if( isAlpha(e.code) && !UM.is_ctrl_down && e.code != 'KeyR' && !UM.is_proof_mode){
-        CM.addSymbol( new Symbolic(e.code[3], UM.mouse_pos ) );
+        CanvasManager.addSymbol( new Symbolic(e.code[3], UM.mouse_pos ) );
     }else if( (e.code === 'Delete' || e.code === 'Backspace') && !UM.is_proof_mode ){
         deleteObjectUnderMouse();
     }
@@ -273,8 +256,8 @@ function onKeyUp(e){
 * Toggles the different modes in VL, fired by onclick event
 */
 function toggleMode(){
-    let UM = UserInputManager.getInstance();
-    let CM = CanvasManager.getInstance();
+    let UM = UserInputManager;
+    let CM = CanvasManager;
 
     if(CM.is_mini_open){
         return;
@@ -294,13 +277,13 @@ function toggleMode(){
 
 function toggleProofPanel(){
     let tgt = document.getElementById('proof-panel');
-    tgt.style.display = UserInputManager.getInstance().is_proof_mode ? 'block' : 'none';
+    tgt.style.display = UserInputManager.is_proof_mode ? 'block' : 'none';
 }
 
 //TODO move somwhere else & remove obj from child cuts 
 /** @param {Cut|Symbolic} obj */
 function deleteObject(obj){
-    let CM = CanvasManager.getInstance();
+    let CM = CanvasManager;
     function removeFromList(tgt, list){
         for(let i = 0; i < list.length; i++){
             if ( list[i].id === tgt.id ){
@@ -345,7 +328,7 @@ function deleteObjectRecursive(obj){
 
 
 function deleteObjectUnderMouse(){
-    let UM = UserInputManager.getInstance();
+    let UM = UserInputManager;
     if(UM.obj_under_mouse === null){
         return;
     }
@@ -358,19 +341,17 @@ function deleteObjectUnderMouse(){
 
 
 function toggleDoubleCutButton(){
-    let CM = CanvasManager.getInstance();
-    document.getElementById('dbl-cut-btn').disabled = CM.proof_selected.length !== 2;
+    document.getElementById('dbl-cut-btn').disabled = CanvasManager.proof_selected.length !== 2;
 }
 
 
 function toggleInsertionButton(){
-    let CM = CanvasManager.getInstance();
-    document.getElementById('insert-btn').disabled = CM.proof_selected.length !== 1;
+    document.getElementById('insert-btn').disabled = CanvasManager.proof_selected.length !== 1;
 }
 
 
 function toggleErasureButton(){
-    document.getElementById('erasure-btn').disabled =  CanvasManager.getInstance().proof_selected.length !== 1;
+    document.getElementById('erasure-btn').disabled =  CanvasManager.proof_selected.length !== 1;
 }
 
 
@@ -382,13 +363,13 @@ function toggleProofButtons(){
 
 
 function toggleOptions(){
-    let tgt = document.getElementById('model-background');
+    const tgt = document.getElementById('model-background');
     tgt.style.display = tgt.style.display === 'flex' ? 'none' : 'flex';  
 }
 
-
 export {
     UserInputManager,
+    InitializeUserInputManager,
     toggleMode,
     deleteObject,
     deleteObjectRecursive,
