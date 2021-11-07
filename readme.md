@@ -63,7 +63,7 @@ The linter can be run with the command:
 npm run lint
 ```
 
-Some errors can be fixed automatically be eslint by running the command
+Some errors can be fixed automatically by eslint by running the command
 
 ```bash
 npm run lint:fix
