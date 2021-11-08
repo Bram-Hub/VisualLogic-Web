@@ -1,7 +1,6 @@
 import {CanvasManager} from './canvasManager.js';
 import {UserInputManager} from './userInput.js';
 import {Point} from './lib/point.js';
-import {getRandomString} from './main.js';
 import {isPointWithinRect} from './lib/math.js';
 import {DEBUG} from './main.js';
 /** @typedef { import('./lib/point.js').Point } Point */
@@ -30,7 +29,7 @@ class Symbolic{
         this.center = new Point(this.real_x, this.real_y);
         this.is_mouse_over = false;
 
-        this.id = getRandomString();
+        this.id = CanvasManager.getNextId();
         this.level = 1;
 
         this.is_proof_selected = false;
@@ -39,10 +38,16 @@ class Symbolic{
     }
 
     update(){
-        let UM = UserInputManager;
-        this.is_mouse_over = isMouseOverSym(this);
+        this.is_mouse_over = isPointWithinRect(
+            UserInputManager.mouse_pos, 
+            this.x - 25, 
+            this.y - 25, 
+            this.width, 
+            this.height
+        );
+
         if (this.is_mouse_over){
-            UM.obj_under_mouse = this;
+            UserInputManager.obj_under_mouse = this;
         }
     }
 
@@ -76,7 +81,7 @@ class Symbolic{
      * @returns {String} 
      * */
     toString(){
-        return this.id;
+        return this.id.toString();
     }
 
     /**
@@ -104,7 +109,9 @@ function drawSymbol(sym){
         context.fillStyle = 'green';
     }
 
-    context.font = 'italic 70px Times New Roman';
+    //TODO: store this somewhere and allow UI scaling with the size of a symbol
+    const font_size = '70px';
+    context.font = `italic ${font_size} Times New Roman`;
 
     context.fillText(sym.letter, sym.real_x, sym.real_y); 
 
@@ -114,22 +121,6 @@ function drawSymbol(sym){
         context.stroke();
     }
 }
-
-
-/**
-* is the mouse over a symbol
-* 
-* @param {Symbol} sym - symbol to check
-* @returns {Boolean}
-*/
-function isMouseOverSym(sym){
-    return isPointWithinRect(
-        UserInputManager.mouse_pos, 
-        sym.x - 25, sym.y - 25, 
-        sym.width, sym.height
-    );
-}
-
 
 export {
     Symbolic,

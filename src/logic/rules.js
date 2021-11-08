@@ -118,12 +118,11 @@ function insertion(subgraph){
 
     for(let x of subgraph.free_symbols){
         UM.last_mouse_pos = x.center;
-        console.log(UM.last_mouse_pos);
         x.updatePos( new Point( start_x, start_y + x.height), false );
 
         let new_width = x.width;
         let new_height = x.height;
-        console.log(start_x + new_width, tgt.interier_bounding_box[2]);
+
         if ( (start_x + new_width) <= tgt.interier_bounding_box[2] ){
             start_x += x.width;
         }else if( (start_y + new_height) <= tgt.interier_bounding_box[3] ){

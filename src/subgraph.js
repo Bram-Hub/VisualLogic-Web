@@ -1,6 +1,6 @@
+import { CanvasManager } from './canvasManager.js';
 import {Cut} from './cut.js';
 import {Symbolic} from './symbol.js';
-import {getRandomString} from '../src/main.js';
 
 /**
 * A subgraph is a collection of cuts and symbols together
@@ -13,7 +13,7 @@ class Subgraph{
     constructor(parts, root = null){
         this.elements = parts;
         this.root = root === null ? parts[0] : root;
-        this.id = getRandomString();
+        this.id = CanvasManager.getNextId();
         //map the elements by what level they're on
 
         this.levels = {};

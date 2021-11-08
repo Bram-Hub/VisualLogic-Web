@@ -9,7 +9,7 @@ import {Point} from './lib/point.js';
 */
 
 
-/** Handles object being drawn on the canvas or mini renderer */
+/** Handles object being drawn on the canvas or mini renderer & the state of the app */
 class __CanvasManager{
     constructor(canvas, mini_canvas){
         this.cuts = [];
@@ -36,6 +36,8 @@ class __CanvasManager{
 
         this.proof_selected = [];
         this.id_map = {};
+
+        this.last_id = 0;
     }   
 
     clearData(){
@@ -45,6 +47,7 @@ class __CanvasManager{
         this.s_syms = [];
         this.proof_selected = [];
         this.id_map = {};
+        this.last_id = 0;
     }
 
     /**
@@ -171,6 +174,7 @@ class __CanvasManager{
 
     /**
     * save the application to a tgt destination
+    * TODO support file downloads
     *
     * @param {String} tgt - can either be "localStorage" | "file" | "string"
     */
@@ -178,24 +182,28 @@ class __CanvasManager{
         if(tgt !== 'localStorage' && tgt !== 'file' && tgt !== 'string'){
             return;
         }
+
+        let objs = [];
+
+        this.cuts.forEach(cut => objs.push(cut.serialize()));
+        this.syms.forEach(sym => objs.push(sym.serialize()));
     
-        let todo = [];
-    
-        for(let x of this.cuts){
-            todo.push( x.serialize() );
-        }
-    
-        for(let x of this.syms){
-            todo.push( x.serialize() );
-        }
-    
-        const data = JSON.stringify(todo);
+        const data = JSON.stringify(objs);
     
         if(tgt === 'string'){
             return data;
         }else if(tgt === 'localStorage'){
             localStorage.setItem('save-state', data);
         }
+    }
+
+    /**
+     * Get a new ID for a symbol or cut
+     * @returns {Number}
+     */
+    getNextId(){
+        this.last_id++;
+        return this.last_id;
     }
 
     /**

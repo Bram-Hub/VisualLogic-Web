@@ -24,28 +24,26 @@ class __UserInputManager{
         MiniCanvas.addEventListener('mouseup', onMouseUp);
         MiniCanvas.addEventListener('mousemove', this.onMouseMove);
 
-        this.is_dragging = false;
         this.is_mouse_down = false;
         this.is_shift_down = false;
-        this.is_ctrl_down = false;
         this.mouse_pos = new Point(0,0);
         this.last_mouse_pos = this.mouse_pos;
         this.is_proof_mode = false;
 
         this.current_obj = null;
-        this.obj_under_mouse = false;
+        this.obj_under_mouse = null;
         this.is_options_menu_open = false;
 
         document.getElementById('toggle_mode').addEventListener('click', toggleMode);
         document.getElementById('insert-btn').addEventListener('click', toggleMiniRenderer);
         document.getElementById('exit-mini').addEventListener('click', toggleMiniRenderer);
         document.getElementById('dbl-cut-btn').addEventListener('click', () => {
-            doubleCut( new Subgraph(CM.proof_selected) );
+            doubleCut( new Subgraph( CanvasManager.proof_selected) );
             toggleDoubleCutButton();
         });
         document.getElementById('insert-graph').addEventListener('click', () => {
             toggleMiniRenderer();
-            insertion( new Subgraph( CM.s_cuts.concat(CM.s_syms) ) );
+            insertion( new Subgraph( CanvasManager.s_cuts.concat(CM.s_syms) ) );
         });
         document.getElementById('erasure-btn').addEventListener('click', () => {
             erasure();
@@ -62,21 +60,17 @@ class __UserInputManager{
 
     clearData(){
         this.current_obj = null;
-        this.obj_under_mouse = false;
+        this.obj_under_mouse = null;
+        this.is_mouse_down = false;
+        this.is_shift_down = false;
+        this.is_options_menu_open = false;
         toggleOptions();
     }
 
     update(){
-        this.updateUserInput();
-    }
-
-
-    updateUserInput(){
-        this.is_dragging = this.is_mouse_down && this.is_moving;
-        this.is_moving = false;
 
         if (!this.is_proof_mode){
-            if ( this.is_dragging && !(this.current_obj === null) ){
+            if ( this.current_obj !== null ){
                 this.current_obj.updatePos( UserInputManager.mouse_pos );
             }
         }
@@ -92,7 +86,6 @@ class __UserInputManager{
         e.stopPropagation();
 
         UserInputManager.mouse_pos = getRealMousePos(e);
-        UserInputManager.is_moving = true;
 
         //TODO find a better a time to figure this out
         CanvasManager.recalculateCuts();
@@ -218,37 +211,38 @@ function getRealMousePos(pos){
 function onKeyDown(e){
     if ( e.code === 'ShiftLeft' || e.code === 'ShiftRight' ){
         UserInputManager.is_shift_down = true;
-    }else if(e.code === 'ControlLeft' || e.code === 'ControlRight' ){
-        UserInputManager.is_ctrl_down = true;
     }
 }
 
 
 /** @param {MouseEvent} e */
 function onKeyUp(e){
-    e.preventDefault();
     let UM = UserInputManager;
+    
+    let isAlpha = (tgt) => {
+        if ( tgt.length != 4 ){
+            return false;
+        }
+
+        const n = tgt.charCodeAt(3);
+        return n >=65 && n <= 90;
+    }
+    
     if ( e.code === 'Escape' ){
         //user decides to not create a cut, clear the temporary
-        CM.tmp_cut = null;
-    }else if( e.code === 'ShiftLeft' || e.code === 'ShiftRight' ){
-        UM.is_shift_down = false;
-    }else if( isAlpha(e.code) && !UM.is_ctrl_down && e.code != 'KeyR' && !UM.is_proof_mode){
+        CanvasManager.tmp_cut = null;
+    }
+    
+    //prevent blocking page refresh
+    else if( isAlpha(e.code) && e.code != 'KeyR' && !UM.is_proof_mode){
         CanvasManager.addSymbol( new Symbolic(e.code[3], UM.mouse_pos ) );
-    }else if( (e.code === 'Delete' || e.code === 'Backspace') && !UM.is_proof_mode ){
+    }
+    
+    else if( (e.code === 'Delete' || e.code === 'Backspace') && !UM.is_proof_mode ){
         deleteObjectUnderMouse();
     }
 
-
-    UM.is_shift_down = UM.is_ctrl_down = false;
-    function isAlpha(tgt){
-        if ( tgt.length != 4 )
-            return false;
-
-        let n = tgt.charCodeAt(3);
-        return n >=65 && n <= 90;
-    }
-    e.stopPropagation();
+    UM.is_shift_down = false;    
 }
 
 

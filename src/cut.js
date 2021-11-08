@@ -1,6 +1,6 @@
 import {CanvasManager} from './canvasManager.js';
 import {UserInputManager} from './userInput.js';
-import {getRandomString, DEBUG} from './main.js';
+import {DEBUG} from './main.js';
 import {Point} from './lib/point.js';
 import {
     getEllipseArea, 
@@ -8,7 +8,7 @@ import {
     isWithinTollerance,
     getInteriorBoundingBox,
 } from './lib/math.js';
-import {Vector, drawVector} from './lib/vector.js';
+import {Vector} from './lib/vector.js';
 import {renderProofTexture} from './renderer.js';
 
 /** @typedef { import('./lib/point.js').Point } Point */
@@ -24,7 +24,7 @@ class Cut{
     constructor(pos){
         this.x = pos.x;
         this.y = pos.y;
-        this.id = getRandomString();
+        this.id = CanvasManager.getNextId();
 
         this.border_rad = 10;
         this.rad_x = 100 + this.border_rad;
@@ -76,12 +76,6 @@ class Cut{
 
         if (this.is_mouse_over){
             UM.obj_under_mouse = this;
-        }
-
-        for(let x of this.child_cuts){
-            if ( x.is_mouse_over ){
-                UM.obj_under_mouse = x;
-            }
         }
 
         this.bounding_box = [
@@ -139,7 +133,7 @@ class Cut{
 
 
     toString(){
-        return this.id;
+        return this.id.toString();
     }
 
 
@@ -180,20 +174,8 @@ class Cut{
     * @returns {Array}
     */
     getChildren(){
-        let ret = [];
-        for(let x of this.child_cuts){
-            if(x.level === this.level + 1){
-                ret.push(x);
-            }
-        }
-
-        for(let x of this.child_syms){
-            if(x.level === this.level){
-                ret.push(x);
-            }
-        }
-
-        return ret;
+        return this.child_cuts.filter(cut => cut.level === this.level+1).concat(
+            this.child_syms.filter(sym => sym.level === this.level));
     }
 
 
@@ -203,10 +185,7 @@ class Cut{
                 return value.serialize();
             }else if(key === 'child_syms' || key === 'child_cuts'){
                 let r = [];
-                for(let x of value){
-                    r.push(x.id);
-                }
-
+                value.forEach(val => r.push(val.id));
                 return r;
             }else{
                 return value;
@@ -301,7 +280,7 @@ function drawCut(cut){
 class CutBorder{
     constructor(par){
         this.parent = par;
-        this.id = getRandomString();
+        this.id = CanvasManager.getNextId();
 
         this.scale_speed = 1;
     }
@@ -334,7 +313,7 @@ class CutBorder{
     }
 
     toString(){
-        return this.id;
+        return this.id.toString();
     }
 
     serialize(){
@@ -431,7 +410,7 @@ function drawTemporaryCut(pos){
     let v = new Vector(CM.tmp_origin, pos);
 
     if ( DEBUG ){
-        drawVector(v);
+        v.drawVector();
     }
 
     CM.tmp_cut.rad_x = Math.abs(v.length);

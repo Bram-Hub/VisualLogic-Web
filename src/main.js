@@ -106,7 +106,7 @@ function renderLoop(){
         CM.addCut(CM.tmp_cut);
     }
 
-    if ( UM.is_mouse_down && UM.is_shift_down && !UM.is_proof_mode ){
+    if ( UM.is_mouse_down && UM.is_shift_down && !UM.is_proof_mode){
         drawTemporaryCut(UM.mouse_pos);
     }else{
         CM.tmp_cut = null;
@@ -124,31 +124,6 @@ function renderLoop(){
     CM.animationRequest = requestAnimationFrame(renderLoop);
 }
 
-
-/**
-* create a unique random string
-* @return {String}
-*/
-function getRandomString(){
-    var array = new Uint32Array(2);
-
-    //TODO: find better way if window is not defined
-    if (typeof window.crypto !== 'undefined'){
-        window.crypto.getRandomValues(array);
-    }else{
-        for(let i = 0; i < array.length; i++){
-            array[i] = Math.floor(Math.random() * Math.floor(500));
-        }
-    }
-
-    let ret = '';
-    for (let i = 0; i < array.length; i++) {
-        ret += array[i].toString();
-    }
-
-    return ret;
-}
-
 /** Clear all canvas state and whatever is stored in localstorage */
 function clearCanvas(){
     CanvasManager.clearData();
@@ -157,7 +132,6 @@ function clearCanvas(){
 }
 
 export {
-    getRandomString,
     clearCanvas,
     DEBUG
 };
