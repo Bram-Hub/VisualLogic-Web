@@ -1,6 +1,7 @@
 import {CanvasManager} from './canvasManager.js';
 import {UserInputManager} from './userInput.js';
 import {Point} from './lib/point.js';
+import {Vector} from './lib/vector.js';
 
 /**
 * Draws the background grid, this also acts as a method

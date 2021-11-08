@@ -257,32 +257,6 @@ class __CanvasManager{
 }
 
 
-function saveState(tgt){
-    if(tgt !== 'localStorage' && tgt !== 'file' && tgt !== 'string'){
-        return;
-    }
-
-    let CM = CanvasManager;
-    let todo = [];
-
-    for(let x of CM.cuts){
-        todo.push( x.serialize() );
-    }
-
-    for(let x of CM.syms){
-        todo.push( x.serialize() );
-    }
-
-    let data = JSON.stringify(todo);
-
-    if(tgt === 'string'){
-        return data;
-    }else if(tgt === 'localStorage'){
-        localStorage.setItem('save-state', data);
-    }
-}
-
-
 /**
 * load the application from a src destination
 *

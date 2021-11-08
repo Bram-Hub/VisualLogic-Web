@@ -43,7 +43,7 @@ class __UserInputManager{
         });
         document.getElementById('insert-graph').addEventListener('click', () => {
             toggleMiniRenderer();
-            insertion( new Subgraph( CanvasManager.s_cuts.concat(CM.s_syms) ) );
+            insertion( new Subgraph( CanvasManager.s_cuts.concat( CanvasManager.s_syms) ) );
         });
         document.getElementById('erasure-btn').addEventListener('click', () => {
             erasure();
@@ -226,7 +226,7 @@ function onKeyUp(e){
 
         const n = tgt.charCodeAt(3);
         return n >=65 && n <= 90;
-    }
+    };
     
     if ( e.code === 'Escape' ){
         //user decides to not create a cut, clear the temporary
