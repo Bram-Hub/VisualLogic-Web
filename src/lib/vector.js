@@ -1,6 +1,5 @@
 import {getDistance} from './math.js';
 import {CanvasManager} from '../canvasManager.js';
-/** @typedef { import('./lib/point.js').Point } Point */
 
 
 /**

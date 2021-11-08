@@ -6,7 +6,6 @@ import {Symbolic} from '../symbol.js';
 import {Point} from '../lib/point.js';
 import {UserInputManager} from '../userInput.js';
 
-/** @typedef { import('../subgraph.js').Subgraph } Subgraph */
 
 /**
 * Given two cuts seperated by 1 level, erase both of them

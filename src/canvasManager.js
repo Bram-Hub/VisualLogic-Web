@@ -3,11 +3,6 @@ import {toggleProofButtons} from './userInput.js';
 import {Symbolic} from './symbol.js';
 import {Point} from './lib/point.js';
 
-/**
-* @typedef { import('./cut.js').Cut } Cut 
-* @typedef { import('./symbol.js').Symbolic } Symbolic
-*/
-
 
 /** Handles object being drawn on the canvas or mini renderer & the state of the app */
 class __CanvasManager{
@@ -26,10 +21,10 @@ class __CanvasManager{
         this.MiniContext = this.MiniCanvas.getContext('2d');
        
         this.animationRequest = null;
-        this.m_width;
-        this.m_height;
-        this.c_width;
-        this.c_height;
+        this.m_width = 0;
+        this.m_height = 0;
+        this.c_width = window.innerWidth;
+        this.c_height = window.innerHeight;
 
         this.tmp_cut = null;
         this.tmp_origin = null;
@@ -125,6 +120,7 @@ class __CanvasManager{
     * @param {Cut|Symbolic} tgt
     */
     addProofSelected(tgt){
+        tgt.is_proof_selected = true;
         this.proof_selected.push(tgt);
         toggleProofButtons();
     }
@@ -138,39 +134,11 @@ class __CanvasManager{
         const index = this.proof_selected.indexOf(tgt);
         if(index > -1){
             this.proof_selected.splice(index,1);
+            tgt.is_proof_selected = false;
+            toggleProofButtons();
         }
-        toggleProofButtons();
     }
 
-    /**
-    * get all objects from a root obj
-    * if not given a root will select everything from the assertion plane (i.e everything)
-    *
-    * @param {Cut|Symbolic|null} root
-    */ 
-    getAllObjects(root = null){
-        let ret = [];
-        if(root === null){
-            return this.cuts.concat(this.syms);
-        }
-
-
-        if(root instanceof Symbolic){
-            //symbols have no children
-            return [];
-        }
-
-        for(let x of root.child_cuts){
-            ret.push(x);
-            ret.concat(this.getAllObjects(x));
-        }
-
-        for(let x of root.child_syms){
-            ret.push(x);
-        }
-
-        return ret;
-    }
 
     /**
     * save the application to a tgt destination

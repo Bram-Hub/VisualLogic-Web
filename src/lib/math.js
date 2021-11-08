@@ -1,5 +1,5 @@
 import {Point} from './point.js';
-/** @typedef { import('./point.js').Point } Point */
+
 
 /**
 * Given a point and a description of an ellipse determine if that point is 

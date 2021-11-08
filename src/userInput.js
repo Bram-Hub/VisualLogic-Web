@@ -107,78 +107,28 @@ function onMouseDown(e){
     UM.last_mouse_pos = getRealMousePos(e);
     UM.is_mouse_down = true;
 
-
     if ( UM.is_shift_down && !UM.is_proof_mode ){
         return;
     }
 
-
-    function isOverAnything(tgt_list){
-        for(let x of tgt_list){
-            
-            if((x instanceof Cut) && (x.is_mouse_in_border || mouseOverInnerMost(x).is_mouse_in_border) ){
-                UM.current_obj = x.cut_border;
-                return;
-            }
-
-            if(x instanceof CutBorder){
-                UM.current_obj = x;
-                return;
-            }
-
-            if(x.is_mouse_over){
-                UM.current_obj = (x instanceof Cut) ? mouseOverInnerMost(x) : x;
-            }
+    const overSyms = CM.getSyms().filter(sym => sym.is_mouse_over);
+    if(overSyms.length > 0){
+        UM.current_obj = overSyms[0];
+    }
+    else{
+        const overCuts = CM.getCuts().filter(cut => (cut.is_mouse_over || cut.is_mouse_in_border) && cut.level === 1);
+        if(overCuts.length > 0){
+            const innerMost = mouseOverInnerMost(overCuts[0]);
+            UM.current_obj = innerMost.is_mouse_in_border ? innerMost.cut_border : innerMost;
         }
-
-
     }
 
-
-    if(CM.is_mini_open){
-        isOverAnything(CM.s_cuts);
-        isOverAnything(CM.s_syms);
-    }else{
-        isOverAnything(CM.cuts);
-        isOverAnything(CM.syms);
-    }
-
-
-    //if CTRL + SHIFT select whatever gets clicked and all its children as 
-    //proof selected
-    if(UM.is_shift_down && UM.is_ctrl_down && UM.current_obj !== null){
-        for(let x of CM.getAllObjects(UM.current_obj)){
-            x.is_proof_selected = !x.is_proof_selected;
-            if(x.is_proof_selected){
-                CM.addProofSelected(x);
-            }else{
-                //remove from list otherwise
-                CM.removeProofSelected(x);
-            }
-        }
-
-
-        UM.current_obj.is_proof_selected = !UM.current_obj.is_proof_selected;
-        if(UM.current_obj.is_proof_selected){
+    //if CTRL + SHIFT select whatever gets clicked as proof selected
+    if(UM.is_shift_down && UM.current_obj !== null){
+        if(!UM.current_obj.is_proof_selected){
             CM.addProofSelected(UserInputManager.current_obj);
         }else{
-            //remove from list otherwise
             CM.removeProofSelected(UserInputManager.current_obj);
-        }
-
-        return;
-    }
-
-
-    //need to perform check after we check if anything under mouse
-    if(UM.is_shift_down && UM.is_proof_mode && UM.current_obj !== null){
-        UserInputManager.current_obj.is_proof_selected = !UserInputManager.current_obj.is_proof_selected;
-
-        if(UM.current_obj.is_proof_selected){
-            CM.addProofSelected(UM.current_obj);
-        }else{
-            //remove from list otherwise
-            CM.removeProofSelected(UM.current_obj);
         }
     }
 
@@ -206,6 +156,7 @@ function getRealMousePos(pos){
         new Point(pos.offsetX, pos.offsetY), getDeviceRatio()
     );
 }
+
 
 /** @param {MouseEvent} e */
 function onKeyDown(e){
@@ -273,6 +224,7 @@ function toggleProofPanel(){
     let tgt = document.getElementById('proof-panel');
     tgt.style.display = UserInputManager.is_proof_mode ? 'block' : 'none';
 }
+
 
 //TODO move somwhere else & remove obj from child cuts 
 /** @param {Cut|Symbolic} obj */

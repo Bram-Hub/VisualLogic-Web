@@ -4,7 +4,7 @@ import {UserInputManager, InitializeUserInputManager, toggleMode} from './userIn
 import {drawTemporaryCut, drawCut} from './cut.js';
 import {drawSymbol} from './symbol.js';
 
-var DEBUG = false;
+var DEBUG = document.getElementById('debug').dataset.debugMode === 'true';
 
 /**
 * Entry Point of the program

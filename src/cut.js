@@ -11,7 +11,6 @@ import {
 import {Vector} from './lib/vector.js';
 import {renderProofTexture} from './renderer.js';
 
-/** @typedef { import('./lib/point.js').Point } Point */
 
 /**
 * A cut represents a negation in the sheet of assertion
@@ -277,6 +276,9 @@ function drawCut(cut){
 }
 
 
+/**
+ * CutBorder represents the ring around a cut and is used for resizing a cut
+ */
 class CutBorder{
     constructor(par){
         this.parent = par;
@@ -328,6 +330,7 @@ class CutBorder{
     }
 }
 
+
 /**
 * return true if the mouse is over any point in the cut
 * this includes the border
@@ -339,6 +342,7 @@ function isMouseOverCut(cut){
         cut.x, cut.y, cut.rad_x , cut.rad_y 
     );
 }
+
 
 /**
 * return true if the mouse is inside the cut
@@ -354,6 +358,7 @@ function isMouseInCut(cut){
     );
 }
 
+
 /**
 * return true if the mouse is only within the border of a cut
 * @param {Cut} cut 
@@ -364,19 +369,15 @@ function isMouseInBorder(cut){
 
 
 /** 
- * Depending on the mouse position on the cut border select a cursor to indicate what direction to scale under
+ * Depending on the mouse position on the cut border select a cursor to indicate what direction to scale towards
  * 
  * @param {Cut} cut 
- * @returns {String} 
  */
 function updateCursor(cut){
-    //depending on what quardrant we're in, update the cursor 
-    //if we're on the border to indicate resizing
+    const a = new Vector(UserInputManager.mouse_pos, cut.center).angle_degrees;
 
-    let v = new Vector(UserInputManager.mouse_pos, cut.center);
-    let a = v.angle_degrees;
+    let ptr = 'default';
 
-    let ptr = 'pointer';
     if( isWithinTollerance(a,270,10) || isWithinTollerance(a,90,20) ){
         ptr = 'ns-resize';
     }else if( (a > 110 && a < 170) || (a > 290 && a < 340) ){
@@ -385,12 +386,9 @@ function updateCursor(cut){
         ptr = 'ew-resize';
     }else if( (a > 200 && a < 250) || (a > 20 && a < 70) ){
         ptr = 'nwse-resize';
-    }else{
-        ptr = 'default';
     }
 
     document.getElementById('canvas').style.cursor = ptr; 
-    return ptr;
 }
 
 /**
@@ -457,7 +455,7 @@ function isWithinCut(a,b){
 function getInnerMostCut(cut){
     let inner_most = null;
     for (let x of cut.child_cuts ){
-        if ( x.is_mouse_over ){
+        if ( x.is_mouse_over || x.is_mouse_in_border ){
             inner_most = getInnerMostCut(x);
         }
     }
