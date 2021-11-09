@@ -1,0 +1,6 @@
+* text=lf
+
+*.js text
+*.json text
+*.md text
+*.yml text

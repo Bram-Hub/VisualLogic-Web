@@ -1,48 +1,11 @@
-import {CutManager} from './cutmanager.js';
-import {Symbolic} from './symbol.js';
+import {Cut, CutBorder, isWithinCut, getInnerMostCutWithSymbol} from './cut.js';
 import {toggleProofButtons} from './userInput.js';
-import {Cut, CutBorder} from './cut.js';
+import {Symbolic} from './symbol.js';
 import {Point} from './lib/point.js';
 
-/**
-* @typedef { import('./cut.js').Cut } Cut 
-* @typedef { import('./symbol.js').Symbolic } Symbolic
-*/
 
-
-/** Handles object being drawn on the canvas or mini renderer */
-
-export var CanvasManager = (function(){
-    var instance = null;
- 
-    return {
-        /** Delete this singleton instance */
-        clear : function(){
-            instance = null;
-        },
-        /** 
-        * @param {HTMLCanvasElement} canvas 
-        * @param {HTMLCanvasElement} mini_canvas
-        */
-        init : function(canvas, mini_canvas){
-            instance = new __CANVAS_MANAGER(canvas, mini_canvas);
-        },
-
-        /** 
-         * @returns {__CANVAS_MANAGER} 
-         * @throws If canvas manager is not initialized
-        */
-        getInstance: function () {
-            if (!instance) {
-                throw 'Tried to get uninitialized canvas manager, call init first';
-            }
-            return instance;
-        }
-    };
-})();
-
-
-class __CANVAS_MANAGER{
+/** Handles object being drawn on the canvas or mini renderer & the state of the app */
+class __CanvasManager{
     constructor(canvas, mini_canvas){
         this.cuts = [];
         this.syms = [];
@@ -58,16 +21,17 @@ class __CANVAS_MANAGER{
         this.MiniContext = this.MiniCanvas.getContext('2d');
        
         this.animationRequest = null;
-        this.m_width;
-        this.m_height;
-        this.c_width;
-        this.c_height;
+        this.m_width = 0;
+        this.m_height = 0;
+        this.c_width = window.innerWidth;
+        this.c_height = window.innerHeight;
 
         this.tmp_cut = null;
-        this.tmp_origin = null;
 
         this.proof_selected = [];
         this.id_map = {};
+
+        this.last_id = 0;
     }   
 
     clearData(){
@@ -77,6 +41,7 @@ class __CANVAS_MANAGER{
         this.s_syms = [];
         this.proof_selected = [];
         this.id_map = {};
+        this.last_id = 0;
     }
 
     /**
@@ -107,14 +72,13 @@ class __CANVAS_MANAGER{
     */
     addCut(cut){
         cut.resetCenter();
-        CutManager.getInstance().addObj(cut);
 
         let tgt = this.is_mini_open ? this.s_cuts : this.cuts;
         //keep the cuts list sorted from biggest area to smallest
         tgt.push(cut);
         tgt.sort((a,b) => (b.area - a.area));
 
-        CanvasManager.getInstance().id_map[cut.id] = cut;
+        this.id_map[cut.id] = cut;
     }
 
 
@@ -128,9 +92,8 @@ class __CANVAS_MANAGER{
         let tgt = this.is_mini_open ? this.s_syms : this.syms;
 
         tgt.push(sym);
-        CutManager.getInstance().addObj(sym);
 
-        CanvasManager.getInstance().id_map[sym.id] = sym;
+        this.id_map[sym.id] = sym;
     }
 
 
@@ -156,6 +119,7 @@ class __CANVAS_MANAGER{
     * @param {Cut|Symbolic} tgt
     */
     addProofSelected(tgt){
+        tgt.is_proof_selected = true;
         this.proof_selected.push(tgt);
         toggleProofButtons();
     }
@@ -169,128 +133,145 @@ class __CANVAS_MANAGER{
         const index = this.proof_selected.indexOf(tgt);
         if(index > -1){
             this.proof_selected.splice(index,1);
+            tgt.is_proof_selected = false;
+            toggleProofButtons();
         }
-        toggleProofButtons();
+    }
+
+
+    /**
+    * save the application to a tgt destination
+    * TODO support file downloads
+    *
+    * @param {String} tgt - can either be "localStorage" | "file" | "string"
+    */
+    save(tgt = 'localStorage'){
+        if(tgt !== 'localStorage' && tgt !== 'file' && tgt !== 'string'){
+            return;
+        }
+
+        let objs = [];
+
+        this.cuts.forEach(cut => objs.push(cut.serialize()));
+        this.syms.forEach(sym => objs.push(sym.serialize()));
+    
+        const data = JSON.stringify(objs);
+    
+        if(tgt === 'string'){
+            return data;
+        }else if(tgt === 'localStorage'){
+            localStorage.setItem('save-state', data);
+        }
     }
 
     /**
-    * get all objects from a root obj
-    * if not given a root will select everything from the assertion plane (i.e everything)
+     * Get a new ID for a symbol or cut
+     * @returns {Number}
+     */
+    getNextId(){
+        this.last_id++;
+        return this.last_id;
+    }
+
+    /**
+     * Recalculate cuts by updating which ones are children of which
+     * TODO: find better time to calc this from
+     * TODO: reduce search space of which Cuts to recalc
+     */
+    recalculateCuts(){
+        let CM = CanvasManager;
+        for(let c of CM.getCuts()){
+            c.level = 1;
+            c.child_syms = [];
+            c.child_cuts = [];
+        }
+
+        
+        for(let i of CM.getCuts()){
+            for(let j of CM.getCuts()){
+                if ( i.id === j.id ){
+                    continue;
+                }
+
+                if ( isWithinCut(i,j) || isWithinCut(j,i) ){
+
+                    if ( i.area > j.area ){
+                        i.addChildCut(j);
+                        j.level = i.level + 1;
+                    }
+                }
+
+            }
+
+
+        }
+
+
+        for(let c of CM.getCuts()){
+            //update any symbols
+            for(let s of CM.getSyms()){
+                if( isWithinCut(s, c) ){
+                    //add this to the innermost in this cut
+                    s.level = c.level;
+                    getInnerMostCutWithSymbol(c, s).addChildSym(s);
+                }
+            }
+        }
+
+
+    }
+
+
+    /**
+    * load the application from a src destination
     *
-    * @param {Cut|Symbolic|null} root
-    */ 
-    getAllObjects(root = null){
-        let ret = [];
-        if(root === null){
-            return this.cuts.concat(this.syms);
+    * @param {String} tgt - can either be "localStorage" | "file" | "string"
+    * @param {String|null} data - if src is string, data is the string to parse
+    * @returns {Array} of objects built from save data
+    */
+    loadState(src, data = null){
+        if(src !== 'localStorage' && src !== 'file' && src !== 'string'){
+            return;
         }
 
-
-        if(root instanceof Symbolic){
-            //symbols have no children
-            return [];
-        }
-
-        for(let x of root.child_cuts){
-            ret.push(x);
-            ret.concat(this.getAllObjects(x));
-        }
-
-        for(let x of root.child_syms){
-            ret.push(x);
-        }
-
-        return ret;
-    }
-
-}
-
-
-/**
-* save the application to a tgt destination
-*
-* @param {String} tgt - can either be "localStorage" | "file" | "string"
-*/
-function saveState(tgt){
-    if(tgt !== 'localStorage' && tgt !== 'file' && tgt !== 'string'){
-        return;
-    }
-
-    let CM = CanvasManager.getInstance();
-    let todo = [];
-
-    for(let x of CM.cuts){
-        todo.push( x.serialize() );
-    }
-
-    for(let x of CM.syms){
-        todo.push( x.serialize() );
-    }
-
-    let data = JSON.stringify(todo);
-
-    if(tgt === 'string'){
-        return data;
-    }else if(tgt === 'localStorage'){
-        localStorage.setItem('save-state', data);
-    }
-}
-
-
-/**
-* load the application from a src destination
-*
-* @param {String} tgt - can either be "localStorage" | "file" | "string"
-* @param {String|null} data - if src is string, data is the string to parse
-* @returns {Array} of objects built from save data
-*/
-function loadState(src, data = null){
-    if(src !== 'localStorage' && src !== 'file' && src !== 'string'){
-        return;
-    }
-
-    let CM = CanvasManager.getInstance();
-
-    if(src === 'localStorage'){
-        data = JSON.parse(localStorage.getItem('save-state'));
-    }else{
-        data = JSON.parse(data);
-    }
-
-    let ret = [];
-    for(let x of data){
-        let tmp = JSON.parse(x);
-
-        if(typeof tmp['border_rad'] === 'number'){
-            //cut
-            let c = rebuildCut(tmp);
-            ret.push(c);
-            CM.addCut(c);
+        if(src === 'localStorage'){
+            data = JSON.parse(localStorage.getItem('save-state'));
         }else{
-            //symbolic
-            let s = rebuildSymbol(tmp);
-            ret.push(s);
-            CM.addSymbol(s);
+            data = JSON.parse(data);
         }
+
+        for(let x of data){
+            let tmp = JSON.parse(x);
+
+            if(typeof tmp['border_rad'] === 'number'){
+                //cut
+                this.addCut(rebuildCut(tmp));
+            }else{
+                //symbolic
+                this.addSymbol(rebuildSymbol(tmp));
+            }
+        }
+
+        //once all the cuts have been created swap the ids with the objs
+        for(let x of this.cuts){
+            for(let i = 0 ; i < x.child_cuts.length; i++){
+                x.child_cuts[i] = this.id_map[x.child_cuts[i]];
+            }
+
+            for(let i = 0 ; i < x.child_syms.length; i++){
+                x.child_syms[i] = this.id_map[x.child_syms[i]];
+            }
+
+            if(x.is_proof_selected){
+                this.addProofSelected(x);
+            }
+        }
+
+        return this.syms.concat(CanvasManager.cuts);
     }
 
-    //once all the cuts have been created swap the ids with the objs
-    for(let x of CM.cuts){
-        for(let i = 0 ; i < x.child_cuts.length; i++){
-            x.child_cuts[i] = CM.id_map[x.child_cuts[i]];
-        }
-
-        for(let i = 0 ; i < x.child_syms.length; i++){
-            x.child_syms[i] = CM.id_map[x.child_syms[i]];
-        }
-
-        if(x.is_proof_selected){
-            CM.addProofSelected(x);
-        }
-    }
-
-    return ret;
 }
+
 
 /**
  * @param {Object} data 
@@ -328,16 +309,21 @@ function rebuildSymbol(data){
         ret[prop] = data[prop];
     }
 
-    ret.center = new Point(
-        data['center']['x'], 
-        data['center']['y']
-    );
-
     return ret;
 }
 
 
+var CanvasManager;
+/**
+ * @param {HTMLCanvasElement} canvas 
+ * @param {HTMLCanvasElement} mini_canvas 
+ */
+function InitializeCanvasManager(canvas, mini_canvas){
+    CanvasManager = new __CanvasManager(canvas,mini_canvas);
+}
+
+
 export{
-    saveState,
-    loadState
+    CanvasManager,
+    InitializeCanvasManager,
 };

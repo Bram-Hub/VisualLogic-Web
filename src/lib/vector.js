@@ -1,6 +1,5 @@
 import {getDistance} from './math.js';
 import {CanvasManager} from '../canvasManager.js';
-/** @typedef { import('./lib/point.js').Point } Point */
 
 
 /**
@@ -25,26 +24,22 @@ class Vector{
         }
 
         this.angle_degrees = this.angle * (180/Math.PI) ;
-
-        this.left_to_right = this.length >= 0; 
-        this.top_to_bot = this.height >= 0;
     }
-}
 
-/**
-* @param {Vector} v draws a given vector, primarily for debugging
-*/
-function drawVector(v){
-    let CONTEXT = CanvasManager.getInstance().getContext();
+    /**
+    * draws a this vector, primarily for debugging
+    */
+    drawVector(){
+        const context = CanvasManager.getContext();
 
-    CONTEXT.beginPath();
-    CONTEXT.moveTo(v.start.x, v.start.y);
-    CONTEXT.lineTo(v.end.x,v.end.y);
-    CONTEXT.stroke();
+        context.beginPath();
+        context.moveTo(this.start.x, this.start.y);
+        context.lineTo(this.end.x, this.end.y);
+        context.stroke();
+    }
 }
 
 
 export {
-    Vector,
-    drawVector
+    Vector
 };

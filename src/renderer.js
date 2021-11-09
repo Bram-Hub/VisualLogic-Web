@@ -1,6 +1,7 @@
 import {CanvasManager} from './canvasManager.js';
 import {UserInputManager} from './userInput.js';
 import {Point} from './lib/point.js';
+import {Vector} from './lib/vector.js';
 
 /**
 * Draws the background grid, this also acts as a method
@@ -48,13 +49,13 @@ function renderGrid(context, width, height, line_width = 50){
 * @returns {Number}
 */
 function getDeviceRatio () {
-    let CONTEXT = CanvasManager.getInstance().Context;
-    let dpr = window.devicePixelRatio              || 1,
-        bsr = CONTEXT.webkitBackingStorePixelRatio ||
-              CONTEXT.mozBackingStorePixelRatio    ||
-              CONTEXT.msBackingStorePixelRatio     ||
-              CONTEXT.oBackingStorePixelRatio      ||
-              CONTEXT.backingStorePixelRatio       || 1;
+    const context = CanvasManager.Context;
+    const dpr = window.devicePixelRatio              || 1;
+    const bsr = context.webkitBackingStorePixelRatio ||
+                context.mozBackingStorePixelRatio    ||
+                context.msBackingStorePixelRatio     ||
+                context.oBackingStorePixelRatio      ||
+                context.backingStorePixelRatio       || 1;
 
     return dpr / bsr;
 }
@@ -67,10 +68,10 @@ function getDeviceRatio () {
 * corrects the canvas and resets the mouse pointer
 */
 function onResize() {
-    let CM = CanvasManager.getInstance();
+    let CM = CanvasManager;
     CM.c_width = window.innerWidth;
     CM.c_height = window.innerHeight;
-    UserInputManager.getInstance().mouse_pos = new Point(0,0);
+    UserInputManager.mouse_pos = new Point(0,0);
 
     fixBlur(
         CM.Canvas, 
@@ -170,13 +171,54 @@ function renderProofTexture(inner_style){
 * @param {String|null} col - color of the dot (default red)
 */
 function drawPoint(Point, rad = 10, col='red'){
-    let CM = CanvasManager.getInstance();
-    let context = CM.getContext();
+    let context = CanvasManager.getContext();
 
     context.beginPath();
     context.fillStyle = col;
     context.arc(Point.x,Point.y, rad, 0,2*Math.PI);
     context.fill();
+}
+
+
+function drawDistancesOfCuts(){
+    let CM = CanvasManager;
+
+    for (let i of CM.cuts){
+        for(let j of CM.cuts){
+            if ( j === i ){
+                continue;
+            }
+
+            new Vector( i.center, j.center ).drawVector();
+        }
+    }
+
+}
+
+
+function renderDebugInfo(){
+    let CM = CanvasManager;
+    for( const c of CM.getCuts() ){
+        if ( c.is_mouse_over ){
+            let childs = '<br>Child Cuts : <br>';
+            for(let x of c.child_cuts){
+                childs += x.toString() + '<br>';
+            }
+            document.getElementById('debug').innerHTML = c.toString() +'<br>Level : ' + c.level.toString() + childs + '<br>' + c.bounded_area.toString();
+        }
+    }
+
+    for ( const s of CM.getSyms() ){
+        if ( s.is_mouse_over ){
+            document.getElementById('debug').innerHTML = s.toString() +
+                '<br>Level : ' + s.level.toString();
+        }
+    }
+
+    drawDistancesOfCuts();
+    if (UserInputManager.current_obj){
+        document.getElementById('debug').innerHTML += '<br>Current : ' + UserInputManager.current_obj.toString();
+    }
 }
 
 
@@ -188,5 +230,6 @@ export {
     displayError,
     displaySuccess,
     renderProofTexture,
-    drawPoint
+    drawPoint,
+    renderDebugInfo
 };

@@ -1,6 +1,6 @@
+import { CanvasManager } from './canvasManager.js';
 import {Cut} from './cut.js';
 import {Symbolic} from './symbol.js';
-import {getRandomString} from '../src/main.js';
 
 /**
 * A subgraph is a collection of cuts and symbols together
@@ -13,7 +13,7 @@ class Subgraph{
     constructor(parts, root = null){
         this.elements = parts;
         this.root = root === null ? parts[0] : root;
-        this.id = getRandomString();
+        this.id = CanvasManager.getNextId();
         //map the elements by what level they're on
 
         this.levels = {};
@@ -50,16 +50,7 @@ class Subgraph{
 	* @returns {Number}
 	*/
     getArea(){
-        let ret = 0;
-        for(let x of this.elements){
-            if(x instanceof Cut){
-                ret += x.area;
-            }
-        }
-        for(let x of this.free_symbols){
-            ret += x.area;
-        }
-        return ret;
+        return getAreaHelper(false, this);
     }
 
 
@@ -69,17 +60,7 @@ class Subgraph{
 	* @returns {Number}
 	*/
     getBoundedArea(){
-        let ret = 0;
-        for(let x of this.elements){
-            if(x instanceof Cut){
-                ret += x.bounded_area;
-            }
-        }
-
-        for(let x of this.free_symbols){
-            ret += x.area;
-        }
-        return ret;
+        return getAreaHelper(true, this);
     }
 
 
@@ -112,6 +93,28 @@ class Subgraph{
         throw 'TODO';
     }
 
+}
+
+
+/**
+ * Get the area of the subgraph
+ * @param {Bool} is_bounded - get either bounded or real area
+ * @param {Subgraph}
+ * @returns {Number}
+ */
+function getAreaHelper(is_bounded, subgraph){
+    let ret = 0;
+    for(let x of subgraph.elements){
+        if(x instanceof Cut){
+            ret += is_bounded ? x.bounded_area : x.area;
+        }
+    }
+
+    for(let x of subgraph.free_symbols){
+        ret += x.area;
+    }
+    
+    return ret;
 }
 
 

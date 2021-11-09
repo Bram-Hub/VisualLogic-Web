@@ -6,7 +6,6 @@ import {Symbolic} from '../symbol.js';
 import {Point} from '../lib/point.js';
 import {UserInputManager} from '../userInput.js';
 
-/** @typedef { import('../subgraph.js').Subgraph } Subgraph */
 
 /**
 * Given two cuts seperated by 1 level, erase both of them
@@ -66,7 +65,7 @@ function doubleCut(subgraph){
 * TODO: get current elements in tgt graph level and recalculate the subgraph with them
 */
 function insertion(subgraph){
-    let CM = CanvasManager.getInstance();
+    let CM = CanvasManager;
 
     //is there enough room
     if(CM.proof_selected.length !== 1){
@@ -87,7 +86,7 @@ function insertion(subgraph){
 
     let start_x = tgt.interier_bounding_box[0];
     let start_y = tgt.interier_bounding_box[1];
-    let UM = UserInputManager.getInstance();
+    let UM = UserInputManager;
 
     //copy over the elements from the subgraph into the real canvas
     for(let x of subgraph.elements){
@@ -118,12 +117,11 @@ function insertion(subgraph){
 
     for(let x of subgraph.free_symbols){
         UM.last_mouse_pos = x.center;
-        console.log(UM.last_mouse_pos);
         x.updatePos( new Point( start_x, start_y + x.height), false );
 
         let new_width = x.width;
         let new_height = x.height;
-        console.log(start_x + new_width, tgt.interier_bounding_box[2]);
+
         if ( (start_x + new_width) <= tgt.interier_bounding_box[2] ){
             start_x += x.width;
         }else if( (start_y + new_height) <= tgt.interier_bounding_box[3] ){
@@ -140,7 +138,7 @@ function insertion(subgraph){
 *
 */
 function erasure(){
-    let CM = CanvasManager.getInstance();
+    let CM = CanvasManager;
 
     if(CM.proof_selected.length !== 1){
         displayError('Can only apply erasure to 1 subgraph at a time');

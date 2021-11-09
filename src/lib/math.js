@@ -1,5 +1,5 @@
 import {Point} from './point.js';
-/** @typedef { import('./point.js').Point } Point */
+
 
 /**
 * Given a point and a description of an ellipse determine if that point is 
@@ -64,18 +64,18 @@ function getEllipseArea(rad_x, rad_y){
 
 
 /**
-* https://stackoverflow.com/questions/27205018/multiply-2-matrices-in-javascript
 * given two matrices perform a dot product on them
+* https://stackoverflow.com/questions/27205018/multiply-2-matrices-in-javascript
 *
-* @param {Array.<Number>} A
-* @param {Array.<Number>} B
+* @param {Array[]} A
+* @param {Array[]} B
 * @returns {Array.<Array.<Number>>}
 */
 function matrixDot (A, B) {
     let result = new Array(A.length).fill(0).map(() => new Array(B[0].length).fill(0));
 
     return result.map((row, i) => {
-        return row.map((val, j) => {
+        return row.map((_, j) => {
             return A[i].reduce((sum, elm, k) => sum + (elm*B[k][j]) ,0);
         });
     });

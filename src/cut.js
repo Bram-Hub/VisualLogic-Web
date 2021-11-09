@@ -1,6 +1,6 @@
 import {CanvasManager} from './canvasManager.js';
 import {UserInputManager} from './userInput.js';
-import {getRandomString, DEBUG} from './main.js';
+import {DEBUG} from './main.js';
 import {Point} from './lib/point.js';
 import {
     getEllipseArea, 
@@ -8,10 +8,9 @@ import {
     isWithinTollerance,
     getInteriorBoundingBox,
 } from './lib/math.js';
-import {Vector, drawVector} from './lib/vector.js';
+import {Vector} from './lib/vector.js';
 import {renderProofTexture} from './renderer.js';
 
-/** @typedef { import('./lib/point.js').Point } Point */
 
 /**
 * A cut represents a negation in the sheet of assertion
@@ -24,7 +23,7 @@ class Cut{
     constructor(pos){
         this.x = pos.x;
         this.y = pos.y;
-        this.id = getRandomString();
+        this.id = CanvasManager.getNextId();
 
         this.border_rad = 10;
         this.rad_x = 100 + this.border_rad;
@@ -64,7 +63,7 @@ class Cut{
 
 
     update(){
-        let UM = UserInputManager.getInstance();
+        let UM = UserInputManager;
 
         this.is_mouse_in_border = isMouseInBorder(this);
         this.is_mouse_over = UM.is_proof_mode ? isMouseOverCut(this) : isMouseInCut(this) ;
@@ -76,12 +75,6 @@ class Cut{
 
         if (this.is_mouse_over){
             UM.obj_under_mouse = this;
-        }
-
-        for(let x of this.child_cuts){
-            if ( x.is_mouse_over ){
-                UM.obj_under_mouse = x;
-            }
         }
 
         this.bounding_box = [
@@ -111,7 +104,7 @@ class Cut{
     * @param {Boolean|null} root - is this the root obj to move or false if getting moved by another
     */
     updatePos( new_pos, root = true ){
-        let UM = UserInputManager.getInstance();
+        let UM = UserInputManager;
         let dx = new_pos.x - UM.last_mouse_pos.x;
         let dy = new_pos.y - UM.last_mouse_pos.y;
 
@@ -139,7 +132,7 @@ class Cut{
 
 
     toString(){
-        return this.id;
+        return this.id.toString();
     }
 
 
@@ -180,20 +173,8 @@ class Cut{
     * @returns {Array}
     */
     getChildren(){
-        let ret = [];
-        for(let x of this.child_cuts){
-            if(x.level === this.level + 1){
-                ret.push(x);
-            }
-        }
-
-        for(let x of this.child_syms){
-            if(x.level === this.level){
-                ret.push(x);
-            }
-        }
-
-        return ret;
+        return this.child_cuts.filter(cut => cut.level === this.level+1).concat(
+            this.child_syms.filter(sym => sym.level === this.level));
     }
 
 
@@ -202,12 +183,7 @@ class Cut{
             if(key === 'cut_border'){
                 return value.serialize();
             }else if(key === 'child_syms' || key === 'child_cuts'){
-                let r = [];
-                for(let x of value){
-                    r.push(x.id);
-                }
-
-                return r;
+                return value.map(val => val.id);
             }else{
                 return value;
             }
@@ -215,93 +191,94 @@ class Cut{
 
         return JSON.stringify(this, replacer);
     }
+
+
+    draw(){
+        let context = CanvasManager.getContext();
+        let UM = UserInputManager;
+    
+        let border_rad = 5;
+    
+        if ( this.rad_x < border_rad*2 || this.rad_y < border_rad*2 ){
+            return;
+        }
+    
+        context.strokeStyle = this === UM.obj_under_mouse ? 'blue' : 'black';
+    
+        if(this.is_mouse_in_border && !UM.is_proof_mode){
+            context.strokeStyle = 'lightblue';
+        }
+    
+        context.lineWidth = this.border_rad;
+    
+        context.beginPath();
+        context.ellipse(
+            this.x, this.y, 
+            this.rad_x - this.border_rad/2, 
+            this.rad_y - this.border_rad/2, 
+            0, 0, 2 * Math.PI
+        );
+    
+        context.stroke();
+    
+        if(DEBUG){
+            context.beginPath();
+            context.lineWidth = 2;
+            let bb = this.bounding_box;
+            context.rect(
+                bb[0],bb[1],bb[2],bb[3]
+            );
+    
+            let i_bb = this.interier_bounding_box;
+            // console.log(bb);
+            context.rect(
+                i_bb[0],i_bb[1],i_bb[2],i_bb[3]
+            );
+            context.stroke();
+        }
+    
+    
+        //now draw inner cut
+    
+        let inner_style = '#A9A9A9';
+    
+        if(this.level % 2 === 0){
+            inner_style = 'white';
+        }
+    
+        if(this === UM.obj_under_mouse){
+            inner_style = '#DCDCDC';
+        }
+    
+        if(this.is_proof_selected && UM.is_proof_mode){
+            inner_style = renderProofTexture(inner_style);
+        }
+    
+        context.save();
+        context.globalAlpha = 0.7;
+        context.fillStyle = inner_style;
+        context.beginPath();
+        context.ellipse(
+            this.x, this.y, 
+            this.rad_x - this.border_rad, 
+            this.rad_y - this.border_rad, 0, 0, 2 * Math.PI
+        );
+    
+        context.fill();
+        context.restore();
+        context.lineWidth = 1;
+    }
+    
 }
 
 
 /**
-* @param {Cut} cut
-*/
-function drawCut(cut){
-    let context = CanvasManager.getInstance().getContext();
-    let UM = UserInputManager.getInstance();
-
-    let border_rad = 5;
-
-    if ( cut.rad_x < border_rad*2 || cut.rad_y < border_rad*2 ){
-        return;
-    }
-
-    context.strokeStyle = cut === UM.obj_under_mouse ? 'blue' : 'black';
-
-    if(cut.is_mouse_in_border && !UM.is_proof_mode){
-        context.strokeStyle = 'lightblue';
-    }
-
-    context.lineWidth = cut.border_rad;
-
-    context.beginPath();
-    context.ellipse(
-        cut.x, cut.y, 
-        cut.rad_x - cut.border_rad/2, 
-        cut.rad_y - cut.border_rad/2, 
-        0, 0, 2 * Math.PI
-    );
-
-    context.stroke();
-
-    if(DEBUG){
-        context.beginPath();
-        context.lineWidth = 2;
-        let bb = cut.bounding_box;
-        context.rect(
-            bb[0],bb[1],bb[2],bb[3]
-        );
-
-        let i_bb = cut.interier_bounding_box;
-        // console.log(bb);
-        context.rect(
-            i_bb[0],i_bb[1],i_bb[2],i_bb[3]
-        );
-        context.stroke();
-    }
-
-
-    //now draw inner cut
-
-    let inner_style = '#A9A9A9';
-
-    if(cut.level % 2 === 0){
-        inner_style = 'white';
-    }
-
-    if(cut === UM.obj_under_mouse){
-        inner_style = '#DCDCDC';
-    }
-
-    if(cut.is_proof_selected && UM.is_proof_mode){
-        inner_style = renderProofTexture(inner_style);
-    }
-
-    context.save();
-    context.globalAlpha = 0.7;
-    context.fillStyle = inner_style;
-    context.beginPath();
-    context.ellipse(
-        cut.x, cut.y, 
-        cut.rad_x - cut.border_rad, 
-        cut.rad_y - cut.border_rad, 0, 0, 2 * Math.PI
-    );
-
-    context.fill();
-    context.restore();
-    context.lineWidth = 1;
-}
-
-
+ * CutBorder represents the ring around a cut and is used for resizing a cut
+ */
 class CutBorder{
     constructor(par){
         this.parent = par;
-        this.id = getRandomString();
+        this.id = CanvasManager.getNextId();
 
         this.scale_speed = 1;
     }
@@ -311,7 +288,7 @@ class CutBorder{
     }
 
     updatePos(new_pos){
-        let UM = UserInputManager.getInstance();
+        let UM = UserInputManager;
         let dx = (new_pos.x - UM.last_mouse_pos.x) * this.scale_speed;
         let dy = (new_pos.y - UM.last_mouse_pos.y) * this.scale_speed;
         let c = this.parent;
@@ -334,7 +311,7 @@ class CutBorder{
     }
 
     toString(){
-        return this.id;
+        return this.id.toString();
     }
 
     serialize(){
@@ -349,6 +326,7 @@ class CutBorder{
     }
 }
 
+
 /**
 * return true if the mouse is over any point in the cut
 * this includes the border
@@ -356,10 +334,11 @@ class CutBorder{
 */
 function isMouseOverCut(cut){
     return isWithinEllipse(
-        UserInputManager.getInstance().mouse_pos, 
+        UserInputManager.mouse_pos, 
         cut.x, cut.y, cut.rad_x , cut.rad_y 
     );
 }
+
 
 /**
 * return true if the mouse is inside the cut
@@ -368,12 +347,13 @@ function isMouseOverCut(cut){
 */
 function isMouseInCut(cut){
     return isWithinEllipse(
-        UserInputManager.getInstance().mouse_pos,  
+        UserInputManager.mouse_pos,  
         cut.x, cut.y, 
         cut.rad_x - cut.border_rad , 
         cut.rad_y - cut.border_rad
     );
 }
+
 
 /**
 * return true if the mouse is only within the border of a cut
@@ -385,19 +365,15 @@ function isMouseInBorder(cut){
 
 
 /** 
- * Depending on the mouse position on the cut border select a cursor to indicate what direction to scale under
+ * Depending on the mouse position on the cut border select a cursor to indicate what direction to scale towards
  * 
  * @param {Cut} cut 
- * @returns {String} 
  */
 function updateCursor(cut){
-    //depending on what quardrant we're in, update the cursor 
-    //if we're on the border to indicate resizing
+    const a = new Vector(UserInputManager.mouse_pos, cut.center).angle_degrees;
 
-    let v = new Vector(UserInputManager.getInstance().mouse_pos, cut.center);
-    let a = v.angle_degrees;
+    let ptr = 'default';
 
-    let ptr = 'pointer';
     if( isWithinTollerance(a,270,10) || isWithinTollerance(a,90,20) ){
         ptr = 'ns-resize';
     }else if( (a > 110 && a < 170) || (a > 290 && a < 340) ){
@@ -406,12 +382,9 @@ function updateCursor(cut){
         ptr = 'ew-resize';
     }else if( (a > 200 && a < 250) || (a > 20 && a < 70) ){
         ptr = 'nwse-resize';
-    }else{
-        ptr = 'default';
     }
 
     document.getElementById('canvas').style.cursor = ptr; 
-    return ptr;
 }
 
 /**
@@ -420,31 +393,29 @@ function updateCursor(cut){
  * @param {Point} pos 
  */
 function drawTemporaryCut(pos){
-    let CM = CanvasManager.getInstance();
+    let CM = CanvasManager;
     if ( CM.tmp_cut === null ){
-        CM.tmp_origin = pos;
-        CM.tmp_cut = new Cut(CM.tmp_origin);
-        CM.tmp_cut.rad_x = 0;
-        CM.tmp_cut.rad_y = 0;
+        CM.tmp_cut = new Cut(pos);
     }
 
-    let v = new Vector(CM.tmp_origin, pos);
+    const origin = CM.tmp_cut.center;
+    const v = new Vector(origin, pos);
 
     if ( DEBUG ){
-        drawVector(v);
+        v.drawVector();
     }
 
     CM.tmp_cut.rad_x = Math.abs(v.length);
     CM.tmp_cut.rad_y = Math.abs(v.height);
 
-    CM.tmp_cut.x = CM.tmp_origin.x + v.length/4;
-    CM.tmp_cut.y = CM.tmp_origin.y + v.height/4;
+    CM.tmp_cut.x = origin.x + v.length/4;
+    CM.tmp_cut.y = origin.y + v.height/4;
 
     let context = CM.getContext();
 
     context.save();
     context.globalAlpha = 0.5;
-    drawCut(CM.tmp_cut);
+    CM.tmp_cut.draw();
     context.restore();
 
     CM.tmp_cut.update();
@@ -478,7 +449,7 @@ function isWithinCut(a,b){
 function getInnerMostCut(cut){
     let inner_most = null;
     for (let x of cut.child_cuts ){
-        if ( x.is_mouse_over ){
+        if ( x.is_mouse_over || x.is_mouse_in_border ){
             inner_most = getInnerMostCut(x);
         }
     }
@@ -519,7 +490,6 @@ function mouseOverInnerMost(cut){
 
 export{
     drawTemporaryCut,
-    drawCut,
     Cut,
     mouseOverInnerMost,
     isWithinCut,

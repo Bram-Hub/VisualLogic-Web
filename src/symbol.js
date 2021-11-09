@@ -1,10 +1,8 @@
 import {CanvasManager} from './canvasManager.js';
 import {UserInputManager} from './userInput.js';
 import {Point} from './lib/point.js';
-import {getRandomString} from './main.js';
 import {isPointWithinRect} from './lib/math.js';
 import {DEBUG} from './main.js';
-/** @typedef { import('./lib/point.js').Point } Point */
 
 /**
 * A symbol represents a boolean variable in the sheet of assertion
@@ -30,7 +28,7 @@ class Symbolic{
         this.center = new Point(this.real_x, this.real_y);
         this.is_mouse_over = false;
 
-        this.id = getRandomString();
+        this.id = CanvasManager.getNextId();
         this.level = 1;
 
         this.is_proof_selected = false;
@@ -39,10 +37,16 @@ class Symbolic{
     }
 
     update(){
-        let UM = UserInputManager.getInstance();
-        this.is_mouse_over = isMouseOverSym(this);
+        this.is_mouse_over = isPointWithinRect(
+            UserInputManager.mouse_pos, 
+            this.x - 25, 
+            this.y - 25, 
+            this.width, 
+            this.height
+        );
+
         if (this.is_mouse_over){
-            UM.obj_under_mouse = this;
+            UserInputManager.obj_under_mouse = this;
         }
     }
 
@@ -53,7 +57,7 @@ class Symbolic{
      * @param {Boolean|null} root (true by default)
     */
     updatePos( new_pos, root = true ){
-        let UM = UserInputManager.getInstance(); 
+        let UM = UserInputManager; 
         let dx = new_pos.x - UM.last_mouse_pos.x;
         let dy = new_pos.y - UM.last_mouse_pos.y;
 
@@ -66,7 +70,7 @@ class Symbolic{
         this.center = new Point(this.real_x, this.real_y);
 
         if ( root ){
-            UserInputManager.getInstance().last_mouse_pos = new_pos;
+            UserInputManager.last_mouse_pos = new_pos;
         }
     }
 
@@ -76,7 +80,7 @@ class Symbolic{
      * @returns {String} 
      * */
     toString(){
-        return this.id;
+        return this.id.toString();
     }
 
     /**
@@ -87,51 +91,35 @@ class Symbolic{
     serialize(){
         return JSON.stringify(this);
     }
-}
 
 
-/**
-* Render a given symbol on whichever context is opened
-*
-* @param {Symbolic} sym
-*/
-function drawSymbol(sym){
+    /**
+    * Render a given symbol on whichever context is opened
+    */
+    draw(){
 
-    let context = CanvasManager.getInstance().getContext();
-    context.fillStyle = sym.is_mouse_over ? 'blue' : 'black';
+        let context = CanvasManager.getContext();
+        context.fillStyle = this.is_mouse_over ? 'blue' : 'black';
 
-    if(sym.is_proof_selected){
-        context.fillStyle = 'green';
+        if(this.is_proof_selected){
+            context.fillStyle = 'green';
+        }
+
+        //TODO: store this somewhere and allow UI scaling with the size of a symbol
+        const font_size = '70px';
+        context.font = `italic ${font_size} Times New Roman`;
+
+        context.fillText(this.letter, this.real_x, this.real_y); 
+
+        if ( DEBUG ){
+            context.beginPath();
+            context.rect(this.x - 25, this.y - 25, this.width, this.height);
+            context.stroke();
+        }
     }
-
-    context.font = 'italic 70px Times New Roman';
-
-    context.fillText(sym.letter, sym.real_x, sym.real_y); 
-
-    if ( DEBUG ){
-        context.beginPath();
-        context.rect(sym.x - 25, sym.y - 25, sym.width, sym.height);
-        context.stroke();
-    }
-}
-
-
-/**
-* is the mouse over a symbol
-* 
-* @param {Symbol} sym - symbol to check
-* @returns {Boolean}
-*/
-function isMouseOverSym(sym){
-    return isPointWithinRect(
-        UserInputManager.getInstance().mouse_pos, 
-        sym.x - 25, sym.y - 25, 
-        sym.width, sym.height
-    );
 }
 
 
 export {
-    Symbolic,
-    drawSymbol,
+    Symbolic
 };
