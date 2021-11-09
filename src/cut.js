@@ -183,9 +183,7 @@ class Cut{
             if(key === 'cut_border'){
                 return value.serialize();
             }else if(key === 'child_syms' || key === 'child_cuts'){
-                let r = [];
-                value.forEach(val => r.push(val.id));
-                return r;
+                return value.map(val => val.id);
             }else{
                 return value;
             }

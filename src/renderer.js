@@ -198,7 +198,7 @@ function drawDistancesOfCuts(){
 
 function renderDebugInfo(){
     let CM = CanvasManager;
-    for( let c of CM.cuts ){
+    for( const c of CM.getCuts() ){
         if ( c.is_mouse_over ){
             let childs = '<br>Child Cuts : <br>';
             for(let x of c.child_cuts){
@@ -208,11 +208,16 @@ function renderDebugInfo(){
         }
     }
 
-    for ( let s of CM.syms ){
+    for ( const s of CM.getSyms() ){
         if ( s.is_mouse_over ){
             document.getElementById('debug').innerHTML = s.toString() +
                 '<br>Level : ' + s.level.toString();
         }
+    }
+
+    drawDistancesOfCuts();
+    if (UserInputManager.current_obj){
+        document.getElementById('debug').innerHTML += '<br>Current : ' + UserInputManager.current_obj.toString();
     }
 }
 
@@ -226,6 +231,5 @@ export {
     displaySuccess,
     renderProofTexture,
     drawPoint,
-    drawDistancesOfCuts,
     renderDebugInfo
 };

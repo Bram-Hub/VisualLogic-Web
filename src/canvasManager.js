@@ -309,11 +309,6 @@ function rebuildSymbol(data){
         ret[prop] = data[prop];
     }
 
-    ret.center = new Point(
-        data['center']['x'], 
-        data['center']['y']
-    );
-
     return ret;
 }
 

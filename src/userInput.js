@@ -157,7 +157,6 @@ function getRealMousePos(pos){
 }
 
 
-/** @param {MouseEvent} e */
 function onKeyDown(e){
     if ( e.code === 'ShiftLeft' || e.code === 'ShiftRight' ){
         UserInputManager.is_shift_down = true;
@@ -165,7 +164,6 @@ function onKeyDown(e){
 }
 
 
-/** @param {MouseEvent} e */
 function onKeyUp(e){
     let UM = UserInputManager;
     

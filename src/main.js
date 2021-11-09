@@ -1,5 +1,5 @@
 import {CanvasManager, InitializeCanvasManager} from './canvasManager.js';
-import {onResize, renderGrid, drawDistancesOfCuts, renderDebugInfo} from './renderer.js';
+import {onResize, renderGrid, renderDebugInfo} from './renderer.js';
 import {UserInputManager, InitializeUserInputManager, toggleMode} from './userInput.js';
 import {drawTemporaryCut} from './cut.js';
 
@@ -89,12 +89,7 @@ function renderLoop(){
 
 
     if( DEBUG ){
-        document.getElementById('debug').innerHTML = '';
         renderDebugInfo();
-        drawDistancesOfCuts();
-        if (UM.current_obj){
-            document.getElementById('debug').innerHTML += '<br>Current : ' + UM.current_obj.toString();
-        }
     }
 
 

@@ -1,5 +1,5 @@
 import {CanvasManager} from './canvasManager.js';
-import {fixBlur, renderGrid} from './renderer.js';
+import {fixBlur, renderGrid, renderDebugInfo} from './renderer.js';
 import {UserInputManager, toggleMode} from './userInput.js';
 import {drawTemporaryCut} from './cut.js';
 import {DEBUG} from './main.js';
@@ -40,63 +40,38 @@ function toggleMiniRenderer(){
 
 
 //main application loop
-//TODO: reduce duplication between rednering miniCanvas and normal canvas
+//TODO: reduce duplication between rendering miniCanvas and normal canvas
 function renderMiniCanvas(){
     let CM = CanvasManager;
     let UM = UserInputManager;
 
     renderGrid(CM.MiniContext, CM.m_width, CM.m_height, 25);
+    UM.obj_under_mouse = null;
     UM.update();
 
+    CM.getCuts().forEach(cut => {
+        cut.update();
+        cut.draw();
+    });
 
-    if( DEBUG ){
-        document.getElementById('debug').innerHTML = '';
-    }
-
-    for( let c of CM.s_cuts ){
-        c.update();
-
-        if ( c.is_mouse_over && DEBUG ){
-            document.getElementById('debug').innerHTML = c.toString() + 
-            '<br>Level : ' + c.level.toString();
-        }
-
-
-        if ( c.is_mouse_over ){
-            UM.obj_under_mouse = c;
-        }
-
-    }
-
-    for ( let s of CM.s_syms ){
-        s.update();
-
-        //symSelectionControl(s);
-
-        if ( s.is_mouse_over && DEBUG ){
-            document.getElementById('debug').innerHTML = s.toString();
-        }
-
-
-        if ( s.is_mouse_over ){
-            UM.obj_under_mouse = s;
-        }
-    }
-
-
-    CM.getCuts().forEach(cut => cut.draw());
-    CM.getSyms().forEach(sym => sym.draw());
+    CM.getSyms().forEach(sym => {
+        sym.update();
+        sym.draw();
+    });
 
     //we released the mouse and a temporary cut exists, now create it
     if ( !(CM.tmp_cut === null) && !UM.is_mouse_down ){
         CM.addCut(CM.tmp_cut);
     }
 
-
     if ( UM.is_mouse_down && UM.is_shift_down && !UM.is_proof_mode ){
         drawTemporaryCut(UM.mouse_pos);
     }else{
         CM.tmp_cut = null;
+    }
+
+    if( DEBUG ){
+        renderDebugInfo();
     }
 
     CM.animationRequest = requestAnimationFrame(renderMiniCanvas);
