@@ -3,7 +3,7 @@ import {onResize, renderGrid, renderDebugInfo} from './renderer.js';
 import {UserInputManager, InitializeUserInputManager, toggleMode} from './userInput.js';
 import {drawTemporaryCut} from './cut.js';
 
-var DEBUG = document.getElementById('debug').dataset.debugMode === 'true';
+var DEBUG = document.getElementById('debug') ? document.getElementById('debug').dataset.debugMode === 'true' : false;
 
 /**
 * Entry Point of the program

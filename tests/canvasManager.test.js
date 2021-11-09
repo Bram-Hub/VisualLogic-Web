@@ -1,7 +1,7 @@
 import {Cut} from '../src/cut.js';
 import {Symbolic} from '../src/symbol.js';
 import {Point} from '../src/lib/point.js';
-import {CanvasManager, loadState, InitializeCanvasManager} from '../src/canvasManager.js';
+import {CanvasManager, InitializeCanvasManager} from '../src/canvasManager.js';
 
 beforeEach(() => {
 	let mck = {
@@ -27,7 +27,7 @@ describe('Save tests', () => {
 		CanvasManager.addCut(c);
 
 		let d = CanvasManager.save("string");
-		let r = loadState("string", d);
+		let r = CanvasManager.loadState("string", d);
 
 		for(let x in r[0]){
 			expect(r[0][x]).toStrictEqual(c[x]);
@@ -42,7 +42,7 @@ describe('Save tests', () => {
 		CanvasManager.addSymbol(s);
 
 		let d = CanvasManager.save("string");
-		let r = loadState("string", d);
+		let r = CanvasManager.loadState("string", d);
 
 		for(let x in r[0]){
 			expect(r[0][x]).toStrictEqual(s[x]);
@@ -60,7 +60,7 @@ describe('Save tests', () => {
 		c.child_cuts.push(c_1);
 
 		let d = CanvasManager.save("string");
-		let r = loadState("string", d);
+		let r = CanvasManager.loadState("string", d);
 
 		for(let x in r[0]){
 			expect(r[0][x]).toStrictEqual(c[x]);
@@ -79,7 +79,7 @@ describe('Save tests', () => {
 		c.child_syms.push(s);
 
 		let d = CanvasManager.save("string");
-		let r = loadState("string", d);
+		let r = CanvasManager.loadState("string", d);
 
 		for(let x in r[0]){
 			expect(r[0][x]).toStrictEqual(c[x]);
