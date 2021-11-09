@@ -1,5 +1,5 @@
 import {doubleCut, insertion, erasure} from './logic/rules.js';
-import {Cut, CutBorder, mouseOverInnerMost} from './cut.js';
+import {mouseOverInnerMost} from './cut.js';
 import {getDeviceRatio, displayError} from './renderer.js';
 import {toggleMiniRenderer} from './minirenderer.js';
 import {CanvasManager} from './canvasManager.js';
@@ -80,7 +80,6 @@ class __UserInputManager{
         }
     }
 
-    /** @param {MouseEvent} e */
     onMouseMove(e){
         e.preventDefault();
         e.stopPropagation();
@@ -99,7 +98,7 @@ function InitializeUserInputManager(){
     UserInputManager = new __UserInputManager();
 }
 
-/** @param {MouseEvent} e */
+
 function onMouseDown(e){
     let CM = CanvasManager;
     let UM = UserInputManager;

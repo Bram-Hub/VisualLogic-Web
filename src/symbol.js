@@ -3,7 +3,6 @@ import {UserInputManager} from './userInput.js';
 import {Point} from './lib/point.js';
 import {isPointWithinRect} from './lib/math.js';
 import {DEBUG} from './main.js';
-/** @typedef { import('./lib/point.js').Point } Point */
 
 /**
 * A symbol represents a boolean variable in the sheet of assertion
@@ -92,37 +91,35 @@ class Symbolic{
     serialize(){
         return JSON.stringify(this);
     }
-}
 
 
-/**
-* Render a given symbol on whichever context is opened
-*
-* @param {Symbolic} sym
-*/
-function drawSymbol(sym){
+    /**
+    * Render a given symbol on whichever context is opened
+    */
+    draw(){
 
-    let context = CanvasManager.getContext();
-    context.fillStyle = sym.is_mouse_over ? 'blue' : 'black';
+        let context = CanvasManager.getContext();
+        context.fillStyle = this.is_mouse_over ? 'blue' : 'black';
 
-    if(sym.is_proof_selected){
-        context.fillStyle = 'green';
-    }
+        if(this.is_proof_selected){
+            context.fillStyle = 'green';
+        }
 
-    //TODO: store this somewhere and allow UI scaling with the size of a symbol
-    const font_size = '70px';
-    context.font = `italic ${font_size} Times New Roman`;
+        //TODO: store this somewhere and allow UI scaling with the size of a symbol
+        const font_size = '70px';
+        context.font = `italic ${font_size} Times New Roman`;
 
-    context.fillText(sym.letter, sym.real_x, sym.real_y); 
+        context.fillText(this.letter, this.real_x, this.real_y); 
 
-    if ( DEBUG ){
-        context.beginPath();
-        context.rect(sym.x - 25, sym.y - 25, sym.width, sym.height);
-        context.stroke();
+        if ( DEBUG ){
+            context.beginPath();
+            context.rect(this.x - 25, this.y - 25, this.width, this.height);
+            context.stroke();
+        }
     }
 }
+
 
 export {
-    Symbolic,
-    drawSymbol,
+    Symbolic
 };

@@ -1,8 +1,7 @@
 import {CanvasManager} from './canvasManager.js';
 import {fixBlur, renderGrid} from './renderer.js';
 import {UserInputManager, toggleMode} from './userInput.js';
-import {drawTemporaryCut, drawCut} from './cut.js';
-import {drawSymbol} from './symbol.js';
+import {drawTemporaryCut} from './cut.js';
 import {DEBUG} from './main.js';
 
 function loadMini(){
@@ -85,13 +84,8 @@ function renderMiniCanvas(){
     }
 
 
-    for ( let c of CM.s_cuts ){
-        drawCut(c);
-    }
-
-    for ( let s of CM.s_syms ){
-        drawSymbol(s);
-    }
+    CM.getCuts().forEach(cut => cut.draw());
+    CM.getSyms().forEach(sym => sym.draw());
 
     //we released the mouse and a temporary cut exists, now create it
     if ( !(CM.tmp_cut === null) && !UM.is_mouse_down ){
@@ -103,7 +97,6 @@ function renderMiniCanvas(){
         drawTemporaryCut(UM.mouse_pos);
     }else{
         CM.tmp_cut = null;
-        CM.tmp_origin = null;
     }
 
     CM.animationRequest = requestAnimationFrame(renderMiniCanvas);

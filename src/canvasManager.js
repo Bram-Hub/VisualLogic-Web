@@ -27,7 +27,6 @@ class __CanvasManager{
         this.c_height = window.innerHeight;
 
         this.tmp_cut = null;
-        this.tmp_origin = null;
 
         this.proof_selected = [];
         this.id_map = {};
@@ -222,61 +221,57 @@ class __CanvasManager{
 
     }
 
-}
 
+    /**
+    * load the application from a src destination
+    *
+    * @param {String} tgt - can either be "localStorage" | "file" | "string"
+    * @param {String|null} data - if src is string, data is the string to parse
+    * @returns {Array} of objects built from save data
+    */
+    loadState(src, data = null){
+        if(src !== 'localStorage' && src !== 'file' && src !== 'string'){
+            return;
+        }
 
-/**
-* load the application from a src destination
-*
-* @param {String} tgt - can either be "localStorage" | "file" | "string"
-* @param {String|null} data - if src is string, data is the string to parse
-* @returns {Array} of objects built from save data
-*/
-function loadState(src, data = null){
-    if(src !== 'localStorage' && src !== 'file' && src !== 'string'){
-        return;
-    }
-
-    if(src === 'localStorage'){
-        data = JSON.parse(localStorage.getItem('save-state'));
-    }else{
-        data = JSON.parse(data);
-    }
-
-    let ret = [];
-    for(let x of data){
-        let tmp = JSON.parse(x);
-
-        if(typeof tmp['border_rad'] === 'number'){
-            //cut
-            let c = rebuildCut(tmp);
-            ret.push(c);
-            CanvasManager.addCut(c);
+        if(src === 'localStorage'){
+            data = JSON.parse(localStorage.getItem('save-state'));
         }else{
-            //symbolic
-            let s = rebuildSymbol(tmp);
-            ret.push(s);
-            CanvasManager.addSymbol(s);
+            data = JSON.parse(data);
         }
+
+        for(let x of data){
+            let tmp = JSON.parse(x);
+
+            if(typeof tmp['border_rad'] === 'number'){
+                //cut
+                this.addCut(rebuildCut(tmp));
+            }else{
+                //symbolic
+                this.addSymbol(rebuildSymbol(tmp));
+            }
+        }
+
+        //once all the cuts have been created swap the ids with the objs
+        for(let x of this.cuts){
+            for(let i = 0 ; i < x.child_cuts.length; i++){
+                x.child_cuts[i] = this.id_map[x.child_cuts[i]];
+            }
+
+            for(let i = 0 ; i < x.child_syms.length; i++){
+                x.child_syms[i] = this.id_map[x.child_syms[i]];
+            }
+
+            if(x.is_proof_selected){
+                this.addProofSelected(x);
+            }
+        }
+
+        return this.syms.concat(CanvasManager.cuts);
     }
 
-    //once all the cuts have been created swap the ids with the objs
-    for(let x of CanvasManager.cuts){
-        for(let i = 0 ; i < x.child_cuts.length; i++){
-            x.child_cuts[i] = CanvasManager.id_map[x.child_cuts[i]];
-        }
-
-        for(let i = 0 ; i < x.child_syms.length; i++){
-            x.child_syms[i] = CanvasManager.id_map[x.child_syms[i]];
-        }
-
-        if(x.is_proof_selected){
-            CanvasManager.addProofSelected(x);
-        }
-    }
-
-    return ret;
 }
+
 
 /**
  * @param {Object} data 
@@ -336,5 +331,4 @@ function InitializeCanvasManager(canvas, mini_canvas){
 export{
     CanvasManager,
     InitializeCanvasManager,
-    loadState
 };

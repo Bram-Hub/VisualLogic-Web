@@ -24,9 +24,6 @@ class Vector{
         }
 
         this.angle_degrees = this.angle * (180/Math.PI) ;
-
-        this.left_to_right = this.length >= 0; 
-        this.top_to_bot = this.height >= 0;
     }
 
     /**
@@ -44,5 +41,5 @@ class Vector{
 
 
 export {
-    Vector,
+    Vector
 };

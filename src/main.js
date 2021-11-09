@@ -1,8 +1,7 @@
-import {CanvasManager, InitializeCanvasManager, loadState} from './canvasManager.js';
-import {onResize, renderGrid, drawDistancesOfCuts} from './renderer.js';
+import {CanvasManager, InitializeCanvasManager} from './canvasManager.js';
+import {onResize, renderGrid, drawDistancesOfCuts, renderDebugInfo} from './renderer.js';
 import {UserInputManager, InitializeUserInputManager, toggleMode} from './userInput.js';
-import {drawTemporaryCut, drawCut} from './cut.js';
-import {drawSymbol} from './symbol.js';
+import {drawTemporaryCut} from './cut.js';
 
 var DEBUG = document.getElementById('debug').dataset.debugMode === 'true';
 
@@ -35,7 +34,7 @@ window.onload = () => {
 
     //load default mode
     let mode = localStorage.getItem('proof_mode');
-    if(!localStorage.getItem('proof_mode')){
+    if(!mode){
         localStorage.setItem('proof_mode', 'active');
     }else if(mode === 'active'){
         toggleMode();
@@ -43,7 +42,7 @@ window.onload = () => {
 
     //load previous data
     if(localStorage.getItem('save-state')){
-        loadState('localStorage');
+        CanvasManager.loadState('localStorage');
     }
 
 
@@ -67,39 +66,15 @@ function renderLoop(){
     UM.obj_under_mouse = null;
     UM.update();
 
-    if( DEBUG ){
-        document.getElementById('debug').innerHTML = '';
-    }
+    CM.getCuts().forEach(cut => {
+        cut.update();
+        cut.draw();
+    });
 
-    for( let c of CM.cuts ){
-        //check if this cut is under the mouse
-        c.update();
-
-        if ( c.is_mouse_over && DEBUG ){
-            let childs = '<br>Child Cuts : <br>';
-            for(let x of c.child_cuts){
-                childs += x.toString() + '<br>';
-            }
-            document.getElementById('debug').innerHTML = c.toString() +'<br>Level : ' + c.level.toString() + childs + '<br>' + c.bounded_area.toString();
-        }
-    }
-
-    for ( let s of CM.syms ){
-        s.update();
-
-        if ( s.is_mouse_over && DEBUG ){
-            document.getElementById('debug').innerHTML = s.toString() +
-                '<br>Level : ' + s.level.toString();
-        }
-    }
-
-    for ( let c of CM.cuts ){
-        drawCut(c);
-    }
-
-    for ( let s of CM.syms ){
-        drawSymbol(s);
-    }
+    CM.getSyms().forEach(sym => {
+        sym.update();
+        sym.draw();
+    });
 
     //we released the mouse and a temporary cut exists, now create it
     if ( !(CM.tmp_cut === null) && !UM.is_mouse_down ){
@@ -110,16 +85,18 @@ function renderLoop(){
         drawTemporaryCut(UM.mouse_pos);
     }else{
         CM.tmp_cut = null;
-        CM.tmp_origin = null;
     }
 
-    if (UM.current_obj && DEBUG){
-        document.getElementById('debug').innerHTML += '<br>Current : ' + UM.current_obj.toString();
+
+    if( DEBUG ){
+        document.getElementById('debug').innerHTML = '';
+        renderDebugInfo();
+        drawDistancesOfCuts();
+        if (UM.current_obj){
+            document.getElementById('debug').innerHTML += '<br>Current : ' + UM.current_obj.toString();
+        }
     }
 
-    if ( DEBUG ){
-        drawDistancesOfCuts();  
-    }
 
     CM.animationRequest = requestAnimationFrame(renderLoop);
 }
