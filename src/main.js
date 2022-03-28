@@ -63,7 +63,6 @@ function renderLoop(){
     let UM = UserInputManager;
 
     renderGrid(CM.Context, CM.c_width, CM.c_height);
-    UM.obj_under_mouse = null;
     UM.update();
 
     CM.getCuts().forEach(cut => {

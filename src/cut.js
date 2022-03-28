@@ -31,7 +31,6 @@ class Cut{
 
         this.is_mouse_over = false;
         this.is_mouse_in_border = false;
-        this.center = new Point(this.x,this.y);
 
         this.cut_border = new CutBorder(this);
 
@@ -62,6 +61,11 @@ class Cut{
     }
 
 
+    center(){
+        return new Point(this.x,this.y);
+    }
+
+
     update(){
         let UM = UserInputManager;
 
@@ -71,10 +75,6 @@ class Cut{
 
         if ( this.is_mouse_in_border && !UM.is_proof_mode ){
             updateCursor(this);
-        }
-
-        if (this.is_mouse_over){
-            UM.obj_under_mouse = this;
         }
 
         this.bounding_box = [
@@ -110,7 +110,6 @@ class Cut{
 
         this.x += dx;
         this.y += dy;
-        this.center = new Point(this.x,this.y);
 
         for ( let child of this.child_cuts ){
             if ( child.level === this.level + 1){
@@ -161,10 +160,6 @@ class Cut{
         this.child_syms.push(new_child);
     }
 
-    resetCenter(){
-        this.center = new Point(this.x,this.y);
-    }
-
 
     /**
     * Gets children that are only 1 level distant from this cut
@@ -202,9 +197,8 @@ class Cut{
         if ( this.rad_x < border_rad*2 || this.rad_y < border_rad*2 ){
             return;
         }
-    
+        
         context.strokeStyle = this === UM.obj_under_mouse ? 'blue' : 'black';
-    
         if(this.is_mouse_in_border && !UM.is_proof_mode){
             context.strokeStyle = 'lightblue';
         }
@@ -293,19 +287,16 @@ class CutBorder{
         let dy = (new_pos.y - UM.last_mouse_pos.y) * this.scale_speed;
         let c = this.parent;
 
-        if( new_pos.leftOf(c.center) ){
+        if( new_pos.leftOf(c.center()) ){
             dx = -dx;
         }
 
-        if( new_pos.above(c.center) ){
+        if( new_pos.above(c.center()) ){
             dy = -dy;
         }
 
         this.parent.rad_x += dx;
         this.parent.rad_y += dy;
-
-
-        this.center = new Point(this.x,this.y);
 
         UM.last_mouse_pos = new_pos;
     }
@@ -370,7 +361,7 @@ function isMouseInBorder(cut){
  * @param {Cut} cut 
  */
 function updateCursor(cut){
-    const a = new Vector(UserInputManager.mouse_pos, cut.center).angle_degrees;
+    const a = new Vector(UserInputManager.mouse_pos, cut.center()).angle_degrees;
 
     let ptr = 'default';
 
@@ -393,23 +384,31 @@ function updateCursor(cut){
  * @param {Point} pos 
  */
 function drawTemporaryCut(pos){
-    let CM = CanvasManager;
+    const CM = CanvasManager;
+    const UM = UserInputManager;
+
     if ( CM.tmp_cut === null ){
         CM.tmp_cut = new Cut(pos);
     }
 
-    const origin = CM.tmp_cut.center;
+    const origin = UM.last_mouse_pos;
     const v = new Vector(origin, pos);
 
     if ( DEBUG ){
         v.drawVector();
     }
 
-    CM.tmp_cut.rad_x = Math.abs(v.length);
-    CM.tmp_cut.rad_y = Math.abs(v.height);
+    const scale = 0.5;
 
-    CM.tmp_cut.x = origin.x + v.length/4;
-    CM.tmp_cut.y = origin.y + v.height/4;
+    CM.tmp_cut.rad_x = Math.abs(v.length) * scale;
+    CM.tmp_cut.rad_y = Math.abs(v.height) * scale;
+
+    //start a little to the left and above the starting position for a bit of padding
+    const x_offset = -10;
+    const y_offset = -10;
+
+    CM.tmp_cut.x = (origin.x + x_offset) + (v.length * scale);
+    CM.tmp_cut.y = (origin.y + y_offset) + (v.height * scale);
 
     let context = CM.getContext();
 
@@ -431,10 +430,10 @@ function drawTemporaryCut(pos){
 */
 function isWithinCut(a,b){
     return isWithinEllipse(
-        a.center, 
+        a.center(), 
         
-        b.center.x,
-        b.center.y,
+        b.x,
+        b.y,
         b.rad_x,
         b.rad_y
     );
