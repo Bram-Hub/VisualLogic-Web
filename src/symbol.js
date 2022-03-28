@@ -25,7 +25,6 @@ class Symbolic{
         this.width = 50;
         this.height = 50;
 
-        this.center = new Point(this.real_x, this.real_y);
         this.is_mouse_over = false;
 
         this.id = CanvasManager.getNextId();
@@ -36,6 +35,10 @@ class Symbolic{
         this.area = this.width * this.height;
     }
 
+    center(){
+        return new Point(this.x,this.y);
+    }
+
     update(){
         this.is_mouse_over = isPointWithinRect(
             UserInputManager.mouse_pos, 
@@ -44,10 +47,6 @@ class Symbolic{
             this.width, 
             this.height
         );
-
-        if (this.is_mouse_over){
-            UserInputManager.obj_under_mouse = this;
-        }
     }
 
     /**
@@ -66,8 +65,6 @@ class Symbolic{
 
         this.real_x = this.x - 25;
         this.real_y = this.y + 25;
-
-        this.center = new Point(this.real_x, this.real_y);
 
         if ( root ){
             UserInputManager.last_mouse_pos = new_pos;

@@ -46,7 +46,6 @@ function renderMiniCanvas(){
     let UM = UserInputManager;
 
     renderGrid(CM.MiniContext, CM.m_width, CM.m_height, 25);
-    UM.obj_under_mouse = null;
     UM.update();
 
     CM.getCuts().forEach(cut => {

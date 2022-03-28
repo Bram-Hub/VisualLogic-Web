@@ -78,6 +78,8 @@ class __UserInputManager{
         if ( this.current_obj === null ){
             document.getElementById('canvas').style.cursor = 'default'; 
         }
+
+        this.obj_under_mouse = getObjUnderMouse();
     }
 
     onMouseMove(e){
@@ -110,27 +112,36 @@ function onMouseDown(e){
         return;
     }
 
-    const overSyms = CM.getSyms().filter(sym => sym.is_mouse_over);
-    if(overSyms.length > 0){
-        UM.current_obj = overSyms[0];
-    }
-    else{
-        const overCuts = CM.getCuts().filter(cut => (cut.is_mouse_over || cut.is_mouse_in_border) && cut.level === 1);
-        if(overCuts.length > 0){
-            const innerMost = mouseOverInnerMost(overCuts[0]);
-            UM.current_obj = innerMost.is_mouse_in_border ? innerMost.cut_border : innerMost;
-        }
-    }
+    UM.current_obj = getObjUnderMouse();
 
     //if CTRL + SHIFT select whatever gets clicked as proof selected
     if(UM.is_shift_down && UM.current_obj !== null){
         if(!UM.current_obj.is_proof_selected){
-            CM.addProofSelected(UserInputManager.current_obj);
+            CM.addProofSelected(UM.current_obj);
         }else{
-            CM.removeProofSelected(UserInputManager.current_obj);
+            CM.removeProofSelected(UM.current_obj);
         }
     }
 
+}
+
+
+function getObjUnderMouse(){
+    const CM = CanvasManager;
+    let ret = null;
+
+    const overSyms = CM.getSyms().filter(sym => sym.is_mouse_over);
+    if(overSyms.length > 0){
+        ret = overSyms[0];
+    }else{
+        const overCuts = CM.getCuts().filter(cut => (cut.is_mouse_over || cut.is_mouse_in_border) && cut.level === 1);
+        if(overCuts.length > 0){
+            const innerMost = mouseOverInnerMost(overCuts[0]);
+            ret = innerMost.is_mouse_in_border ? innerMost.cut_border : innerMost;
+        }
+    }
+
+    return ret;
 }
 
 
@@ -278,8 +289,6 @@ function deleteObjectUnderMouse(){
 
 
     deleteObject(UM.obj_under_mouse);
-
-    UM.obj_under_mouse = null;
 }
 
 

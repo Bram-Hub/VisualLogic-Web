@@ -71,8 +71,6 @@ class __CanvasManager{
     * @param {Cut} cut
     */
     addCut(cut){
-        cut.resetCenter();
-
         let tgt = this.is_mini_open ? this.s_cuts : this.cuts;
         //keep the cuts list sorted from biggest area to smallest
         tgt.push(cut);

@@ -189,7 +189,7 @@ function drawDistancesOfCuts(){
                 continue;
             }
 
-            new Vector( i.center, j.center ).drawVector();
+            new Vector( i.center(), j.center() ).drawVector();
         }
     }
 
