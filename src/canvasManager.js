@@ -1,5 +1,6 @@
 import {Cut, CutBorder, isWithinCut, getInnerMostCutWithSymbol} from './cut.js';
 import {toggleProofButtons} from './userInput.js';
+import {isRectInRect} from './lib/math.js';
 import {Symbolic} from './symbol.js';
 import {Point} from './lib/point.js';
 
@@ -191,16 +192,12 @@ class __CanvasManager{
                     continue;
                 }
 
-                if ( isWithinCut(i,j) || isWithinCut(j,i) ){
-
-                    if ( i.area > j.area ){
-                        i.addChildCut(j);
-                        j.level = i.level + 1;
-                    }
+                if( isRectInRect(i.bounding_box, j.bounding_box) ){
+                    //J is within I
+                    i.addChildCut(j);
+                    j.level = i.level + 1;
                 }
-
             }
-
 
         }
 

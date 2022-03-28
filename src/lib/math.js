@@ -23,6 +23,17 @@ function isWithinEllipse(point, x, y, rad_x, rad_y){
 
 
 /**
+ * Given two rects return true if rect b is within a
+ * @param {Array} [x,y,width,height]
+ * @param {Array} [x,y,width,height] 
+ */ 
+function isRectInRect(a,b){
+    return (b[0] >= a[0]) && (b[0] + b[2] <= a[0] + a[2]) &&
+           (b[1] >= a[1]) && (b[1] + b[3] <= a[1] + a[3]);
+}
+
+
+/**
 * check if a given value is between a certain tolerance (inclusive)
 *
 * @param {Number} tgt
@@ -128,11 +139,12 @@ function getInteriorBoundingBox(rad_x,rad_y){
 
 
 export {
+    getDistance,
+    isRectInRect,
     transformPoint,
     isWithinEllipse,
     isWithinTollerance,
     getEllipseArea,
-    getDistance,
     isPointWithinRect,
     getInteriorBoundingBox,
 };
