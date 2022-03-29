@@ -1,7 +1,6 @@
 name: VL CI
 
-on:
-  push:
+on: [push, pull_request]
 
 jobs:
   npm-test:

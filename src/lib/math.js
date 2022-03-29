@@ -2,7 +2,7 @@ import {Point} from './point.js';
 
 
 /**
-* Given a point and a description of an ellipse determine if that point is 
+* Given a point and a description of an ellipse determine if that point is
 * within that ellipse, the coordinates are assumed to represent HTML canvas points
 *
 * @param {Point} point the point being tested
@@ -14,35 +14,22 @@ import {Point} from './point.js';
 */
 function isWithinEllipse(point, x, y, rad_x, rad_y){
     // (x-h)^2/a^2 + (y-k)^2/b^2 <= 1
-	
-    let a = Math.pow( point.x - x, 2) / Math.pow(rad_x, 2);
-    let b = Math.pow( point.y - y, 2) / Math.pow(rad_y, 2);
 
-    return a+b <= 1;	
+    const a = Math.pow( point.x - x, 2) / Math.pow(rad_x, 2);
+    const b = Math.pow( point.y - y, 2) / Math.pow(rad_y, 2);
+
+    return a+b <= 1;
 }
 
 
 /**
  * Given two rects return true if rect b is within a
  * @param {Array} [x,y,width,height]
- * @param {Array} [x,y,width,height] 
- */ 
+ * @param {Array} [x,y,width,height]
+ */
 function isRectInRect(a,b){
     return (b[0] >= a[0]) && (b[0] + b[2] <= a[0] + a[2]) &&
            (b[1] >= a[1]) && (b[1] + b[3] <= a[1] + a[3]);
-}
-
-
-/**
-* check if a given value is between a certain tolerance (inclusive)
-*
-* @param {Number} tgt
-* @param {Number} base
-* @param {Number} tol 
-* @returns {Boolean}
-*/
-function isWithinTollerance(tgt, base, tol){
-    return tgt >= ( base - tol ) && tgt <= ( base + tol );
 }
 
 
@@ -58,7 +45,7 @@ function isWithinTollerance(tgt, base, tol){
 */
 function isPointWithinRect(point, x,y, width, height){
     return point.x >= x && point.x <= x + width &&
-           point.y >= y && point.y <= y + height;	
+           point.y >= y && point.y <= y + height;
 }
 
 
@@ -66,7 +53,7 @@ function isPointWithinRect(point, x,y, width, height){
 * calculates the area of an ellipse
 *
 * @param {Number} rad_x
-* @param {Number} rad_y 
+* @param {Number} rad_y
 * @returns {Number}
 */
 function getEllipseArea(rad_x, rad_y){
@@ -83,7 +70,7 @@ function getEllipseArea(rad_x, rad_y){
 * @returns {Array.<Array.<Number>>}
 */
 function matrixDot (A, B) {
-    let result = new Array(A.length).fill(0).map(() => new Array(B[0].length).fill(0));
+    const result = new Array(A.length).fill(0).map(() => new Array(B[0].length).fill(0));
 
     return result.map((row, i) => {
         return row.map((_, j) => {
@@ -102,8 +89,8 @@ function matrixDot (A, B) {
 */
 function transformPoint(p, ratio){
     //use the transformation matrix to get the real canvas position
-    let m = matrixDot(
-        [[p.x, p.y]], 
+    const m = matrixDot(
+        [[p.x, p.y]],
         [[ratio, 0, 0 ], [0, ratio, 0], [0,0,1]]
     )[0];
 
@@ -114,13 +101,13 @@ function transformPoint(p, ratio){
 
 /**
 * gets the distance between two points
-* @param {Point} p1 
+* @param {Point} p1
 * @param {Point} p2
 * @returns {Number}
 */
 function getDistance(p1,p2){
-    let a = Math.pow( p2.x - p1.x,2 );
-    let b = Math.pow( p2.y - p1.y,2 );
+    const a = Math.pow( p2.x - p1.x,2 );
+    const b = Math.pow( p2.y - p1.y,2 );
 
     return Math.sqrt( a + b );
 }
@@ -135,7 +122,7 @@ function getDistance(p1,p2){
 */
 function getInteriorBoundingBox(rad_x,rad_y){
     return [ rad_x / Math.sqrt(2), rad_y / Math.sqrt(2) ];
-} 
+}
 
 
 export {
@@ -143,7 +130,6 @@ export {
     isRectInRect,
     transformPoint,
     isWithinEllipse,
-    isWithinTollerance,
     getEllipseArea,
     isPointWithinRect,
     getInteriorBoundingBox,
