@@ -20,7 +20,7 @@ class __CanvasManager{
         this.MiniCanvas = mini_canvas;
         this.Context = this.Canvas.getContext('2d');
         this.MiniContext = this.MiniCanvas.getContext('2d');
-       
+
         this.animationRequest = null;
         this.m_width = 0;
         this.m_height = 0;
@@ -33,7 +33,7 @@ class __CanvasManager{
         this.id_map = {};
 
         this.last_id = 0;
-    }   
+    }
 
     clearData(){
         this.cuts = [];
@@ -72,7 +72,7 @@ class __CanvasManager{
     * @param {Cut} cut
     */
     addCut(cut){
-        let tgt = this.is_mini_open ? this.s_cuts : this.cuts;
+        const tgt = this.is_mini_open ? this.s_cuts : this.cuts;
         //keep the cuts list sorted from biggest area to smallest
         tgt.push(cut);
         tgt.sort((a,b) => (b.area - a.area));
@@ -88,7 +88,7 @@ class __CanvasManager{
     * @param {Symbolic} sym
     */
     addSymbol(sym){
-        let tgt = this.is_mini_open ? this.s_syms : this.syms;
+        const tgt = this.is_mini_open ? this.s_syms : this.syms;
 
         tgt.push(sym);
 
@@ -102,13 +102,13 @@ class __CanvasManager{
     getCuts(){
         return this.is_mini_open ? this.s_cuts : this.cuts;
     }
-    
+
 
     /**
     * @returns {Symbolic[]} returns either cuts or s_cuts based on if mini_renderer is open
     */
     getSyms(){
-        return this.is_mini_open ? this.s_syms : this.syms; 
+        return this.is_mini_open ? this.s_syms : this.syms;
     }
 
 
@@ -125,12 +125,12 @@ class __CanvasManager{
 
     /**
     * Remove from the list of proof selected
-    * 
+    *
     * @param {Cut|Symbolic} tgt
     */
     removeProofSelected(tgt){
         const index = this.proof_selected.indexOf(tgt);
-        if(index > -1){
+        if (index > -1){
             this.proof_selected.splice(index,1);
             tgt.is_proof_selected = false;
             toggleProofButtons();
@@ -145,20 +145,20 @@ class __CanvasManager{
     * @param {String} tgt - can either be "localStorage" | "file" | "string"
     */
     save(tgt = 'localStorage'){
-        if(tgt !== 'localStorage' && tgt !== 'file' && tgt !== 'string'){
+        if (tgt !== 'localStorage' && tgt !== 'file' && tgt !== 'string'){
             return;
         }
 
-        let objs = [];
+        const objs = [];
 
         this.cuts.forEach(cut => objs.push(cut.serialize()));
         this.syms.forEach(sym => objs.push(sym.serialize()));
-    
+
         const data = JSON.stringify(objs);
-    
-        if(tgt === 'string'){
+
+        if (tgt === 'string'){
             return data;
-        }else if(tgt === 'localStorage'){
+        } else if (tgt === 'localStorage'){
             localStorage.setItem('save-state', data);
         }
     }
@@ -178,21 +178,21 @@ class __CanvasManager{
      * TODO: reduce search space of which Cuts to recalc
      */
     recalculateCuts(){
-        let CM = CanvasManager;
-        for(let c of CM.getCuts()){
+        const CM = CanvasManager;
+        for (const c of CM.getCuts()){
             c.level = 0;
             c.child_syms = [];
             c.child_cuts = [];
         }
 
-        
-        for(let i of CM.getCuts()){
-            for(let j of CM.getCuts()){
+
+        for (const i of CM.getCuts()){
+            for (const j of CM.getCuts()){
                 if ( i.id === j.id ){
                     continue;
                 }
 
-                if( isRectInRect(i.bounding_box, j.bounding_box) ){
+                if ( isRectInRect(i.bounding_box, j.bounding_box) ){
                     //J is within I
                     i.addChildCut(j);
                     //an objects level is the number of cuts surronding it
@@ -203,10 +203,10 @@ class __CanvasManager{
         }
 
 
-        for(let c of CM.getCuts()){
+        for (const c of CM.getCuts()){
             //update any symbols
-            for(let s of CM.getSyms()){
-                if( isWithinCut(s, c) ){
+            for (const s of CM.getSyms()){
+                if ( isWithinCut(s, c) ){
                     //add this to the innermost in this cut
                     s.level = c.level + 1;
                     getInnerMostCutWithSymbol(c, s).addChildSym(s);
@@ -226,39 +226,39 @@ class __CanvasManager{
     * @returns {Array} of objects built from save data
     */
     loadState(src, data = null){
-        if(src !== 'localStorage' && src !== 'file' && src !== 'string'){
+        if (src !== 'localStorage' && src !== 'file' && src !== 'string'){
             return;
         }
 
-        if(src === 'localStorage'){
+        if (src === 'localStorage'){
             data = JSON.parse(localStorage.getItem('save-state'));
-        }else{
+        } else {
             data = JSON.parse(data);
         }
 
-        for(let x of data){
-            let tmp = JSON.parse(x);
+        for (const x of data){
+            const tmp = JSON.parse(x);
 
-            if(typeof tmp['border_rad'] === 'number'){
+            if (typeof tmp['border_rad'] === 'number'){
                 //cut
                 this.addCut(rebuildCut(tmp));
-            }else{
+            } else {
                 //symbolic
                 this.addSymbol(rebuildSymbol(tmp));
             }
         }
 
         //once all the cuts have been created swap the ids with the objs
-        for(let x of this.cuts){
-            for(let i = 0 ; i < x.child_cuts.length; i++){
+        for (const x of this.cuts){
+            for (let i = 0 ; i < x.child_cuts.length; i++){
                 x.child_cuts[i] = this.id_map[x.child_cuts[i]];
             }
 
-            for(let i = 0 ; i < x.child_syms.length; i++){
+            for (let i = 0 ; i < x.child_syms.length; i++){
                 x.child_syms[i] = this.id_map[x.child_syms[i]];
             }
 
-            if(x.is_proof_selected){
+            if (x.is_proof_selected){
                 this.addProofSelected(x);
             }
         }
@@ -270,38 +270,38 @@ class __CanvasManager{
 
 
 /**
- * @param {Object} data 
+ * @param {Object} data
  * @returns {Cut}
  */
 function rebuildCut(data){
-    let ret = new Cut(new Point(0,0));
+    const ret = new Cut(new Point(0,0));
 
-    for(let prop in data){
+    for (const prop in data){
         ret[prop] = data[prop];
     }
 
-    let cb = new CutBorder(null);
-    let cb_data = JSON.parse(ret['cut_border']);
-    for(let prop in cb_data){
+    const cb = new CutBorder(null);
+    const cb_data = JSON.parse(ret['cut_border']);
+    for (const prop in cb_data){
         cb[prop] = cb_data[prop];
     }
 
     cb.parent = ret;
     ret.cut_border = cb;
 
-    return ret;    
+    return ret;
 }
 
 
 /**
- * 
+ *
  * @param {Object} data
- * @returns {Symbolic} 
+ * @returns {Symbolic}
  */
 function rebuildSymbol(data){
-    let ret = new Symbolic('', new Point(0,0) );
+    const ret = new Symbolic('', new Point(0,0) );
 
-    for(let prop in data){
+    for (const prop in data){
         ret[prop] = data[prop];
     }
 
@@ -309,17 +309,17 @@ function rebuildSymbol(data){
 }
 
 
-var CanvasManager;
+let CanvasManager;
 /**
- * @param {HTMLCanvasElement} canvas 
- * @param {HTMLCanvasElement} mini_canvas 
+ * @param {HTMLCanvasElement} canvas
+ * @param {HTMLCanvasElement} mini_canvas
  */
 function InitializeCanvasManager(canvas, mini_canvas){
     CanvasManager = new __CanvasManager(canvas,mini_canvas);
 }
 
 
-export{
+export {
     CanvasManager,
     InitializeCanvasManager,
 };

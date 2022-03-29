@@ -22,6 +22,10 @@ describe('Point tests', () => {
         expect(getDistance(p2,p4)).toBe(1);
         expect(getDistance(p2,p1)).toBe(1);
     });
+
+    it('update test', () => {
+        
+    });
 });
 
 

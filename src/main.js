@@ -3,7 +3,7 @@ import {onResize, renderGrid, renderDebugInfo} from './renderer.js';
 import {UserInputManager, InitializeUserInputManager, toggleMode} from './userInput.js';
 import {drawTemporaryCut} from './cut.js';
 
-var DEBUG = document.getElementById('debug') ? document.getElementById('debug').dataset.debugMode === 'true' : false;
+const DEBUG = document.getElementById('debug') ? document.getElementById('debug').dataset.debugMode === 'true' : false;
 
 /**
 * Entry Point of the program
@@ -11,13 +11,13 @@ var DEBUG = document.getElementById('debug') ? document.getElementById('debug').
 */
 window.onload = () => {
     //initialize application
-    let canvas = document.getElementById('canvas');
+    const canvas = document.getElementById('canvas');
     if ( !canvas || !canvas.getContext('2d')){
         alert('Failed to initialized canvas element');
         return;
     }
 
-    let mini_canvas = document.getElementById('mini-canvas');
+    const mini_canvas = document.getElementById('mini-canvas');
     if ( !mini_canvas || !mini_canvas.getContext('2d')){
         alert('Failed to initialized mini canvas element');
         return;
@@ -33,15 +33,15 @@ window.onload = () => {
     window.addEventListener('resize', onResize);
 
     //load default mode
-    let mode = localStorage.getItem('proof_mode');
-    if(!mode){
+    const mode = localStorage.getItem('proof_mode');
+    if (!mode){
         localStorage.setItem('proof_mode', 'active');
-    }else if(mode === 'active'){
+    } else if (mode === 'active'){
         toggleMode();
     }
 
     //load previous data
-    if(localStorage.getItem('save-state')){
+    if (localStorage.getItem('save-state')){
         CanvasManager.loadState('localStorage');
     }
 
@@ -59,8 +59,8 @@ window.onload = () => {
 
 //main application loop
 function renderLoop(){
-    let CM = CanvasManager;
-    let UM = UserInputManager;
+    const CM = CanvasManager;
+    const UM = UserInputManager;
 
     renderGrid(CM.Context, CM.c_width, CM.c_height);
     UM.update();
@@ -82,12 +82,12 @@ function renderLoop(){
 
     if ( UM.is_mouse_down && UM.is_shift_down && !UM.is_proof_mode){
         drawTemporaryCut(UM.mouse_pos);
-    }else{
+    } else {
         CM.tmp_cut = null;
     }
 
 
-    if( DEBUG ){
+    if ( DEBUG ){
         renderDebugInfo();
     }
 
