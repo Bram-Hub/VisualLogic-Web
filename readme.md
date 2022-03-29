@@ -23,8 +23,8 @@ Dependencies are managed by `npm`, currently the following packages are used:
 
 - [Jest](https://jestjs.io/) - used for testing
 - [serve](https://www.npmjs.com/package/serve) - used to run a local development server
-- [esm](https://www.npmjs.com/package/esm) - used to allow Jest to run with ES6 syntax
-- [eslint](https://eslint.org/) - used for linting 
+- [babel](https://babeljs.io/) - used to allow Jest to run with ESM
+- [eslint](https://eslint.org/) - used for JS linting 
 
 **Installing dependencies**. From the root directory of the project run the command:
 
@@ -42,14 +42,12 @@ The above command will start a local server, copy the URL the project is locally
 
 ### Testing
 
-Run 
+To run the test suite and generate coverage, run:
+
 ```bash
 npm test
 ```
 
-To run the test suite and generate coverage
-*Note: some of the coverage may 
-be highlighted incorrectly due to `esm` being used to allow jest to test ES6 JS modules.*
 
 Individual files can be run by:
 
