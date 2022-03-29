@@ -22,18 +22,7 @@ describe('Subgraph Test', () => {
 	jest.spyOn(window, 'alert').mockImplementation(() => {});
 
 	it('empty graph', () =>{
-		let s = new Subgraph([], null);
-	});
-
-
-	it('cut as a graph', () => {
-		let c = new Cut(new Point(0,0));
-		let s = new Subgraph([c], c);
-
-		expect(s.elements.length).toBe(1);
-		expect(s.levels[1].length).toBe(1);
-		expect( (s.levels[1][0] === c) ).toBeTruthy();
-		expect(s.getArea()).toBe(c.area);
+		let s = new Subgraph([]);
 	});
 
 });

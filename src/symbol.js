@@ -6,10 +6,10 @@ import {DEBUG} from './main.js';
 
 /**
 * A symbol represents a boolean variable in the sheet of assertion
-* Called symbolic since Symbol reserved by JS 
+* Called symbolic since Symbol reserved by JS
 */
 class Symbolic{
-    /** 
+    /**
      * @param {String} letter charactor representing the symbol
      * @param {Point} position
      */
@@ -45,24 +45,24 @@ class Symbolic{
 
     update(){
         this.is_mouse_over = isPointWithinRect(
-            UserInputManager.mouse_pos, 
-            this.x - 25, 
-            this.y - 25, 
-            this.width, 
+            UserInputManager.mouse_pos,
+            this.x - 25,
+            this.y - 25,
+            this.width,
             this.height
         );
     }
 
     /**
      * Update this objects position, if root the last mouse position will be updated as well
-     * 
-     * @param {Point} new_pos 
+     *
+     * @param {Point} new_pos
      * @param {Boolean|null} root (true by default)
     */
     updatePos( new_pos, root = true ){
-        let UM = UserInputManager; 
-        let dx = new_pos.x - UM.last_mouse_pos.x;
-        let dy = new_pos.y - UM.last_mouse_pos.y;
+        const UM = UserInputManager;
+        const dx = new_pos.x - UM.last_mouse_pos.x;
+        const dy = new_pos.y - UM.last_mouse_pos.y;
 
         this.x += dx;
         this.y += dy;
@@ -75,10 +75,10 @@ class Symbolic{
         }
     }
 
-    /** 
+    /**
      * Get this object's ID
-     * 
-     * @returns {String} 
+     *
+     * @returns {String}
      * */
     toString(){
         return this.id.toString();
@@ -86,8 +86,8 @@ class Symbolic{
 
     /**
      * Serialize this object into a JSON string
-     *  
-     * @returns {String} 
+     *
+     * @returns {String}
      * */
     serialize(){
         return JSON.stringify(this);
@@ -99,10 +99,10 @@ class Symbolic{
     */
     draw(){
 
-        let context = CanvasManager.getContext();
+        const context = CanvasManager.getContext();
         context.fillStyle = this.is_mouse_over ? 'blue' : 'black';
 
-        if(this.is_proof_selected){
+        if (this.is_proof_selected){
             context.fillStyle = 'green';
         }
 
@@ -110,7 +110,7 @@ class Symbolic{
         const font_size = '70px';
         context.font = `italic ${font_size} Times New Roman`;
 
-        context.fillText(this.letter, this.real_x, this.real_y); 
+        context.fillText(this.letter, this.real_x, this.real_y);
 
         if ( DEBUG ){
             context.beginPath();

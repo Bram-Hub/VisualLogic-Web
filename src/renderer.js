@@ -7,7 +7,7 @@ import {Vector} from './lib/vector.js';
 * Draws the background grid, this also acts as a method
 * of clearing the previous frame
 *
-* @param {CanvasRenderingContext2D} 
+* @param {CanvasRenderingContext2D}
 * @param {Number} width
 * @param {Number} height
 * @param {Number|null} line_width (50 by default)
@@ -18,7 +18,7 @@ function renderGrid(context, width, height, line_width = 50){
     context.fillRect(0,0,width,height);
 
     //x direction
-    for(let i = 0; i < width; i += line_width){
+    for (let i = 0; i < width; i += line_width){
 
         context.strokeStyle = i % 150 === 0 ? '#787878' : '#D0D0D0';
 
@@ -29,7 +29,7 @@ function renderGrid(context, width, height, line_width = 50){
     }
 
     //y direction
-    for(let i = 0; i < height; i += line_width){
+    for (let i = 0; i < height; i += line_width){
 
         context.strokeStyle = i % 150 === 0 ? '#787878' : '#D0D0D0';
 
@@ -43,8 +43,8 @@ function renderGrid(context, width, height, line_width = 50){
 }
 
 
-/** 
-* returns the device's pixel ratio for HiDPI displays 
+/**
+* returns the device's pixel ratio for HiDPI displays
 *
 * @returns {Number}
 */
@@ -68,38 +68,38 @@ function getDeviceRatio () {
 * corrects the canvas and resets the mouse pointer
 */
 function onResize() {
-    let CM = CanvasManager;
+    const CM = CanvasManager;
     CM.c_width = window.innerWidth;
     CM.c_height = window.innerHeight;
     UserInputManager.mouse_pos = new Point(0,0);
 
     fixBlur(
-        CM.Canvas, 
-        CM.Context, 
-        CM.c_width, 
+        CM.Canvas,
+        CM.Context,
+        CM.c_width,
         CM.c_height
     );
 }
 
 /**
  * TODO: use canvasManager instead of passing in variables
- * TODO: just scale the entire canvas up by the device pixel ratio 
- * 
- * @param {HTMLCanvasElement} canvas 
- * @param {CanvasRenderingContext2DSettings} context 
- * @param {Number} width 
- * @param {Number} height 
+ * TODO: just scale the entire canvas up by the device pixel ratio
+ *
+ * @param {HTMLCanvasElement} canvas
+ * @param {CanvasRenderingContext2DSettings} context
+ * @param {Number} width
+ * @param {Number} height
  */
 function fixBlur(canvas, context, width, height){
-    let ratio = getDeviceRatio();
+    const ratio = getDeviceRatio();
     canvas.width = width * ratio;
     canvas.height = height * ratio;
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
     //                    a     b  c  d      e  f
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     /**
-    [ a c e 
+    [ a c e
       b d f
       0 0 1
     ]
@@ -120,35 +120,35 @@ function displaySuccess(message){
 * Display a message to the error
 *
 * @param {String} message - what to show
-* @param {Boolean} error true if error/warning, false if notice/success 
+* @param {Boolean} error true if error/warning, false if notice/success
 */
 function displayMessage(message, error){
-    let f = error ? console.error : console.log;
+    const f = error ? console.error : console.log;
     f(message);
 
-    let msg_buf = document.getElementById('msg-buff');
-    let new_msg = document.createElement('div');
+    const msg_buf = document.getElementById('msg-buff');
+    const new_msg = document.createElement('div');
 
-    let clss = error ? 'msg err' : 'msg';
+    const clss = error ? 'msg err' : 'msg';
 
     new_msg.setAttribute('class', clss);
     new_msg.innerHTML = message;
     msg_buf.appendChild(new_msg);
 
-    setTimeout(function(){ 
+    setTimeout(()=> {
         msg_buf.innerHTML = '';
     }, 3000);
 }
 
-/** 
+/**
  * Create a texture that will display over a cut's area to indicate its selected in proof mode
- * 
- * @param {String} inner_style - fill style of the cut 
+ *
+ * @param {String} inner_style - fill style of the cut
  * @returns {CanvasPattern}
  * */
 function renderProofTexture(inner_style){
-    let scratch = document.createElement('canvas');
-    let scratch_ctx = scratch.getContext('2d');
+    const scratch = document.createElement('canvas');
+    const scratch_ctx = scratch.getContext('2d');
 
     scratch.width = 50;
     scratch.height = 50;
@@ -171,7 +171,7 @@ function renderProofTexture(inner_style){
 * @param {String|null} col - color of the dot (default red)
 */
 function drawPoint(Point, rad = 10, col='red'){
-    let context = CanvasManager.getContext();
+    const context = CanvasManager.getContext();
 
     context.beginPath();
     context.fillStyle = col;
@@ -181,10 +181,10 @@ function drawPoint(Point, rad = 10, col='red'){
 
 
 function drawDistancesOfCuts(){
-    let CM = CanvasManager;
+    const CM = CanvasManager;
 
-    for (let i of CM.cuts){
-        for(let j of CM.cuts){
+    for (const i of CM.cuts){
+        for (const j of CM.cuts){
             if ( j === i ){
                 continue;
             }
@@ -197,27 +197,27 @@ function drawDistancesOfCuts(){
 
 
 function renderDebugInfo(){
-    let CM = CanvasManager;
-    for( const c of CM.getCuts() ){
+    const CM = CanvasManager;
+    for ( const c of CM.getCuts() ){
         if ( c.is_mouse_over ){
             let childs = '<br>Child Cuts : <br>';
-            for(let x of c.child_cuts){
-                childs += x.toString() + '<br>';
+            for (const x of c.child_cuts){
+                childs += `${x.toString()}<br>`;
             }
-            document.getElementById('debug').innerHTML = c.toString() +'<br>Level : ' + c.level.toString() + childs + '<br>' + c.bounded_area.toString();
+            document.getElementById('debug').innerHTML = `${c.toString()}<br>Level : ${c.level.toString()}${childs}<br>${c.bounded_area.toString()}`;
         }
     }
 
     for ( const s of CM.getSyms() ){
         if ( s.is_mouse_over ){
-            document.getElementById('debug').innerHTML = s.toString() +
-                '<br>Level : ' + s.level.toString();
+            document.getElementById('debug').innerHTML = `${s.toString()
+            }<br>Level : ${s.level.toString()}`;
         }
     }
 
     drawDistancesOfCuts();
     if (UserInputManager.current_obj){
-        document.getElementById('debug').innerHTML += '<br>Current : ' + UserInputManager.current_obj.toString();
+        document.getElementById('debug').innerHTML += `<br>Current : ${UserInputManager.current_obj.toString()}`;
     }
 }
 
