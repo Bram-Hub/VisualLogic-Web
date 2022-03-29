@@ -4,7 +4,6 @@ import {getDeviceRatio, displayError} from './renderer.js';
 import {toggleMiniRenderer} from './minirenderer.js';
 import {CanvasManager} from './canvasManager.js';
 import {transformPoint} from './lib/math.js';
-import {Subgraph} from './subgraph.js';
 import {clearCanvas} from './main.js';
 import {Point} from './lib/point.js';
 import {Symbolic} from './symbol.js';
@@ -38,15 +37,15 @@ class __UserInputManager{
         document.getElementById('insert-btn').addEventListener('click', toggleMiniRenderer);
         document.getElementById('exit-mini').addEventListener('click', toggleMiniRenderer);
         document.getElementById('dbl-cut-btn').addEventListener('click', () => {
-            doubleCut( new Subgraph( CanvasManager.proof_selected) );
+            doubleCut( CanvasManager.proof_selected );
             toggleDoubleCutButton();
         });
         document.getElementById('insert-graph').addEventListener('click', () => {
             toggleMiniRenderer();
-            insertion( new Subgraph( CanvasManager.s_cuts.concat( CanvasManager.s_syms) ) );
+            insertion( CanvasManager.s_cuts.concat( CanvasManager.s_syms) );
         });
         document.getElementById('erasure-btn').addEventListener('click', () => {
-            erasure();
+            erasure( CanvasManager.proof_selected );
         });
         document.getElementById('iteration-btn').addEventListener('click', () => { displayError('not implemented'); });
         document.getElementById('deiteration-btn').addEventListener('click', () => { displayError('not implemented'); });
@@ -134,7 +133,7 @@ function getObjUnderMouse(){
     if(overSyms.length > 0){
         ret = overSyms[0];
     }else{
-        const overCuts = CM.getCuts().filter(cut => (cut.is_mouse_over || cut.is_mouse_in_border) && cut.level === 1);
+        const overCuts = CM.getCuts().filter(cut => (cut.is_mouse_over || cut.is_mouse_in_border) && cut.level === 0);
         if(overCuts.length > 0){
             const innerMost = mouseOverInnerMost(overCuts[0]);
             ret = innerMost.is_mouse_in_border ? innerMost.cut_border : innerMost;

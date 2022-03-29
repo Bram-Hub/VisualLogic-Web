@@ -180,7 +180,7 @@ class __CanvasManager{
     recalculateCuts(){
         let CM = CanvasManager;
         for(let c of CM.getCuts()){
-            c.level = 1;
+            c.level = 0;
             c.child_syms = [];
             c.child_cuts = [];
         }
@@ -195,6 +195,7 @@ class __CanvasManager{
                 if( isRectInRect(i.bounding_box, j.bounding_box) ){
                     //J is within I
                     i.addChildCut(j);
+                    //an objects level is the number of cuts surronding it
                     j.level = i.level + 1;
                 }
             }
@@ -207,7 +208,7 @@ class __CanvasManager{
             for(let s of CM.getSyms()){
                 if( isWithinCut(s, c) ){
                     //add this to the innermost in this cut
-                    s.level = c.level;
+                    s.level = c.level + 1;
                     getInnerMostCutWithSymbol(c, s).addChildSym(s);
                 }
             }

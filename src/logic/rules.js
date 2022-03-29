@@ -13,58 +13,59 @@ import {UserInputManager} from '../userInput.js';
 *
 * Performs checks if double check possible
 *
-* @param {Subgraph} subgraph - list of objects to try and perform a double cut
+* @param {Array} parts - list of objects to try and perform a double cut
 */
-function doubleCut(subgraph){
-    const elements = subgraph.elements;
-
-    if(elements.length !== 2){
+function doubleCut(parts){
+    if(parts.length !== 2){
         displayError('Can only double cut between 2 immediate cuts');
         return;
     }
 
-    for( const x of elements ){
-        if( !(x instanceof Cut) ){
-            displayError('Cannot perform double cut with a Symbol');
+    if( !(parts[0] instanceof Cut) || !(parts[1] instanceof Cut) ){
+        displayError('Can only perform double cut between two cuts');
+        return;
+    }
+
+    if( parts[0].level == parts[1].level){
+        displayError('Cannot perform a double cut between cuts on the same level');
+        return;
+    }
+
+    const err  = 'Can only perform double cut between two directly nested cuts with an empty subgraph in between them';
+
+
+    //check if between the two cuts there's an empty graph
+    const parent = parts[0].level < parts[1].level ? parts[0] : parts[1];
+    const child = parts[0].level > parts[1].level ? parts[0] : parts[1];
+  
+    if(parent.level != child.level-1){
+        displayError(err);
+        return;
+    }
+
+    for(const c of parent.getChildren()){
+        if(c.id != child.id){
+            displayError(err);
             return;
         }
-    }
-
-    //find the larger cut
-    let larger = null;
-    let smaller = null;
-    if(elements[0].area > elements[1].area){
-        larger = elements[0];
-        smaller = elements[1];
-    }else{
-        larger = elements[1];
-        smaller = elements[0];
-    }
-
-    for( const x of larger.getChildren()){
-        if(x.id !== smaller.id){
-            displayError('Found sub graph between double cuts');
-            return;
-        }
-    }
+    }   
 
 
-    deleteObject(larger);
-    deleteObject(smaller);
+    deleteObject(parent);
+    deleteObject(child);
 
     displaySuccess('Double cut complete');
-
 }
 
 
 /**
 * Insertion a subgraph at an odd level
 *
-* @param {Subgraph} subgraph
+* @param {Array} parts
 *
 * TODO: get current elements in tgt graph level and recalculate the subgraph with them
 */
-function insertion(subgraph){
+function insertion(parts){
     let CM = CanvasManager;
 
     //is there enough room
@@ -135,34 +136,27 @@ function insertion(subgraph){
 
 /**
 * Erasure erase any graph from even level
-*
+* @param {Array}
 */
-function erasure(){
-    let CM = CanvasManager;
-
-    if(CM.proof_selected.length !== 1){
+function erasure(parts){
+    if(parts.length !== 1){
         displayError('Can only apply erasure to 1 subgraph at a time');
         return;
     }
 
-    let tgt = CM.proof_selected[0];
+    const tgt = parts[0];
     if(tgt instanceof Symbolic){
-
-        if(tgt.level % 2 != 0){
+        if(!tgt.isEvenLevel()){
             displayError('Can only apply erasure to subgraph on an even level');
             return;
         }
-
 
         deleteObject(tgt);
         displaySuccess('Erasure Complete');
         return;
     }
 
-
-    //a cut has its own level, but is considered to be on its parent's level
-    //so check if odd in this case
-    if(tgt.level % 2 == 0){
+    if(!tgt.isEvenLevel()){
         displayError('Can only apply erasure to subgraph on an even level');
         return;
     }

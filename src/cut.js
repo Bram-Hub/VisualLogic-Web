@@ -36,7 +36,7 @@ class Cut{
 
         this.child_cuts = [];
         this.child_syms = [];
-        this.level = 1;
+        this.level = 0;
 
         this.area = getEllipseArea(this.rad_x, this.rad_y);
 
@@ -58,6 +58,11 @@ class Cut{
             this.y - this.rad_y + diff_y/2,
             inner_bb[0]*2,inner_bb[1]*2
         ];
+    }
+
+
+    isEvenLevel(){
+        return this.level % 2 == 0;
     }
 
 
@@ -118,7 +123,7 @@ class Cut{
         }
 
         for ( let child of this.child_syms ){
-            if ( child.level === this.level ){
+            if ( child.level === this.level + 1){
                 child.updatePos(new_pos, false);
             }
         }
@@ -169,7 +174,7 @@ class Cut{
     */
     getChildren(){
         return this.child_cuts.filter(cut => cut.level === this.level+1).concat(
-            this.child_syms.filter(sym => sym.level === this.level));
+            this.child_syms.filter(sym => sym.level === this.level+1));
     }
 
 
@@ -236,7 +241,7 @@ class Cut{
     
         let inner_style = '#A9A9A9';
     
-        if(this.level % 2 === 0){
+        if(!this.isEvenLevel()){
             inner_style = 'white';
         }
     

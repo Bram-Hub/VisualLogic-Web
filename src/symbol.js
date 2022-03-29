@@ -28,7 +28,7 @@ class Symbolic{
         this.is_mouse_over = false;
 
         this.id = CanvasManager.getNextId();
-        this.level = 1;
+        this.level = 0;
 
         this.is_proof_selected = false;
 
@@ -37,6 +37,10 @@ class Symbolic{
 
     center(){
         return new Point(this.x,this.y);
+    }
+
+    isEvenLevel(){
+        return this.level % 2 == 0;
     }
 
     update(){
