@@ -1,21 +1,18 @@
 
 import {Symbolic} from '../src/symbol.js';
 import {Point} from '../src/lib/point.js';
-import {CanvasManager, InitializeCanvasManager} from '../src/canvasManager.js';
+import {CanvasManager} from '../src/canvasManager.js';
 import {createCut} from './cut.test.js';
+import {initMockApp, deinitMockApp} from './testUtil.js';
+
 
 beforeEach(() => {
-	let mck = {
-		getContext : function() {},
-		addEventListener : function() {}
-	}
-
-	InitializeCanvasManager(mck,mck);
+	initMockApp();
 });
 
 
 afterEach(() => {
-	CanvasManager.clearData();
+	deinitMockApp();
 });
 
 

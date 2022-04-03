@@ -309,7 +309,7 @@ function toggleProofButtons(){
 
 
 function toggleOptions(){
-    const tgt = document.getElementById('model-background');
+    const tgt = document.getElementById('modal-background');
     tgt.style.display = tgt.style.display === 'flex' ? 'none' : 'flex';
 }
 
