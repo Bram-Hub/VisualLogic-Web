@@ -17,14 +17,6 @@
             "error",
             "unix"
         ],
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "always"
-        ],
         "template-curly-spacing": ["error", "never"],
         "semi-style": ["error", "last"],
         "semi": ["error", "always"],
