@@ -98,11 +98,11 @@ class Symbolic{
     * Render a given symbol on whichever context is opened
     */
     draw(){
-
+        const UM = UserInputManager;
         const context = CanvasManager.getContext();
         context.fillStyle = this.is_mouse_over ? 'blue' : 'black';
 
-        if (this.is_proof_selected){
+        if (UM.is_proof_mode && this.is_proof_selected){
             context.fillStyle = 'green';
         }
 

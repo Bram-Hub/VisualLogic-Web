@@ -1,5 +1,5 @@
 import {doubleCut, insertion, erasure} from './logic/rules.js';
-import {mouseOverInnerMost} from './cut.js';
+import {getInnerMostCut} from './cut.js';
 import {getDeviceRatio, displayError} from './renderer.js';
 import {toggleMiniRenderer} from './minirenderer.js';
 import {CanvasManager} from './canvasManager.js';
@@ -135,7 +135,7 @@ function getObjUnderMouse(){
     } else {
         const overCuts = CM.getCuts().filter(cut => (cut.is_mouse_over || cut.is_mouse_in_border) && cut.level === 0);
         if (overCuts.length > 0){
-            const innerMost = mouseOverInnerMost(overCuts[0]);
+            const innerMost = getInnerMostCut(overCuts[0]);
             ret = innerMost.is_mouse_in_border ? innerMost.cut_border : innerMost;
         }
     }

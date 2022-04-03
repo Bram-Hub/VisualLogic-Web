@@ -1,4 +1,5 @@
-import {Cut, CutBorder, isWithinCut, getInnerMostCutWithSymbol} from './cut.js';
+import {Cut, isWithinCut, getInnerMostCutWithSymbol} from './cut.js';
+import {CutBorder} from './cutBorder.js';
 import {toggleProofButtons} from './userInput.js';
 import {isRectInRect} from './lib/math.js';
 import {Symbolic} from './symbol.js';
