@@ -9,7 +9,7 @@ import {
 } from './lib/math.js';
 import {Vector} from './lib/vector.js';
 import {renderProofTexture} from './renderer.js';
-
+import {CutBorder} from './cutBorder.js';
 
 /**
 * A cut represents a negation in the sheet of assertion
@@ -271,58 +271,6 @@ class Cut{
 
 
 /**
- * CutBorder represents the ring around a cut and is used for resizing a cut
- */
-class CutBorder{
-    constructor(par){
-        this.parent = par;
-        this.id = CanvasManager.getNextId();
-
-        this.scale_speed = 1;
-    }
-
-    update(){
-        //pass
-    }
-
-    updatePos(new_pos){
-        const UM = UserInputManager;
-        let dx = (new_pos.x - UM.last_mouse_pos.x) * this.scale_speed;
-        let dy = (new_pos.y - UM.last_mouse_pos.y) * this.scale_speed;
-        const c = this.parent;
-
-        if ( new_pos.leftOf(c.center()) ){
-            dx = -dx;
-        }
-
-        if ( new_pos.above(c.center()) ){
-            dy = -dy;
-        }
-
-        this.parent.rad_x += dx;
-        this.parent.rad_y += dy;
-
-        UM.last_mouse_pos = new_pos;
-    }
-
-    toString(){
-        return this.id.toString();
-    }
-
-    serialize(){
-        function replacer(key,value){
-            if (key === 'parent'){
-                return value.id;
-            } else {
-                return value;
-            }
-        }
-        return JSON.stringify(this, replacer);
-    }
-}
-
-
-/**
 * return true if the mouse is over any point in the cut
 * this includes the border
 * @param {Cut} cut
@@ -488,21 +436,10 @@ function getInnerMostCutWithSymbol(cut, sym){
 }
 
 
-/**
-* @param {Cut} cut
-* @returns {Cut}
-*/
-function mouseOverInnerMost(cut){
-    return getInnerMostCut(cut);
-}
-
-
 export {
     drawTemporaryCut,
     Cut,
-    mouseOverInnerMost,
     isWithinCut,
     getInnerMostCutWithSymbol,
-    CutBorder,
     getInnerMostCut
 };
