@@ -346,7 +346,7 @@ function toggleProofButtons(){
 }
 
 function toggleOptions(){
-   UserInputManager.modal_background.style.display = UserInputManager.modal_background.style.display === 'flex' ? 'none' : 'flex';
+    UserInputManager.modal_background.style.display = UserInputManager.modal_background.style.display === 'flex' ? 'none' : 'flex';
 }
 
 export {
