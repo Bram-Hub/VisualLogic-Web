@@ -19,7 +19,7 @@ function createMockDom(){
     <button id="close-btn"></button>
     <button id="options-btn"></button>
     <button id="clear-btn"></button>
-    <div id="modal-background"></div>
+    <div id="modal-background" style=""></div>
     <div id="msg-buff"></div>
     `;
 }

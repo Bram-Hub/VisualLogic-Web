@@ -265,6 +265,12 @@ class __CanvasManager{
             }
         }
 
+        for (const x of this.syms){
+            if (x.is_proof_selected){
+                this.addProofSelected(x);
+            }
+        }
+
         return this.syms.concat(CanvasManager.cuts);
     }
 

@@ -1,3 +1,4 @@
+import {checkIfSubgraphsAreaEqual} from './ruleUtils.js';
 import {displaySuccess, displayError} from '../renderer.js';
 import {deleteObject, deleteObjectRecursive} from '../userInput.js';
 import {Cut} from '../cut.js';
@@ -14,18 +15,15 @@ import {Symbolic} from '../symbol.js';
 */
 function doubleCut(parts){
     if (parts.length !== 2){
-        displayError('Can only double cut between 2 immediate cuts');
-        return;
+        return displayError('Can only double cut between 2 immediate cuts');
     }
 
     if ( !(parts[0] instanceof Cut) || !(parts[1] instanceof Cut) ){
-        displayError('Can only perform double cut between two cuts');
-        return;
+        return displayError('Can only perform double cut between two cuts');
     }
 
     if ( parts[0].level == parts[1].level){
-        displayError('Cannot perform a double cut between cuts on the same level');
-        return;
+        return displayError('Cannot perform a double cut between cuts on the same level');
     }
 
     const err  = 'Can only perform double cut between two directly nested cuts with an empty subgraph in between them';
@@ -36,14 +34,12 @@ function doubleCut(parts){
     const child = parts[0].level > parts[1].level ? parts[0] : parts[1];
 
     if (parent.level != child.level-1){
-        displayError(err);
-        return;
+        return displayError(err);
     }
 
     for (const c of parent.getChildren()){
         if (c.id != child.id){
-            displayError(err);
-            return;
+            return displayError(err);
         }
     }
 
@@ -51,7 +47,7 @@ function doubleCut(parts){
     deleteObject(parent);
     deleteObject(child);
 
-    displaySuccess('Double cut complete');
+    return displaySuccess('Double cut complete');
 }
 
 
@@ -74,33 +70,53 @@ function insertion(){
 */
 function erasure(parts){
     if (parts.length !== 1){
-        displayError('Can only apply erasure to 1 subgraph at a time');
-        return;
+        return displayError('Can only apply erasure to 1 subgraph at a time');
     }
 
     const tgt = parts[0];
     if (tgt instanceof Symbolic){
         if (!tgt.isEvenLevel()){
-            displayError('Can only apply erasure to subgraph on an even level');
-            return;
+            return displayError('Can only apply erasure to subgraph on an even level');
         }
 
         deleteObject(tgt);
-        displaySuccess('Erasure Complete');
-        return;
+        return displaySuccess('Erasure Complete');
     }
 
     if (!tgt.isEvenLevel()){
-        displayError('Can only apply erasure to subgraph on an even level');
-        return;
+        return displayError('Can only apply erasure to subgraph on an even level');
     }
 
     deleteObjectRecursive(tgt);
-    displaySuccess('Erasure Complete');
+    return displaySuccess('Erasure Complete');
+}
+
+
+/**
+ * erase a copy of a subgraph at any nested level
+ * @param {Array} parts
+ */
+function deiteration(parts){
+    if (parts.length !== 2){
+        return displayError('Must select two subgraphs to perform deiteration');
+    }
+
+    if (parts[0].level === parts[1].level){
+        return displayError('Deiteration can not be done between two subgraphs on the same level');
+    }
+
+    //the first element is the copy to delete
+    if (!checkIfSubgraphsAreaEqual(parts[0], parts[1])){
+        return displayError('Selected subgraphs are not equivalent');
+    }
+
+    deleteObjectRecursive(parts[0]);
+    return displaySuccess('Erasure Complete');
 }
 
 export {
     doubleCut,
     insertion,
-    erasure
+    erasure,
+    deiteration
 };

@@ -1,4 +1,4 @@
-import {doubleCut, insertion, erasure} from './logic/rules.js';
+import {doubleCut, insertion, erasure, deiteration} from './logic/rules.js';
 import {getInnerMostCut} from './cut.js';
 import {getDeviceRatio, displayError} from './renderer.js';
 import {toggleMiniRenderer} from './minirenderer.js';
@@ -12,16 +12,17 @@ import {Symbolic} from './symbol.js';
 class __UserInputManager{
     constructor(){
         const MiniCanvas = CanvasManager.MiniCanvas;
+        const CM = CanvasManager;
 
-        CanvasManager.Canvas.addEventListener('mousedown', onMouseDown);
-        CanvasManager.Canvas.addEventListener('mouseup', onMouseUp);
-        CanvasManager.Canvas.addEventListener('mousemove', this.onMouseMove);
+        CM.Canvas.addEventListener('mousedown', onMouseDown);
+        CM.Canvas.addEventListener('mouseup', onMouseUp);
+        CM.Canvas.addEventListener('mousemove', onMouseMove);
         window.addEventListener('keydown', onKeyDown);
         window.addEventListener('keyup', onKeyUp);
 
         MiniCanvas.addEventListener('mousedown', onMouseDown);
         MiniCanvas.addEventListener('mouseup', onMouseUp);
-        MiniCanvas.addEventListener('mousemove', this.onMouseMove);
+        MiniCanvas.addEventListener('mousemove', onMouseMove);
 
         this.is_mouse_down = false;
         this.is_shift_down = false;
@@ -33,28 +34,49 @@ class __UserInputManager{
         this.obj_under_mouse = null;
         this.is_options_menu_open = false;
 
-        document.getElementById('toggle_mode').addEventListener('click', toggleMode);
-        document.getElementById('insert-btn').addEventListener('click', toggleMiniRenderer);
-        document.getElementById('exit-mini').addEventListener('click', toggleMiniRenderer);
-        document.getElementById('dbl-cut-btn').addEventListener('click', () => {
+        this.toggle_mode_btn = document.getElementById('toggle_mode');
+        this.insert_btn = document.getElementById('insert-btn');
+        this.exit_mini_renderer_btn = document.getElementById('exit-mini');
+        this.double_cut_btn = document.getElementById('dbl-cut-btn');
+        this.insert_subgraph_btn = document.getElementById('insert-graph');
+        this.erasure_btn = document.getElementById('erasure-btn');
+        this.iteration_btn = document.getElementById('iteration-btn');
+        this.deiteration_btn = document.getElementById('deiteration-btn');
+        this.close_btn = document.getElementById('close-btn');
+        this.option_btn = document.getElementById('options-btn');
+        this.clear_btn = document.getElementById('clear-btn');
+
+        this.toggle_mode_btn.addEventListener('click', toggleMode);
+        this.insert_btn.addEventListener('click', toggleMiniRenderer);
+        this.exit_mini_renderer_btn.addEventListener('click', toggleMiniRenderer);
+
+        this.modal_background = document.getElementById('modal-background');
+
+        //rules
+        this.double_cut_btn.addEventListener('click', () => {
             doubleCut( CanvasManager.proof_selected );
             toggleDoubleCutButton();
         });
-        document.getElementById('insert-graph').addEventListener('click', () => {
+
+        this.insert_subgraph_btn.addEventListener('click', () => {
             toggleMiniRenderer();
             insertion( CanvasManager.s_cuts.concat( CanvasManager.s_syms) );
         });
-        document.getElementById('erasure-btn').addEventListener('click', () => {
+
+        this.erasure_btn.addEventListener('click', () => {
             erasure( CanvasManager.proof_selected );
         });
-        document.getElementById('iteration-btn').addEventListener('click', () => { displayError('not implemented'); });
-        document.getElementById('deiteration-btn').addEventListener('click', () => { displayError('not implemented'); });
-        document.getElementById('close-btn').addEventListener('click', toggleOptions);
-        document.getElementById('options-btn').addEventListener('click', toggleOptions);
-        document.getElementById('clear-btn').addEventListener('click', clearCanvas);
 
-        toggleProofButtons();
-        toggleOptions();
+        this.iteration_btn.addEventListener('click', () => { displayError('not implemented'); });
+        this.deiteration_btn.addEventListener('click', () => {
+            if (deiteration( CM.proof_selected )){
+                CM.removeProofSelected(CM.proof_selected[0]);
+            }
+        });
+
+        this.close_btn.addEventListener('click', toggleOptions);
+        this.option_btn.addEventListener('click', toggleOptions);
+        this.clear_btn.addEventListener('click', clearCanvas);
     }
 
     clearData(){
@@ -81,15 +103,17 @@ class __UserInputManager{
         this.obj_under_mouse = getObjUnderMouse();
     }
 
-    onMouseMove(e){
-        e.preventDefault();
-        e.stopPropagation();
+}
 
-        UserInputManager.mouse_pos = getRealMousePos(e);
 
-        //TODO find a better a time to figure this out
-        CanvasManager.recalculateCuts();
-    }
+function onMouseMove(e){
+    e.preventDefault();
+    e.stopPropagation();
+
+    UserInputManager.mouse_pos = getRealMousePos(e);
+
+    //TODO find a better a time to figure this out
+    CanvasManager.recalculateCuts();
 }
 
 
@@ -97,6 +121,9 @@ let UserInputManager;
 
 function InitializeUserInputManager(){
     UserInputManager = new __UserInputManager();
+
+    toggleProofButtons();
+    toggleOptions();
 }
 
 
@@ -193,9 +220,10 @@ function onKeyUp(e){
         CanvasManager.addSymbol( new Symbolic(e.code[3], UM.mouse_pos ) );
     } else if ( (e.code === 'Delete' || e.code === 'Backspace') && !UM.is_proof_mode ){
         deleteObjectUnderMouse();
+    } else if ( e.code === 'ShiftLeft' || e.code === 'ShiftRight' ){
+        UM.is_shift_down = false;
     }
 
-    UM.is_shift_down = false;
 }
 
 
@@ -283,34 +311,42 @@ function deleteObjectUnderMouse(){
 
 
     deleteObject(UM.obj_under_mouse);
+    UM.current_obj = null;
 }
 
 
 function toggleDoubleCutButton(){
-    document.getElementById('dbl-cut-btn').disabled = CanvasManager.proof_selected.length !== 2;
+    UserInputManager.double_cut_btn.disabled = CanvasManager.proof_selected.length !== 2;
+    UserInputManager.double_cut_btn.blur();
 }
 
 
 function toggleInsertionButton(){
-    document.getElementById('insert-btn').disabled = CanvasManager.proof_selected.length !== 1;
+    UserInputManager.insert_btn.disabled = CanvasManager.proof_selected.length !== 1;
+    UserInputManager.insert_btn.blur();
 }
 
 
 function toggleErasureButton(){
-    document.getElementById('erasure-btn').disabled =  CanvasManager.proof_selected.length !== 1;
+    UserInputManager.erasure_btn.disabled = CanvasManager.proof_selected.length !== 1;
+    UserInputManager.erasure_btn.blur();
 }
 
+
+function toggleDeiterationButton(){
+    UserInputManager.deiteration_btn.disabled = CanvasManager.proof_selected.length !== 2;
+    UserInputManager.deiteration_btn.blur();
+}
 
 function toggleProofButtons(){
     toggleDoubleCutButton();
     toggleInsertionButton();
     toggleErasureButton();
+    toggleDeiterationButton();
 }
 
-
 function toggleOptions(){
-    const tgt = document.getElementById('modal-background');
-    tgt.style.display = tgt.style.display === 'flex' ? 'none' : 'flex';
+   UserInputManager.modal_background.style.display = UserInputManager.modal_background.style.display === 'flex' ? 'none' : 'flex';
 }
 
 export {

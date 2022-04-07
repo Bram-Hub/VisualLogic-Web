@@ -109,11 +109,13 @@ function fixBlur(canvas, context, width, height){
 /** @param {String} message*/
 function displayError(message){
     displayMessage(message, true);
+    return false;
 }
 
 /** @param {String} message*/
 function displaySuccess(message){
     displayMessage(message, false);
+    return true;
 }
 
 /**
@@ -200,10 +202,7 @@ function renderDebugInfo(){
     const CM = CanvasManager;
     for ( const c of CM.getCuts() ){
         if ( c.is_mouse_over ){
-            let childs = '<br>Child Cuts : <br>';
-            for (const x of c.child_cuts){
-                childs += `${x.toString()}<br>`;
-            }
+            const childs = `<br>Child Cuts : ${c.child_cuts.length}`;
             document.getElementById('debug').innerHTML = `${c.toString()}<br>Level : ${c.level.toString()}${childs}<br>${c.bounded_area.toString()}`;
         }
     }
