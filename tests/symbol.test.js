@@ -18,6 +18,18 @@ afterEach(() => {
 
 
 describe('Create Symbol', () => {
+	it('Should create symbols', () => {
+		let s = new Symbolic('A', new Point(0,0));
+
+		s.updatePos(new Point(10,10));
+		s.update();
+
+		expect(s.x).toBe(10);
+		expect(s.y).toBe(10);
+
+		expect(s.toString()).toBe("1");
+	});
+
   	it('Should set symbol levels', () => {
   		let s = new Symbolic('A', new Point(0,0));
 

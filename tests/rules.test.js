@@ -1,5 +1,5 @@
 import {createCut} from './cut.test';
-import {doubleCut} from '../src/logic/rules.js';
+import {doubleCut, erasure} from '../src/logic/rules.js';
 import {initMockApp, deinitMockApp} from './testUtil.js';
 import { Point } from '../src/lib/point';
 import { CanvasManager } from '../src/canvasManager.js';
@@ -30,5 +30,19 @@ describe('Logic Rules tests', () => {
             doubleCut([c1,c2]);
         });
 
+    });
+
+
+    describe('Erasure tests', () => {
+        it('Should perform erasure', () => {
+            const CM = CanvasManager;
+
+            let c1 = createCut(new Point(0,0), 1000);
+            CM.addCut(c1);
+            c1.update();
+            CM.recalculateCuts();
+
+            erasure([c1]);
+        });
     });
 });
