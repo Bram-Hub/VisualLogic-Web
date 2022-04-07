@@ -193,6 +193,7 @@ class __CanvasManager{
                     continue;
                 }
 
+
                 if ( isRectInRect(i.bounding_box, j.bounding_box) ){
                     //J is within I
                     i.addChildCut(j);

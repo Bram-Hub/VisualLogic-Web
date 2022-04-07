@@ -50,7 +50,7 @@ class __UserInputManager{
         this.insert_btn.addEventListener('click', toggleMiniRenderer);
         this.exit_mini_renderer_btn.addEventListener('click', toggleMiniRenderer);
 
-        this.modal_background = document.getElementById('model-background');
+        this.modal_background = document.getElementById('modal-background');
 
         //rules
         this.double_cut_btn.addEventListener('click', () => {
@@ -196,7 +196,6 @@ function getRealMousePos(pos){
 
 function onKeyDown(e){
     if ( e.code === 'ShiftLeft' || e.code === 'ShiftRight' ){
-        console.log('shift down');
         UserInputManager.is_shift_down = true;
     }
 }
