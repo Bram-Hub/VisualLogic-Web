@@ -101,6 +101,10 @@ function deiteration(parts){
        return displayError("Must select two subgraphs to perform deiteration");
     }
 
+    if(parts[0].level === parts[1].level){
+        return displayError("Deiteration can not be done between two subgraphs on the same level");
+    }
+
     //the first element is the copy to delete
     if(!checkIfSubgraphsAreaEqual(parts[0], parts[1])){
         return displayError("Selected subgraphs are not equivalent");

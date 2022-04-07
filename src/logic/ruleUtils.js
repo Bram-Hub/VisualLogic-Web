@@ -36,16 +36,16 @@ function checkIfSubgraphsAreaEqual(first, second){
  */
 function checkSubgraphEqualByLevel(first, second){
 
-    for(const i of first.child_syms.sort()){
-        for(const j of second.child_syms.sort()){
+    for(const i of first.child_syms.sort((a,z) => a.id - z.id )){
+        for(const j of second.child_syms.sort((a,z) => a.letter.localCompare(z.letter) )){
             if( i.letter != j.letter ){
                 return false;
             }
         }
     }
 
-    for(const i of first.child_cuts.sort().filter(cut => cut.level === this.level+1)){
-        for(const j of second.child_cuts.sort().filter(cut => cut.level === this.level +1)){
+    for(const i of first.child_cuts.sort((a,z) => a.id - z.id).filter(cut => cut.level === this.level+1)){
+        for(const j of second.child_cuts.sort((a,z) => a.id - z.id).filter(cut => cut.level === this.level +1)){
             return checkSubgraphEqualByLevel(i,j);
         }
     }
