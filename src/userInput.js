@@ -68,8 +68,8 @@ class __UserInputManager{
         });
 
         this.iteration_btn.addEventListener('click', () => { displayError('not implemented'); });
-        this.deiteration_btn.addEventListener('click', () => { 
-            if(deiteration( CM.proof_selected )){ 
+        this.deiteration_btn.addEventListener('click', () => {
+            if (deiteration( CM.proof_selected )){
                 CM.removeProofSelected(CM.proof_selected[0]);
             }
         });
@@ -121,7 +121,7 @@ let UserInputManager;
 
 function InitializeUserInputManager(){
     UserInputManager = new __UserInputManager();
-    
+
     toggleProofButtons();
     toggleOptions();
 }
