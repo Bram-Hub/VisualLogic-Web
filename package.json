@@ -25,5 +25,8 @@
     "jest": "^27.3.1",
     "jest-esm-transformer": "^1.0.0",
     "serve": "^13.0.2"
+  },
+  "dependencies": {
+    "cypress": "^9.6.1"
   }
 }

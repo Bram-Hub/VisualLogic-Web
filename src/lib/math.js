@@ -34,6 +34,15 @@ function isRectInRect(a,b){
 
 
 /**
+ * Given a rect return its area
+ * @param {Array} [x,y,width,height]
+ */
+function getRectArea(a){
+    return (a[2] - a[0]) * (a[3] -  a[1]);
+}
+
+
+/**
 * check if a given point exists within a rect on the canvas
 *
 * @param {Point} point
@@ -126,6 +135,7 @@ function getInteriorBoundingBox(rad_x,rad_y){
 
 
 export {
+    getRectArea,
     getDistance,
     isRectInRect,
     transformPoint,

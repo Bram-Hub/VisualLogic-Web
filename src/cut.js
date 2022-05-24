@@ -40,13 +40,27 @@ class Cut{
         this.area = getEllipseArea(this.rad_x, this.rad_y);
 
         this.is_proof_selected = false;
+        this.recalculateBoundingBox();
+        
+    }
+
+
+    isEvenLevel(){
+        return (this.level % 2) === 0;
+    }
+
+
+    center(){
+        return new Point(this.x,this.y);
+    }
+
+
+    recalculateBoundingBox(){
         this.bounding_box = [
             this.x - this.rad_x,
             this.y - this.rad_y,
             this.rad_x*2,this.rad_y*2
         ];
-
-        this.bounded_area = this.bounding_box[2] * this.bounding_box[3];
 
         const inner_bb = getInteriorBoundingBox(this.rad_x, this.rad_y);
         const diff_x = (this.rad_x * 2) - (inner_bb[0] * 2);
@@ -55,18 +69,9 @@ class Cut{
         this.interier_bounding_box = [
             this.x - this.rad_x + diff_x/2,
             this.y - this.rad_y + diff_y/2,
-            inner_bb[0]*2,inner_bb[1]*2
+            inner_bb[0]*2,
+            inner_bb[1]*2
         ];
-    }
-
-
-    isEvenLevel(){
-        return this.level % 2 == 0;
-    }
-
-
-    center(){
-        return new Point(this.x,this.y);
     }
 
 
@@ -81,23 +86,7 @@ class Cut{
             updateCursor(this);
         }
 
-        this.bounding_box = [
-            this.x - this.rad_x,
-            this.y - this.rad_y,
-            this.rad_x*2,this.rad_y*2
-        ];
-
-        this.bounded_area = this.bounding_box[2] * this.bounding_box[3];
-
-        const inner_bb = getInteriorBoundingBox(this.rad_x, this.rad_y);
-        const diff_x = (this.rad_x * 2) - (inner_bb[0] * 2);
-        const diff_y = (this.rad_y * 2) - (inner_bb[1] * 2);
-
-        this.interier_bounding_box = [
-            this.x - this.rad_x + diff_x/2,
-            this.y - this.rad_y + diff_y/2,
-            inner_bb[0]*2,inner_bb[1]*2
-        ];
+        this.recalculateBoundingBox();
     }
 
 
@@ -134,33 +123,56 @@ class Cut{
     }
 
 
+    /**
+     * Manually set this cut's position and update all children
+     */ 
+    updateAbsolutePos(new_pos){
+        this.x = new_pos.x;
+        this.y = new_pos.y;
+
+
+        for ( const child of this.child_cuts ){
+            if ( child.level === this.level + 1){
+
+                let offset_x = child.x - this.x;
+                let offset_y = child.y - this.y;
+
+                child.updateAbsolutePos( new Point( new_pos.x + offset_x, new_pos.y + offset_y  )  );
+            }
+        }
+
+        for ( const child of this.child_syms ){
+            if ( child.level === this.level + 1){
+                let offset_x = child.x - this.x;
+                let offset_y = child.y - this.y;
+
+                console.log(offset_x,offset_y);
+
+                child.updateAbsolutePos( new Point( new_pos.x + offset_x, new_pos.y + offset_y  )  );
+            }
+        }
+    }
+
+
     toString(){
         return this.id.toString();
     }
 
 
     /**
-    * adds a new child cut to this cut, checks if unique
+    * adds a new child cut to this cut
     * @param {Cut} new_child - cut to add
     */
     addChildCut(new_child){
-        if ( this.child_cuts.includes(new_child) ){
-            return;
-        }
-
         this.child_cuts.push(new_child);
     }
 
 
     /**
-    * adds a new child symbolic to this cut, checks if unique
+    * adds a new child symbolic to this cut
     * @param {Symbolic} new_child - sym to add
     */
     addChildSym(new_child){
-        if ( this.child_syms.includes(new_child) ){
-            return;
-        }
-
         this.child_syms.push(new_child);
     }
 
@@ -228,7 +240,6 @@ class Cut{
             );
 
             const i_bb = this.interier_bounding_box;
-            // console.log(bb);
             context.rect(
                 i_bb[0],i_bb[1],i_bb[2],i_bb[3]
             );
@@ -238,22 +249,22 @@ class Cut{
 
         //now draw inner cut
 
-        let inner_style = '#A9A9A9';
+        let inner_style = 'rgba(154, 154, 154, 0.7)';
 
         if (!this.isEvenLevel()){
-            inner_style = 'white';
+            inner_style = "rgba(255, 255, 255, 0.7)";
         }
 
-        if (this === UM.obj_under_mouse){
-            inner_style = '#DCDCDC';
+        if (this.is_mouse_over){
+            inner_style = 'rgba(220, 220, 220, 0.7)';
         }
 
-        if (this.is_proof_selected && UM.is_proof_mode){
+        if (UM.is_proof_mode && this.is_proof_selected ){
             inner_style = renderProofTexture(inner_style);
         }
 
-        context.save();
-        context.globalAlpha = 0.7;
+        //context.save();
+        //context.globalAlpha = 0.7;
         context.fillStyle = inner_style;
         context.beginPath();
         context.ellipse(
@@ -263,7 +274,7 @@ class Cut{
         );
 
         context.fill();
-        context.restore();
+        //context.restore();
         context.lineWidth = 1;
     }
 

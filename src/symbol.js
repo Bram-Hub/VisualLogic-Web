@@ -33,6 +33,7 @@ class Symbolic{
         this.is_proof_selected = false;
 
         this.area = this.width * this.height;
+        this.bounding_box = [this.real_x, this.real_y, this.real_x + this.width, this.real_y + this.height];
     }
 
     center(){
@@ -40,7 +41,7 @@ class Symbolic{
     }
 
     isEvenLevel(){
-        return this.level % 2 == 0;
+        return (this.level % 2) === 0;
     }
 
     update(){
@@ -51,6 +52,13 @@ class Symbolic{
             this.width,
             this.height
         );
+    }
+
+    recalculateBoundingBox(){
+        this.real_x = this.x - 25;
+        this.real_y = this.y + 25;
+
+        this.bounding_box = [this.real_x, this.real_y, this.real_x + this.width, this.real_y + this.height];
     }
 
     /**
@@ -67,12 +75,22 @@ class Symbolic{
         this.x += dx;
         this.y += dy;
 
-        this.real_x = this.x - 25;
-        this.real_y = this.y + 25;
+        this.recalculateBoundingBox();
 
         if ( root ){
             UserInputManager.last_mouse_pos = new_pos;
         }
+    }
+
+
+    /**
+     * Manually set this cut's position and update all children
+     */ 
+    updateAbsolutePos(new_pos){
+        this.x = new_pos.x;
+        this.y = new_pos.y;
+
+        this.recalculateBoundingBox();
     }
 
     /**

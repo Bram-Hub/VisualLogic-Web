@@ -9,7 +9,8 @@ const DEBUG = document.getElementById('debug') ? document.getElementById('debug'
 * Entry Point of the program
 * Init application and begin main render loop
 */
-window.onload = () => {
+window.addEventListener('load', init);
+function init() {
     //initialize application
     const canvas = document.getElementById('canvas');
     if ( !canvas || !canvas.getContext('2d')){

@@ -31,7 +31,6 @@ describe('Cut tests', () => {
 		expect(c.center()).toStrictEqual(new Point(300,500));
 
 		c.update();
-		expect(c.bounded_area).toBe( (200*2) * (200*2) );
 		expect(c.toString()).toBe("1");
 	});
 

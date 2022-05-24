@@ -60,17 +60,16 @@ class __UserInputManager{
 
         this.insert_subgraph_btn.addEventListener('click', () => {
             toggleMiniRenderer();
-            insertion( CanvasManager.s_cuts.concat( CanvasManager.s_syms) );
+            insertion( CanvasManager.proof_selected[0], CanvasManager.s_cuts.concat( CanvasManager.s_syms) );
         });
 
         this.erasure_btn.addEventListener('click', () => {
             erasure( CanvasManager.proof_selected );
         });
 
-        this.iteration_btn.addEventListener('click', () => { displayError('not implemented'); });
         this.deiteration_btn.addEventListener('click', () => {
             if (deiteration( CM.proof_selected )){
-                CM.removeProofSelected(CM.proof_selected[0]);
+                CanvasManager.removeProofSelected(CM.proof_selected[0]);
             }
         });
 

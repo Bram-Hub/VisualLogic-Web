@@ -200,23 +200,28 @@ function drawDistancesOfCuts(){
 
 function renderDebugInfo(){
     const CM = CanvasManager;
+    document.getElementById('debug').innerHTML = "";
     for ( const c of CM.getCuts() ){
         if ( c.is_mouse_over ){
             const childs = `<br>Child Cuts : ${c.child_cuts.length}`;
-            document.getElementById('debug').innerHTML = `${c.toString()}<br>Level : ${c.level.toString()}${childs}<br>${c.bounded_area.toString()}`;
+            document.getElementById('debug').innerHTML += `ID: ${c.toString()}<br>Level : ${c.level.toString()}${childs}<br>`;
         }
     }
 
     for ( const s of CM.getSyms() ){
         if ( s.is_mouse_over ){
-            document.getElementById('debug').innerHTML = `${s.toString()
-            }<br>Level : ${s.level.toString()}`;
+            document.getElementById('debug').innerHTML += `ID: ${s.toString()
+            }<br>Level : ${s.level.toString()}<br>`;
         }
     }
 
     drawDistancesOfCuts();
     if (UserInputManager.current_obj){
         document.getElementById('debug').innerHTML += `<br>Current : ${UserInputManager.current_obj.toString()}`;
+    }
+
+    for(const point of CM.debug_points){
+        drawPoint(point);
     }
 }
 

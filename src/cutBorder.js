@@ -30,6 +30,7 @@ class CutBorder{
         this.parent.rad_y += dy;
 
         UM.last_mouse_pos = new_pos;
+        this.parent.recalculateBoundingBox();
     }
 
     toString(){

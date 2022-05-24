@@ -1,7 +1,7 @@
 import {Cut, isWithinCut, getInnerMostCutWithSymbol} from './cut.js';
 import {CutBorder} from './cutBorder.js';
 import {toggleProofButtons} from './userInput.js';
-import {isRectInRect} from './lib/math.js';
+import {isRectInRect, getRectArea} from './lib/math.js';
 import {Symbolic} from './symbol.js';
 import {Point} from './lib/point.js';
 
@@ -34,6 +34,7 @@ class __CanvasManager{
         this.id_map = {};
 
         this.last_id = 0;
+        this.debug_points = [];
     }
 
     clearData(){
@@ -76,7 +77,6 @@ class __CanvasManager{
         const tgt = this.is_mini_open ? this.s_cuts : this.cuts;
         //keep the cuts list sorted from biggest area to smallest
         tgt.push(cut);
-        tgt.sort((a,b) => (b.area - a.area));
 
         this.id_map[cut.id] = cut;
     }
@@ -169,9 +169,10 @@ class __CanvasManager{
      * @returns {Number}
      */
     getNextId(){
-        this.last_id++;
+        this.last_id += 1;
         return this.last_id;
     }
+
 
     /**
      * Recalculate cuts by updating which ones are children of which
@@ -179,16 +180,15 @@ class __CanvasManager{
      * TODO: reduce search space of which Cuts to recalc
      */
     recalculateCuts(){
-        const CM = CanvasManager;
-        for (const c of CM.getCuts()){
+        for (const c of this.getCuts()){
             c.level = 0;
             c.child_syms = [];
             c.child_cuts = [];
         }
 
 
-        for (const i of CM.getCuts()){
-            for (const j of CM.getCuts()){
+        for (const i of this.getCuts()){
+            for (const j of this.getCuts()){
                 if ( i.id === j.id ){
                     continue;
                 }
@@ -200,14 +200,15 @@ class __CanvasManager{
                     //an objects level is the number of cuts surronding it
                     j.level = i.level + 1;
                 }
-            }
-
+            }            
         }
 
+        //ensure higher level cuts always get drawn first
+        this.getCuts().sort((a,b) => (a.level - b.level));
 
-        for (const c of CM.getCuts()){
+        for (const c of this.getCuts()){
             //update any symbols
-            for (const s of CM.getSyms()){
+            for (const s of this.getSyms()){
                 if ( isWithinCut(s, c) ){
                     //add this to the innermost in this cut
                     s.level = c.level + 1;
@@ -215,7 +216,6 @@ class __CanvasManager{
                 }
             }
         }
-
 
     }
 

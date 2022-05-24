@@ -1,8 +1,9 @@
-import {checkIfSubgraphsAreaEqual} from './ruleUtils.js';
-import {displaySuccess, displayError} from '../renderer.js';
+import {checkIfSubgraphsAreaEqual, injectSubgraph, compressCutChildren} from './ruleUtils.js';
 import {deleteObject, deleteObjectRecursive} from '../userInput.js';
-import {Cut} from '../cut.js';
+import {displaySuccess, displayError} from '../renderer.js';
+import {getRectArea} from '../lib/math.js';
 import {Symbolic} from '../symbol.js';
+import {Cut} from '../cut.js';
 
 
 /**
@@ -53,13 +54,36 @@ function doubleCut(parts){
 
 /**
 * Insertion a subgraph at an odd level
+* 
+* 
+* first get all distinct subgraphs that are being inserted (all graphs that are at level 0 of the mini renderer)
+* take existing elements and tile them within the bounding box
+* try and tile the largest elements and then the smallest
+* if doesn't fit expand to requested size
+*    check if the expanded area collides with an existing element
+*    if so push it towards the direction the element is being expanded towards 
 *
 * @param {Array} parts
 *
-* TODO: get current elements in tgt graph level and recalculate the subgraph with them
 */
-function insertion(){
-    throw 'Not implemented';
+function insertion(tgt_element, parts){
+    if(!(tgt_element instanceof Cut)){
+        return displayError('Cannot insert into a symbol');
+    }
+
+    //first get all top level components  
+    let top_levels = parts.filter(x => x.level === 0)
+                          .sort((a,b) => getRectArea(a.bounding_box) <= getRectArea(b.bounding_box) );
+
+    if(top_levels.length === 0){
+        return displaySuccess("Finished insertion");
+    }
+
+    compressCutChildren(tgt_element);
+    
+    for(let element of top_levels){
+        //injectSubgraph(tgt_element, element);
+    }
 
 }
 
